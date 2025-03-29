@@ -1,19 +1,34 @@
 import vertexShaderSrc from './shaders/vertex-shader';
 import fragmentShaderSrc from './shaders/bouncing-mondrian-fragment-shader';
+import seedrandom from 'seedrandom';
+import { createProbable as Probable } from 'probable';
+import { range } from 'd3-array';
 
 var gl;
 var program;
 var glBuffer;
 var resolutionLocation;
 var timeLocation;
+var col2HeightsLocation;
 
-export default function render({ canvas }) {
+export default function render({ canvas, seed }) {
+  var random = seedrandom(seed);
+  var { rollDie } = Probable({ random });
+
   if (!gl) {
     setUpShaders(canvas);
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
   gl.uniform2fv(resolutionLocation, [canvas.width, canvas.height]);
+
+  let heights = range(10).map(() => rollDie(6));
+  const heightSum = heights.reduce((sum, n) => sum + n, 0);
+
+  gl.uniform1fv(
+    col2HeightsLocation,
+    heights.map((height) => height / heightSum)
+  );
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -50,6 +65,7 @@ function setUpShaders(canvas) {
 
   resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
   timeLocation = gl.getUniformLocation(program, 'u_time');
+  col2HeightsLocation = gl.getUniformLocation(program, 'u_col2_heights');
   // cleanup();
 }
 

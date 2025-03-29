@@ -7,6 +7,10 @@ out vec4 outColor;
 
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform float u_col1_heights[10];
+uniform float u_col2_heights[10];
+uniform float u_col3_heights[10];
+
 const float yGap = 0.1;
 const float allBoxesYFloor = -1.;    
 // const float allBoxesYCeiling = 2.;
@@ -31,11 +35,6 @@ float rand(vec2 st) {
 }
 
 void main() {
-    float rectHeights[3];
-    rectHeights[0] = 0.2;
-    rectHeights[1] = 0.3;
-    rectHeights[2] = 0.5;
-    
     vec3 rectColors[3];
     rectColors[0] = vec3(1., 0., 0.);
     rectColors[1] = vec3(1., 1., 0.);
@@ -46,10 +45,11 @@ void main() {
     bool isOn = false;
     float baseY = 0.3;
 
-	float drift = sin(mod(u_time, 1. * PI));
+	  float drift = sin(mod(u_time, 1. * PI));
     float cornerY = allBoxesYFloor + drift;
+    float rectHeights[10] = u_col2_heights;
     
-    for (int i = 0; i < 3; i += 1) {
+    for (int i = 0; i < 10; i += 1) {
         vec2 rectCorner = vec2(0.2, cornerY);
         vec2 rectSize = vec2(0.5, rectHeights[i]);
         // color = vec3(rect(st, rectCorner, rectSize));
