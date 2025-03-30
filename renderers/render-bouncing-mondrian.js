@@ -4,12 +4,17 @@ import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
 import { range } from 'd3-array';
 
+const maxHeightsCount = 50;
+const maxColTotalHeight = 2;
+
 var gl;
 var program;
 var glBuffer;
 var resolutionLocation;
 var timeLocation;
-var col2HeightsLocation;
+var heightsLocation;
+var colLengthsLocation;
+var colCountLocation;
 
 export default function render({ canvas, seed }) {
   var random = seedrandom(seed);
@@ -22,13 +27,32 @@ export default function render({ canvas, seed }) {
 
   gl.uniform2fv(resolutionLocation, [canvas.width, canvas.height]);
 
-  let heights = range(10).map(() => rollDie(6));
-  const heightSum = heights.reduce((sum, n) => sum + n, 0);
+  const maxColCount = rollDie(4) + rollDie(3);
+  var colCount = 0;
+  var colLengths = [];
+  var totalColLengths = 0;
+  var heights = [];
 
-  gl.uniform1fv(
-    col2HeightsLocation,
-    heights.map((height) => height / heightSum)
-  );
+  for (let colIndex = 0; colIndex < maxColCount; ++colIndex) {
+    let colLength = rollDie(8) + rollDie(8);
+    colLength -= Math.max(0, colLength + totalColLengths - maxHeightsCount);
+    if (colLength < 1) {
+      break;
+    }
+
+    colCount += 1;
+    colLengths.push(colLength);
+    totalColLengths += colLength;
+    let colHeights = range(colLength).map(() => rollDie(6));
+    const heightSum = colHeights.reduce((sum, n) => sum + n, 0);
+    heights = heights.concat(
+      colHeights.map((height) => (height / heightSum) * maxColTotalHeight)
+    );
+  }
+
+  gl.uniform1i(colCountLocation, colCount);
+  gl.uniform1iv(colLengthsLocation, colLengths);
+  gl.uniform1fv(heightsLocation, heights);
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -55,7 +79,7 @@ function setUpShaders(canvas) {
     var linkErrLog = gl.getProgramInfoLog(program);
     cleanup();
     throw new Error(
-      'Shader program did not link successfully. ' + 'Error log: ' + linkErrLog
+      `Shader program did not link successfully. Error log:\n${linkErrLog}`
     );
   }
 
@@ -65,7 +89,9 @@ function setUpShaders(canvas) {
 
   resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
   timeLocation = gl.getUniformLocation(program, 'u_time');
-  col2HeightsLocation = gl.getUniformLocation(program, 'u_col2_heights');
+  heightsLocation = gl.getUniformLocation(program, 'u_heights');
+  colLengthsLocation = gl.getUniformLocation(program, 'u_colLengths');
+  colCountLocation = gl.getUniformLocation(program, 'u_colCount');
   // cleanup();
 }
 

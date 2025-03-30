@@ -7,12 +7,15 @@ out vec4 outColor;
 
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform float u_col1_heights[10];
-uniform float u_col2_heights[10];
-uniform float u_col3_heights[10];
+uniform float u_heights[100];
+uniform int u_colLengths[7];
+uniform int u_colCount;
 
-const float yGap = 0.1;
-const float allBoxesYFloor = -1.;    
+const float yGap = 0.02;
+const float xGap = 0.02;
+// TODO: Get from uniform.
+const float colWidth = 0.25;
+const float allBoxesYFloor = -1.;
 // const float allBoxesYCeiling = 2.;
 
 
@@ -46,22 +49,29 @@ void main() {
     float baseY = 0.3;
 
 	  float drift = sin(mod(u_time, 1. * PI));
-    float cornerY = allBoxesYFloor + drift;
-    float rectHeights[10] = u_col2_heights;
-    
-    for (int i = 0; i < 10; i += 1) {
-        vec2 rectCorner = vec2(0.2, cornerY);
-        vec2 rectSize = vec2(0.5, rectHeights[i]);
-        // color = vec3(rect(st, rectCorner, rectSize));
-        isOn = rect(st, rectCorner, rectSize);        
-        if (isOn) {
-            color = rectColors[i];
-            break;
-        }
-        cornerY = cornerY + rectHeights[i] + yGap;
-    }
-    
-    outColor = vec4(color, 1.0);
+    float cornerX = 0.;
+    int heightIndexBase = 0;
+   
+    for (int colIndex = 0; colIndex < u_colCount; ++colIndex) {
+      int colLength = u_colLengths[colIndex];
+      float cornerY = allBoxesYFloor + drift;
+
+      for (int rowIndex = 0; rowIndex < colLength; ++rowIndex) {
+          float height = u_heights[heightIndexBase + rowIndex];
+          vec2 rectCorner = vec2(cornerX, cornerY);
+          vec2 rectSize = vec2(colWidth, height);
+          isOn = rect(st, rectCorner, rectSize);        
+          if (isOn) {
+              color = rectColors[int(mod(float(rowIndex), 3.))];
+              break;
+          }
+          cornerY = cornerY + height + yGap;
+      }
+      heightIndexBase += colLength;
+      outColor = vec4(color, 1.0);
+
+      cornerX += (colWidth + xGap);
+   }
 }
 
 `;
