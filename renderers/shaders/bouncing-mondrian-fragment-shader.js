@@ -48,12 +48,13 @@ void main() {
     bool isOn = false;
     float baseY = 0.3;
 
-	  float drift = sin(mod(u_time, 1. * PI));
     float cornerX = 0.;
     int heightIndexBase = 0;
    
     for (int colIndex = 0; colIndex < u_colCount; ++colIndex) {
       int colLength = u_colLengths[colIndex];
+      float colDriftOffset = float(colIndex) * PI/4.;
+      float drift = sin(u_time + colDriftOffset);
       float cornerY = allBoxesYFloor + drift;
 
       for (int rowIndex = 0; rowIndex < colLength; ++rowIndex) {

@@ -43,7 +43,7 @@ export default function render({ canvas, seed }) {
     colCount += 1;
     colLengths.push(colLength);
     totalColLengths += colLength;
-    let colHeights = range(colLength).map(() => rollDie(6));
+    let colHeights = range(colLength).map(() => rollDie(3));
     const heightSum = colHeights.reduce((sum, n) => sum + n, 0);
     heights = heights.concat(
       colHeights.map((height) => (height / heightSum) * maxColTotalHeight)
