@@ -3,6 +3,7 @@ import fragmentShaderSrc from './shaders/bouncing-mondrian-fragment-shader';
 import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
 import { range } from 'd3-array';
+import { setUniform } from './uniforms';
 
 const maxHeightsCount = 50;
 const maxColTotalHeight = 2;
@@ -10,11 +11,11 @@ const maxColTotalHeight = 2;
 var gl;
 var program;
 var glBuffer;
-var resolutionLocation;
-var timeLocation;
-var heightsLocation;
-var colLengthsLocation;
-var colCountLocation;
+// var resolutionLocation;
+// var timeLocation;
+// var heightsLocation;
+// var colLengthsLocation;
+// var colCountLocation;
 
 export default function render({ canvas, seed }) {
   var random = seedrandom(seed);
@@ -24,8 +25,6 @@ export default function render({ canvas, seed }) {
     setUpShaders(canvas);
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
-
-  gl.uniform2fv(resolutionLocation, [canvas.width, canvas.height]);
 
   const maxColCount = rollDie(4) + rollDie(3);
   var colCount = 0;
@@ -50,9 +49,27 @@ export default function render({ canvas, seed }) {
     );
   }
 
-  gl.uniform1i(colCountLocation, colCount);
-  gl.uniform1iv(colLengthsLocation, colLengths);
-  gl.uniform1fv(heightsLocation, heights);
+  setUniform({
+    gl,
+    program,
+    uniformType: '1i',
+    name: 'u_colCount',
+    value: colCount,
+  });
+  setUniform({
+    gl,
+    program,
+    uniformType: '1iv',
+    name: 'u_colLengths',
+    value: colLengths,
+  });
+  setUniform({
+    gl,
+    program,
+    uniformType: '1fv',
+    name: 'u_heights',
+    value: heights,
+  });
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -87,11 +104,14 @@ function setUpShaders(canvas) {
 
   gl.useProgram(program);
 
-  resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-  timeLocation = gl.getUniformLocation(program, 'u_time');
-  heightsLocation = gl.getUniformLocation(program, 'u_heights');
-  colLengthsLocation = gl.getUniformLocation(program, 'u_colLengths');
-  colCountLocation = gl.getUniformLocation(program, 'u_colCount');
+  setUniform({
+    gl,
+    program,
+    uniformType: '2fv',
+    name: 'u_resolution',
+    value: [canvas.width, canvas.height],
+  });
+
   // cleanup();
 }
 
@@ -145,7 +165,13 @@ function createShader(src, shaderType) {
 }
 
 function renderWithUpdatedTime(timeStamp) {
-  gl.uniform1f(timeLocation, timeStamp / 1000);
+  setUniform({
+    gl,
+    program,
+    uniformType: '1f',
+    name: 'u_time',
+    value: timeStamp / 1000,
+  });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   requestAnimationFrame(renderWithUpdatedTime);
 }
