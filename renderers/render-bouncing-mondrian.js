@@ -5,9 +5,6 @@ import { createProbable as Probable } from 'probable';
 import { range } from 'd3-array';
 import { setUniform } from './uniforms';
 
-const maxHeightsCount = 50;
-const maxColTotalHeight = 2;
-
 var gl;
 var program;
 var glBuffer;
@@ -26,53 +23,52 @@ export default function render({ canvas, seed }) {
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
-  const maxColCount = rollDie(4) + rollDie(3);
-  var colCount = 0;
-  var colLengths = [];
-  var totalColLengths = 0;
-  var heights = [];
+  const verticalBarCount = rollDie(8) + rollDie(8);
+  const verticalBarXs = generateNormalizedNumbers(verticalBarCount);
 
-  for (let colIndex = 0; colIndex < maxColCount; ++colIndex) {
-    let colLength = rollDie(8) + rollDie(8);
-    colLength -= Math.max(0, colLength + totalColLengths - maxHeightsCount);
-    if (colLength < 1) {
-      break;
-    }
+  const horizontalBarCount = rollDie(8) + rollDie(8);
+  const horizontalBarYs = generateNormalizedNumbers(horizontalBarCount);
 
-    colCount += 1;
-    colLengths.push(colLength);
-    totalColLengths += colLength;
-    let colHeights = range(colLength).map(() => rollDie(3));
-    const heightSum = colHeights.reduce((sum, n) => sum + n, 0);
-    heights = heights.concat(
-      colHeights.map((height) => (height / heightSum) * maxColTotalHeight)
-    );
-  }
+  console.log(verticalBarXs, horizontalBarYs);
 
   setUniform({
     gl,
     program,
     uniformType: '1i',
-    name: 'u_colCount',
-    value: colCount,
+    name: 'u_verticalBarCount',
+    value: verticalBarCount,
   });
   setUniform({
     gl,
     program,
-    uniformType: '1iv',
-    name: 'u_colLengths',
-    value: colLengths,
+    uniformType: '1i',
+    name: 'u_horizontalBarCount',
+    value: horizontalBarCount,
   });
   setUniform({
     gl,
     program,
     uniformType: '1fv',
-    name: 'u_heights',
-    value: heights,
+    name: 'u_verticalBarXs',
+    value: verticalBarXs,
+  });
+  setUniform({
+    gl,
+    program,
+    uniformType: '1fv',
+    name: 'u_horizontalBarYs',
+    value: horizontalBarYs,
   });
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  function generateNormalizedNumbers(count) {
+    var numbers = range(count)
+      .map(() => rollDie(100))
+      .sort((a, b) => (a < b ? -1 : 1));
+    return numbers.map((x) => x / 100);
+  }
 }
 
 function setUpShaders(canvas) {
