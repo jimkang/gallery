@@ -24,10 +24,10 @@ export default function render({ canvas, seed }) {
   }
 
   const verticalBarCount = rollDie(8) + rollDie(8);
-  const verticalBarXs = generateNormalizedNumbers(verticalBarCount);
+  const verticalBarXs = generateNormalizedNumbers(verticalBarCount, 75);
 
   const horizontalBarCount = rollDie(8) + rollDie(8);
-  const horizontalBarYs = generateNormalizedNumbers(horizontalBarCount);
+  const horizontalBarYs = generateNormalizedNumbers(horizontalBarCount, 75);
 
   console.log(verticalBarXs, horizontalBarYs);
 
@@ -63,11 +63,11 @@ export default function render({ canvas, seed }) {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-  function generateNormalizedNumbers(count) {
+  function generateNormalizedNumbers(count, divisor) {
     var numbers = range(count)
       .map(() => rollDie(100))
       .sort((a, b) => (a < b ? -1 : 1));
-    return numbers.map((x) => x / 100);
+    return numbers.map((x) => x / divisor);
   }
 }
 
