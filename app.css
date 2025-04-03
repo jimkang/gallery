@@ -57,6 +57,23 @@ a:visited {
   border: solid 1px #444;
 }
 
+.piece-info {
+  justify-content: space-between;
+  display: flex;
+}
+
+.caption {
+  flex: auto;
+  padding-left: 0.25em;
+}
+
+.expand-link {
+  height: 32px;
+  justify-content: flex-end;
+  display: flex;
+  cursor: pointer;
+}
+
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;

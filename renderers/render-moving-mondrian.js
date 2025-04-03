@@ -1,5 +1,5 @@
 import vertexShaderSrc from './shaders/vertex-shader';
-import fragmentShaderSrc from './shaders/bouncing-mondrian-fragment-shader';
+import fragmentShaderSrc from './shaders/moving-mondrian-fragment-shader';
 import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
 import { range } from 'd3-array';

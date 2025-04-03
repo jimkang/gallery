@@ -1,15 +1,18 @@
 import './app.css';
 import handleError from 'handle-error-web';
 import { version } from './package.json';
-import renderBouncingMondrian from './renderers/render-bouncing-mondrian';
+import renderMovingMondrian from './renderers/render-moving-mondrian';
+import renderPieceControls from './renderers/render-piece-controls';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
+
+var normalCanvasSize = [320, 320];
 
 var randomId = RandomId();
 var urlStore;
 
 var renderersForPieceNames = {
-  'bouncing-mondrian': renderBouncingMondrian,
+  'moving-mondrian': renderMovingMondrian,
 };
 
 (async function go() {
@@ -26,11 +29,34 @@ var renderersForPieceNames = {
   urlStore.update();
 })();
 
-function onUpdate({ seed }) {
-  for (let piece in renderersForPieceNames) {
-    let canvas = document.getElementById(piece + '-canvas');
-    renderersForPieceNames[piece]({ canvas, seed });
+function onUpdate({ seed, focusPiece }) {
+  if (focusPiece) {
+    showPiece({ piece: focusPiece, seed, maximize: true });
+  } else {
+    for (let piece in renderersForPieceNames) {
+      showPiece({ piece, seed });
+    }
   }
+}
+
+function showPiece({ piece, seed, maximize = false }) {
+  let canvas = document.getElementById(piece + '-canvas');
+  if (!canvas) {
+    return;
+  }
+
+  if (maximize) {
+    const squareSideLength =
+      '' + Math.min(window.innerWidth, window.innerHeight);
+    canvas.setAttribute('width', squareSideLength);
+    canvas.setAttribute('height', squareSideLength);
+  } else {
+    canvas.setAttribute('width', '' + normalCanvasSize[0]);
+    canvas.setAttribute('height', '' + normalCanvasSize[1]);
+  }
+
+  renderersForPieceNames[piece]({ canvas, seed });
+  renderPieceControls({ piece, urlStore });
 }
 
 function reportTopLevelError(event: ErrorEvent) {
