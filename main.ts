@@ -2,6 +2,7 @@ import './app.css';
 import handleError from 'handle-error-web';
 import { version } from './package.json';
 import renderMovingMondrian from './renderers/render-moving-mondrian';
+import renderGlowPlanets from './renderers/render-glow-planets';
 import renderPieceControls from './renderers/render-piece-controls';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
@@ -12,6 +13,7 @@ var randomId = RandomId();
 var urlStore;
 
 var renderersForPieceNames = {
+  'glow-planets': renderGlowPlanets,
   'moving-mondrian': renderMovingMondrian,
 };
 
@@ -30,6 +32,11 @@ var renderersForPieceNames = {
 })();
 
 function onUpdate({ seed, focusPiece }) {
+  if (!seed) {
+    urlStore.update({ seed: randomId(8) });
+    return;
+  }
+
   if (focusPiece) {
     showPiece({ piece: focusPiece, seed, maximize: true });
   } else {

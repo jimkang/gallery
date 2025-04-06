@@ -1,13 +1,11 @@
 import vertexShaderSrc from './shaders/vertex-shader';
-import fragmentShaderSrc from './shaders/moving-mondrian-fragment-shader';
+import fragmentShaderSrc from './shaders/glow-planets-fragment-shader';
 import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
-import { range } from 'd3-array';
 import UniformCache from './uniforms';
 
 var gl;
 var program;
-var glBuffer;
 var { setUniform } = UniformCache();
 
 export default function render({ canvas, seed }) {
@@ -19,54 +17,13 @@ export default function render({ canvas, seed }) {
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
-  const verticalBarCount = rollDie(8) + rollDie(8);
-  const verticalBarXs = generateNormalizedNumbers(verticalBarCount, 75);
-
-  const horizontalBarCount = rollDie(8) + rollDie(8);
-  const horizontalBarYs = generateNormalizedNumbers(horizontalBarCount, 75);
-
-  console.log(verticalBarXs, horizontalBarYs);
-
-  setUniform({
-    gl,
-    program,
-    uniformType: '1i',
-    name: 'u_verticalBarCount',
-    value: verticalBarCount,
-  });
-  setUniform({
-    gl,
-    program,
-    uniformType: '1i',
-    name: 'u_horizontalBarCount',
-    value: horizontalBarCount,
-  });
-  setUniform({
-    gl,
-    program,
-    uniformType: '1fv',
-    name: 'u_verticalBarXs',
-    value: verticalBarXs,
-  });
-  setUniform({
-    gl,
-    program,
-    uniformType: '1fv',
-    name: 'u_horizontalBarYs',
-    value: horizontalBarYs,
-  });
+  // Set planet uniforms.
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-  function generateNormalizedNumbers(count, divisor) {
-    var numbers = range(count)
-      .map(() => rollDie(100))
-      .sort((a, b) => (a < b ? -1 : 1));
-    return numbers.map((x) => x / divisor);
-  }
 }
 
+// TODO: DRY
 function setUpShaders(canvas) {
   gl = getRenderingContext(canvas);
 
@@ -103,8 +60,6 @@ function setUpShaders(canvas) {
     name: 'u_resolution',
     value: [canvas.width, canvas.height],
   });
-
-  // cleanup();
 }
 
 function initializeGlAttributes() {
@@ -130,9 +85,6 @@ function initializeGlAttributes() {
 
 function cleanup() {
   gl.useProgram(null);
-  if (glBuffer) {
-    gl.deleteBuffer(glBuffer);
-  }
   if (program) {
     gl.deleteProgram(program);
   }

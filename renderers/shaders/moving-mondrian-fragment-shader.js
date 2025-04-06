@@ -1,7 +1,7 @@
 export default `#version 300 es
 precision mediump float;
 
-#define PI 3.1412759
+#define PI 3.1415927
 #define barArraySize 16
 
 out vec4 outColor;
