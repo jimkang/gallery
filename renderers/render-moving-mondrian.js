@@ -10,7 +10,7 @@ var program;
 var glBuffer;
 var { setUniform } = UniformCache();
 
-export default function render({ canvas, seed }) {
+export default function render({ canvas, seed, barThickness = 0.02 }) {
   var random = seedrandom(seed);
   var { rollDie } = Probable({ random });
 
@@ -19,11 +19,20 @@ export default function render({ canvas, seed }) {
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
-  const verticalBarCount = rollDie(8) + rollDie(8);
-  const verticalBarXs = generateNormalizedNumbers(verticalBarCount, 75);
+  const verticalBarDesiredCount = 2; //rollDie(8) + rollDie(8);
+  const verticalBarXs = generateNormalizedNumbers(
+    verticalBarDesiredCount,
+    75,
+    barThickness
+  );
 
-  const horizontalBarCount = rollDie(8) + rollDie(8);
-  const horizontalBarYs = generateNormalizedNumbers(horizontalBarCount, 75);
+  const horizontalBarDesiredCount = 4; //rollDie(8) + rollDie(8);
+  const horizontalBarYs = [0.2, 0.4, 0.6, 0.8];
+  // generateNormalizedNumbers(
+  // horizontalBarDesiredCount,
+  // 75,
+  // barThickness
+  // );
 
   console.log(verticalBarXs, horizontalBarYs);
 
@@ -32,14 +41,14 @@ export default function render({ canvas, seed }) {
     program,
     uniformType: '1i',
     name: 'u_verticalBarCount',
-    value: verticalBarCount,
+    value: verticalBarXs.length,
   });
   setUniform({
     gl,
     program,
     uniformType: '1i',
     name: 'u_horizontalBarCount',
-    value: horizontalBarCount,
+    value: horizontalBarYs.length,
   });
   setUniform({
     gl,
@@ -59,11 +68,17 @@ export default function render({ canvas, seed }) {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-  function generateNormalizedNumbers(count, divisor) {
+  function generateNormalizedNumbers(count, divisor, minGap) {
     var numbers = range(count)
       .map(() => rollDie(100))
       .sort((a, b) => (a < b ? -1 : 1));
-    return numbers.map((x) => x / divisor);
+    var dividedNumbers = numbers.map((x) => x / divisor);
+    for (let i = dividedNumbers.length - 1; i > 0; --i) {
+      if (dividedNumbers[i] < dividedNumbers[i - 1] + minGap) {
+        dividedNumbers.splice(1, 1);
+      }
+    }
+    return dividedNumbers;
   }
 }
 
