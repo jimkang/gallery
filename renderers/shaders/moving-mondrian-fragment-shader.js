@@ -16,16 +16,20 @@ uniform float u_horizontalBarYs[barArraySize];
 uniform float u_verticalBarXs[barArraySize];
 
 const float barWidth = 0.02;
-const float allBoxesYFloor = -.4;
+const float allBoxesYFloor = -.16;
 const float allBoxesXFloor = -.4;
+
+bool isInYBounds(float y, float top, float bottom) {
+    bool isAfterBottom = y > top;
+    bool isBeforeTop = y < bottom;
+    return isAfterBottom && isBeforeTop;
+}
 
 // Decide if this is inside or outside the rectangle.
 bool rect(vec2 st, vec2 corner, vec2 size){
     bool isAfterLeft = st.x > corner.x;
     bool isBeforeRight = st.x < corner.x + size.x;
-    bool isAfterBottom = st.y > corner.y;
-    bool isBeforeTop = st.y < corner.y + size.y;
-    return isAfterLeft && isBeforeRight && isAfterBottom && isBeforeTop;
+    return isAfterLeft && isBeforeRight && isInYBounds(st.y, corner.y, corner.y + size.y);
 }
 
 float rand(vec2 st) {
@@ -83,6 +87,8 @@ void main() {
 
     float horizontalBarYs[barArraySize];
     float verticalBarXs[barArraySize];
+
+    float hBarDrift = mod(u_time/2., 1.);
    
     for (int vBarIndex = 0; vBarIndex < u_verticalBarCount; ++vBarIndex) {
       float vBarDriftOffset = float(vBarIndex) * PI/8.;
@@ -97,22 +103,27 @@ void main() {
       }
       verticalBarXs[vBarIndex] = vBarX;
     }
-    for (int hBarIndex = 0; hBarIndex < u_horizontalBarCount; ++hBarIndex) {
-      float hBarDriftOffset = float(hBarIndex) * PI/8.;
-      float hBarDrift = sin(u_time + hBarDriftOffset) * 0.2;
-      float hBarY = allBoxesYFloor + u_horizontalBarYs[hBarIndex] + hBarDrift;
 
+    for (int hBarIndex = 0; hBarIndex < u_horizontalBarCount; ++hBarIndex) {
+      // float hBarDriftOffset = float(hBarIndex) * PI/8.;
+      float hBarY = allBoxesYFloor + u_horizontalBarYs[hBarIndex] + hBarDrift;
       if (hBarIndex > 0) {
         float prevBarYTop = horizontalBarYs[hBarIndex - 1] + barWidth;
         if (hBarY < prevBarYTop) {
           hBarY = prevBarYTop;
         }
       }
+
+      // Wrap around.
+      if (hBarY > 1.) {
+        hBarY -= 1.;
+      }
+
       horizontalBarYs[hBarIndex] = hBarY;
     }
 
     sort(verticalBarXs, u_verticalBarCount);
-    sort(horizontalBarYs, u_horizontalBarCount);
+    // sort(horizontalBarYs, u_horizontalBarCount);
 
     for (int vBarIndex = 0; vBarIndex < u_verticalBarCount - 1; ++vBarIndex) {
       float boxX = verticalBarXs[vBarIndex] + barWidth;
