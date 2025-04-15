@@ -17,6 +17,7 @@ uniform float u_verticalBarXs[MAX_BAR_ARRAY_SIZE];
 uniform float u_barThickness;
 
 bool debugLinesOn = false;
+// bool debugLinesOn = true;
 
 bool isInYBounds(float y, float top, float bottom) {
     bool isAfterBottom = y > top;

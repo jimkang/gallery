@@ -2,7 +2,6 @@ import vertexShaderSrc from './shaders/vertex-shader';
 import fragmentShaderSrc from './shaders/moving-mondrian-fragment-shader';
 import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
-import { range } from 'd3-array';
 import UniformCache from './uniforms';
 
 var gl;
@@ -10,9 +9,9 @@ var program;
 var glBuffer;
 var { setUniform } = UniformCache();
 
-export default function render({ canvas, seed, barThickness = 0.03 }) {
+export default function render({ canvas, seed, barThickness = 0.01 }) {
   var random = seedrandom(seed);
-  var { rollDie } = Probable({ random });
+  var { rollDie, roll } = Probable({ random });
 
   if (!gl) {
     setUpShaders(canvas);
@@ -20,18 +19,20 @@ export default function render({ canvas, seed, barThickness = 0.03 }) {
   }
 
   const verticalBarDesiredCount = 4 + rollDie(4);
-  const verticalBarXs = generateNormalizedNumbers(
-    verticalBarDesiredCount,
-    100,
-    barThickness
-  );
+  const verticalBarXs = generateNumbersOverRange({
+    count: verticalBarDesiredCount,
+    minimum: 0,
+    maximum: 1,
+    minGap: barThickness,
+  });
 
   const horizontalBarDesiredCount = 4 + rollDie(8);
-  const horizontalBarYs = generateNormalizedNumbers(
-    horizontalBarDesiredCount,
-    100,
-    barThickness
-  );
+  const horizontalBarYs = generateNumbersOverRange({
+    count: horizontalBarDesiredCount,
+    minimum: 0,
+    maximum: 1,
+    minGap: barThickness,
+  });
 
   console.log(verticalBarXs, horizontalBarYs);
 
@@ -74,17 +75,23 @@ export default function render({ canvas, seed, barThickness = 0.03 }) {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-  function generateNormalizedNumbers(count, divisor, minGap) {
-    var numbers = range(count)
-      .map(() => rollDie(100))
-      .sort((a, b) => (a < b ? -1 : 1));
-    var dividedNumbers = numbers.map((x) => x / divisor);
-    for (let i = dividedNumbers.length - 1; i > 0; --i) {
-      if (dividedNumbers[i] < dividedNumbers[i - 1] + minGap) {
-        dividedNumbers.splice(1, 1);
+  function generateNumbersOverRange({ count, minGap, minimum, maximum }) {
+    var numbers = [];
+    const avgDist = (maximum - minimum) / count - minGap;
+    var number;
+    do {
+      if (number === undefined) {
+        number = minimum + roll(2 * avgDist * 1000) / 1000;
+      } else {
+        number += minGap + roll(2 * avgDist * 1000) / 1000;
       }
-    }
-    return dividedNumbers;
+
+      if (number <= maximum) {
+        numbers.push(number);
+      }
+    } while (numbers.length < count && number < maximum);
+
+    return numbers;
   }
 }
 
