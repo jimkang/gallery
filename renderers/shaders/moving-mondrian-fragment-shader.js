@@ -14,8 +14,7 @@ uniform int u_horizontalBarCount;
 uniform int u_verticalBarCount;
 uniform float u_horizontalBarYs[MAX_BAR_ARRAY_SIZE];
 uniform float u_verticalBarXs[MAX_BAR_ARRAY_SIZE];
-
-const float barWidth = 0.02;
+uniform float u_barThickness;
 
 bool debugLinesOn = false;
 
@@ -85,7 +84,7 @@ vec3 getColorForHAndV(int hIndex, int vIndex) {
 bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, int totalHBarCount, out int hitHBarIndex) {
   for (int hBarIndex = 0; hBarIndex < totalHBarCount - 1; ++hBarIndex) {
     float hBarY = horizontalBarYs[hBarIndex];
-    float boxY = hBarY + barWidth;
+    float boxY = hBarY + u_barThickness;
     float nextBoxY = horizontalBarYs[hBarIndex + 1];
     bool isOn = false;
     if (nextBoxY < boxY) {
@@ -122,7 +121,7 @@ void main() {
 
   for (int vBarIndex = 0; vBarIndex < u_verticalBarCount; ++vBarIndex) {
     float vBarX = verticalBarXs[vBarIndex];
-    float boxX = vBarX + barWidth;
+    float boxX = vBarX + u_barThickness;
     int nextVBarIndex = vBarIndex + 1;
     if (nextVBarIndex >= u_verticalBarCount) {
       nextVBarIndex = 0;

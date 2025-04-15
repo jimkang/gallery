@@ -10,7 +10,7 @@ var program;
 var glBuffer;
 var { setUniform } = UniformCache();
 
-export default function render({ canvas, seed, barThickness = 0.02 }) {
+export default function render({ canvas, seed, barThickness = 0.03 }) {
   var random = seedrandom(seed);
   var { rollDie } = Probable({ random });
 
@@ -22,19 +22,26 @@ export default function render({ canvas, seed, barThickness = 0.02 }) {
   const verticalBarDesiredCount = 4 + rollDie(4);
   const verticalBarXs = generateNormalizedNumbers(
     verticalBarDesiredCount,
-    75,
+    100,
     barThickness
   );
 
   const horizontalBarDesiredCount = 4 + rollDie(8);
   const horizontalBarYs = generateNormalizedNumbers(
     horizontalBarDesiredCount,
-    75,
+    100,
     barThickness
   );
 
   console.log(verticalBarXs, horizontalBarYs);
 
+  setUniform({
+    gl,
+    program,
+    uniformType: '1f',
+    name: 'u_barThickness',
+    value: barThickness,
+  });
   setUniform({
     gl,
     program,
