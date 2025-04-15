@@ -95,24 +95,14 @@ void sortPosAndId(PosAndId[MAX_BAR_ARRAY_SIZE] array, int arrayPopulation) {
   }
 }
 
-// Adds bars at 0 and 1 in addition to the bars in srcBarArray.
 void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, float barDrift, out PosAndId destBarArray[MAX_BAR_ARRAY_SIZE]) {
-  int totalBarCount = srcBarCount + 2;
+  int totalBarCount = srcBarCount;
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
-    if (barIndex == 0) {
-      destBarArray[barIndex] = PosAndId(0., 0);
-      continue;
-    }
-    if (barIndex == totalBarCount - 1) {
-      destBarArray[barIndex] = PosAndId(BIG, 0);
-      continue;
-    }
+    float individualBarDrift = 0.;// float(barIndex) * PI/8.;
 
-    float individualBarDrift = float(barIndex) * PI/8.;
-    int srcBarPosIndex = barIndex - 1;
-    float barPos = srcBarArray[srcBarPosIndex] + barDrift + individualBarDrift;
-
+    float barPos = srcBarArray[barIndex] + barDrift + individualBarDrift;
+   
     // Wrap around.
     if (barPos > 1.) {
       barPos = mod(barPos, 1.);
@@ -122,14 +112,15 @@ void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, 
   }
 }
 
-float cantorPair(int a, int b) {
+int cantorPair(int a, int b) {
   float sum = float(a + b);
-  return sum/2. * (sum + 1.) + float(b);
+  return int(sum/2. * (sum + 1.) + float(b));
 }
 
+// There's still a problem at the edges.
 vec3 getColorForHAndV(int hIndex, int vIndex) {
-  int sum = hIndex + vIndex;
-  int colorIndex = int(mod(float(sum), 3.));
+  int sum = cantorPair(hIndex, vIndex);
+  int colorIndex = int(mod(float(sum), 4.));
   if (colorIndex == 0) {
     return vec3(.65, .12, .05);
   }
@@ -141,6 +132,31 @@ vec3 getColorForHAndV(int hIndex, int vIndex) {
   }
   
   return vec3(.96, .96, .86);
+}
+
+bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in PosAndId[MAX_BAR_ARRAY_SIZE] horizontalBarPosAndIds, int totalHBarCount, out int hitHBarIndex) {
+  for (int hBarIndex = 0; hBarIndex < totalHBarCount - 1; ++hBarIndex) {
+    PosAndId hBarPosAndId = horizontalBarPosAndIds[hBarIndex];
+    float boxY = hBarPosAndId.pos + barWidth;
+    float nextBoxY = horizontalBarPosAndIds[hBarIndex + 1].pos;
+    bool isOn = false;
+    if (nextBoxY < boxY) {
+      // Box is split across the top and bottom edges; check both.
+      isOn = rect(st, vec2(x, boxY), vec2(width, 1. - boxY));
+      if (!isOn) {
+        isOn = rect(st, vec2(x, 0.), vec2(width, nextBoxY));
+      }
+    } else {
+      float boxHeight = nextBoxY - boxY;
+      isOn = rect(st, vec2(x, boxY), vec2(width, boxHeight));
+    }
+
+    if (isOn) {
+      hitHBarIndex = hBarIndex;
+      return isOn;
+    }
+  }
+  return false;
 }
 
 void main() {
@@ -169,24 +185,32 @@ void main() {
   setBarPositions(u_verticalBarXs, u_verticalBarCount, vBarDrift, verticalBarPosAndIds);
 
   
-  for (int vBarIndex = 0; vBarIndex < totalVBarCount - 1; ++vBarIndex) {
+  for (int vBarIndex = 0; vBarIndex < u_verticalBarCount; ++vBarIndex) {
     PosAndId vBarPosAndId = verticalBarPosAndIds[vBarIndex];
     float boxX = vBarPosAndId.pos + barWidth;
-    float boxWidth = verticalBarPosAndIds[vBarIndex + 1].pos - boxX;
+    int nextVBarIndex = vBarIndex + 1;
+    if (nextVBarIndex >= u_verticalBarCount) {
+      nextVBarIndex = 0;
+    }
 
-    for (int hBarIndex = 0; hBarIndex < totalHBarCount - 1; ++hBarIndex) {
-      PosAndId hBarPosAndId = horizontalBarPosAndIds[hBarIndex];
-      float boxY = hBarPosAndId.pos + barWidth;
-      float boxHeight = horizontalBarPosAndIds[hBarIndex + 1].pos - boxY;
+    int hitHBarIndex = -1;
+    float nextBoxX = verticalBarPosAndIds[nextVBarIndex].pos;
+    bool isOn = false;
 
-      vec2 rectCorner = vec2(boxX, boxY);
-      vec2 rectSize = vec2(boxWidth, boxHeight);
-      bool isOn = rect(st, rectCorner, rectSize);        
-      if (isOn) {
-        // float hvBarHash = cantorPair(hBarPosAndId.id, vBarPosAndId.id);
-        // int colorIndex = 3000;//int(hvBarHash);// int(mod(hvBarHash * 100., 9.));
-        outColor = vec4(getColorForHAndV(hBarPosAndId.id, vBarPosAndId.id), 1.0);
+    if (nextBoxX < boxX) {
+      // This box is on the edge, so we split it and do checks for two boxes in this case.
+      isOn = checkForBoxHitInVerticalStrip(st, boxX, 1. - boxX, horizontalBarPosAndIds, u_horizontalBarCount, hitHBarIndex);
+      if (!isOn) {
+        isOn = checkForBoxHitInVerticalStrip(st, 0., nextBoxX, horizontalBarPosAndIds, u_horizontalBarCount, hitHBarIndex);
       }
+    } else {
+      float boxWidth = nextBoxX - boxX;
+      isOn = checkForBoxHitInVerticalStrip(st, boxX, boxWidth, horizontalBarPosAndIds, u_horizontalBarCount, hitHBarIndex);
+    }
+    
+    if (isOn) {
+      outColor = vec4(getColorForHAndV(hitHBarIndex, vBarPosAndId.id), 1.0);
+      break;
     }
   }
 
@@ -218,7 +242,6 @@ void main() {
 
   if (rect(st, vec2(0., hBarDrift), vec2(1., .01))) {
     outColor = vec4(1., 0., 0., 1.);
-    return;
   }
 }
 
