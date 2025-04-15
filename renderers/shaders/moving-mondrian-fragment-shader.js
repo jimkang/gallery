@@ -17,6 +17,8 @@ uniform float u_verticalBarXs[MAX_BAR_ARRAY_SIZE];
 
 const float barWidth = 0.02;
 
+bool debugLinesOn = false;
+
 bool isInYBounds(float y, float top, float bottom) {
     bool isAfterBottom = y > top;
     bool isBeforeTop = y < bottom;
@@ -43,7 +45,10 @@ void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, 
   int totalBarCount = srcBarCount;
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
-    float individualBarDrift = 0.;// float(barIndex) * PI/8.;
+    // This would be cool if it weren't possibly seizure-causing.
+    //float individualBarDrift = rand(vec2(float(barIndex) * PI/8., -1.));
+
+    float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
 
     float barPos = srcBarArray[barIndex] + barDrift + individualBarDrift;
    
@@ -63,7 +68,7 @@ int cantorPair(int a, int b) {
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
   int sum = cantorPair(hIndex, vIndex);
-  int colorIndex = int(mod(float(sum), 4.));
+  int colorIndex = int(mod(float(sum), 10.));
   if (colorIndex == 0) {
     return vec3(.65, .12, .05);
   }
@@ -104,6 +109,7 @@ bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in float[MAX_B
 
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  outColor = vec4(.05, .03, .01, 1.);
 
   float hBarDrift = mod(u_time/8., 1.);
   float vBarDrift = mod(u_time/8., 1.);
@@ -144,6 +150,10 @@ void main() {
   }
 
   // Debug line drawing
+  if (!debugLinesOn) {
+    return;
+  }
+
   if (st.y > 0.999 && st.y < 1.001) {
     outColor = vec4(0., 1., 0., 1.);
     return;
