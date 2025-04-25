@@ -52,7 +52,8 @@ void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, 
     float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
 
     float barPos = srcBarArray[barIndex] + barDrift + individualBarDrift;
-   
+  
+    // TODO: Why is there a gap in the horizontal bars?
     // Wrap around.
     if (barPos > 1.) {
       barPos = mod(barPos, 1.);

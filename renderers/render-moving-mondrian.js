@@ -3,6 +3,7 @@ import fragmentShaderSrc from './shaders/moving-mondrian-fragment-shader';
 import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
 import UniformCache from './uniforms';
+import { range } from 'd3-array';
 
 var gl;
 var program;
@@ -11,30 +12,31 @@ var { setUniform } = UniformCache();
 
 export default function render({ canvas, seed, barThickness = 0.01 }) {
   var random = seedrandom(seed);
-  var { rollDie, roll } = Probable({ random });
+  var { rollDie, shuffle } = Probable({ random });
 
   if (!gl) {
     setUpShaders(canvas);
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
-  const verticalBarDesiredCount = 4 + rollDie(4);
-  const verticalBarXs = generateNumbersOverRange({
+  const verticalBarDesiredCount = 8 + rollDie(8);
+  const verticalBarXs = divideRangeRandomly({
     count: verticalBarDesiredCount,
+    numberOfUnits: 24,
     minimum: 0,
     maximum: 1,
-    minGap: barThickness,
   });
 
-  const horizontalBarDesiredCount = 4 + rollDie(8);
-  const horizontalBarYs = generateNumbersOverRange({
+  const horizontalBarDesiredCount = 8 + rollDie(8);
+  const horizontalBarYs = divideRangeRandomly({
     count: horizontalBarDesiredCount,
+    numberOfUnits: 24,
     minimum: 0,
     maximum: 1,
-    minGap: barThickness,
   });
 
-  console.log(verticalBarXs, horizontalBarYs);
+  console.log('verticalBarXs', verticalBarXs);
+  console.log('horizontalBarYs', horizontalBarYs);
 
   setUniform({
     gl,
@@ -75,23 +77,34 @@ export default function render({ canvas, seed, barThickness = 0.01 }) {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-  function generateNumbersOverRange({ count, minGap, minimum, maximum }) {
-    var numbers = [];
-    const avgDist = (maximum - minimum) / count - minGap;
-    var number;
-    do {
-      if (number === undefined) {
-        number = minimum + roll(2 * avgDist * 1000) / 1000;
-      } else {
-        number += minGap + roll(2 * avgDist * 1000) / 1000;
-      }
+  function divideRangeRandomly({ count, numberOfUnits, minimum, maximum }) {
+    const maxRange = maximum - minimum;
+    const unitSize = maxRange / numberOfUnits;
+    const maxUnitsPerDeal = Math.floor((numberOfUnits / count) * 3);
 
-      if (number <= maximum) {
-        numbers.push(number);
-      }
-    } while (numbers.length < count && number < maximum);
+    var unitsPerDivision = range(count).map(() => 1);
+    var remainingUnits = numberOfUnits - count;
+    if (remainingUnits > 0) {
+      let i = 0;
+      do {
+        let extraUnits = rollDie(Math.min(maxUnitsPerDeal, remainingUnits));
+        unitsPerDivision[i] += extraUnits;
+        remainingUnits -= extraUnits;
+        i += 1;
+        if (i >= unitsPerDivision.length) {
+          i = 0;
+        }
+      } while (remainingUnits > 0);
+      unitsPerDivision = shuffle(unitsPerDivision);
+    }
 
-    return numbers;
+    var divisionSizes = unitsPerDivision.map((units) => units * unitSize);
+    var divisionPositions = [0];
+
+    for (let i = 1; i < count; ++i) {
+      divisionPositions[i] = divisionPositions[i - 1] + divisionSizes[i - 1];
+    }
+    return divisionPositions;
   }
 }
 
