@@ -2,6 +2,7 @@ export default `#version 300 es
 precision mediump float;
 
 #define PI 3.1415927
+#define TWOPI 2. * PI
 #define MAX_BAR_ARRAY_SIZE 18
 #define BIG 99.
 
@@ -111,8 +112,15 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
   outColor = vec4(.05, .03, .01, 1.);
 
-  float hBarDrift = mod(u_time/8., 1.);
-  float vBarDrift = mod(u_time/8., 1.);
+  float deltaFactor = u_time/2.;
+  float drift = sin(deltaFactor)/4.;
+  float hBarDrift = 0.;
+  float vBarDrift = 0.;
+  if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
+    hBarDrift = drift;
+  } else {
+    vBarDrift = drift;
+  }
 
   float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
   float verticalBarXs[MAX_BAR_ARRAY_SIZE];
@@ -134,13 +142,16 @@ void main() {
 
     if (nextBoxX < boxX) {
       // This box is on the edge, so we split it and do checks for two boxes in this case.
-      isOn = checkForBoxHitInVerticalStrip(st, boxX, 1. - boxX, horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+      isOn = checkForBoxHitInVerticalStrip(st, boxX, 1. - boxX, 
+        horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
       if (!isOn) {
-        isOn = checkForBoxHitInVerticalStrip(st, 0., nextBoxX, horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+        isOn = checkForBoxHitInVerticalStrip(st, 0., nextBoxX,
+          horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
       }
     } else {
       float boxWidth = nextBoxX - boxX;
-      isOn = checkForBoxHitInVerticalStrip(st, boxX, boxWidth, horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+      isOn = checkForBoxHitInVerticalStrip(st, boxX, boxWidth,
+        horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
     }
     
     if (isOn) {
