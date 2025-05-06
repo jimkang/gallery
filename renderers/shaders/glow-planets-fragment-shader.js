@@ -39,7 +39,7 @@ vec3 revolvingGlowBallColor(vec2 revolutionCenter, float revolutionRadius, float
 
 void main(){
 	  vec2 st = gl_FragCoord.xy/u_resolution;
-    
+
     vec3 color = revolvingGlowBallColor(vec2(.5), .3, 1., .4, .194, vec3(.4, .3, 1.), st);
     color += revolvingGlowBallColor(vec2(.5, .5), .4, 1.25, .1, 0., vec3(.4, .8, .2), st);
     color += revolvingGlowBallColor(vec2(.6, .35), .5, -.5, .2, .6, vec3(.7, .2, .15), st);

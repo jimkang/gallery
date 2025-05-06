@@ -111,6 +111,11 @@ bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in float[MAX_B
 
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+  // Patternize!
+  st *= mod(u_time, 4.);
+  st = fract(st);
+
   outColor = vec4(.05, .03, .01, 1.);
 
   float deltaFactor = u_time/2.;
