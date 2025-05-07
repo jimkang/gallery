@@ -1,17 +1,13 @@
 import vertexShaderSrc from './shaders/vertex-shader';
-import fragmentShaderSrc from './shaders/glow-planets-fragment-shader';
-import seedrandom from 'seedrandom';
-import { createProbable as Probable } from 'probable';
+import fragmentShaderSrc from './shaders/random-cells-fragment-shader';
 import UniformCache from './uniforms';
 
 var gl;
 var program;
+var glBuffer;
 var { setUniform } = UniformCache();
 
-export default function render({ canvas, seed }) {
-  var random = seedrandom(seed);
-  var { rollDie } = Probable({ random });
-
+export default function render({ canvas }) {
   if (!gl) {
     setUpShaders(canvas);
     window.requestAnimationFrame(renderWithUpdatedTime);
@@ -26,13 +22,10 @@ export default function render({ canvas, seed }) {
     value: [canvas.width, canvas.height],
   });
 
-  // Set planet uniforms.
-
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-// TODO: DRY
 function setUpShaders(canvas) {
   gl = getRenderingContext(canvas);
 
@@ -61,6 +54,8 @@ function setUpShaders(canvas) {
   initializeGlAttributes();
 
   gl.useProgram(program);
+
+  // cleanup();
 }
 
 function initializeGlAttributes() {
@@ -86,6 +81,9 @@ function initializeGlAttributes() {
 
 function cleanup() {
   gl.useProgram(null);
+  if (glBuffer) {
+    gl.deleteBuffer(glBuffer);
+  }
   if (program) {
     gl.deleteProgram(program);
   }

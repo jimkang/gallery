@@ -3,6 +3,7 @@ import handleError from 'handle-error-web';
 import { version } from './package.json';
 import renderMovingMondrian from './renderers/render-moving-mondrian';
 import renderGlowPlanets from './renderers/render-glow-planets';
+import renderRandomCells from './renderers/render-random-cells';
 import renderPieceControls from './renderers/render-piece-controls';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
@@ -15,6 +16,7 @@ var urlStore;
 var renderersForPieceNames = {
   'glow-planets': renderGlowPlanets,
   'moving-mondrian': renderMovingMondrian,
+  'random-cells': renderRandomCells,
 };
 
 (async function go() {
@@ -47,20 +49,18 @@ function onUpdate({ seed, focusPiece }) {
 }
 
 function showPiece({ piece, seed, maximize = false }) {
+  let container = document.getElementById(piece + '-piece');
   let canvas = document.getElementById(piece + '-canvas');
-  if (!canvas) {
+  if (!canvas || !container) {
     return;
   }
 
-  if (maximize) {
-    const squareSideLength =
-      '' + Math.min(window.innerWidth, window.innerHeight);
-    canvas.setAttribute('width', squareSideLength);
-    canvas.setAttribute('height', squareSideLength);
-  } else {
-    canvas.setAttribute('width', '' + normalCanvasSize[0]);
-    canvas.setAttribute('height', '' + normalCanvasSize[1]);
-  }
+  container.classList[maximize ? 'add' : 'remove']('maximized');
+
+  var rect = container.getBoundingClientRect();
+  const squareSideLength = Math.min(rect.width, rect.height);
+  canvas.setAttribute('width', '' + squareSideLength);
+  canvas.setAttribute('height', '' + squareSideLength);
 
   renderersForPieceNames[piece]({ canvas, seed });
   renderPieceControls({ piece, urlStore });

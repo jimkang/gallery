@@ -19,6 +19,17 @@ export default function render({ canvas, seed, barThickness = 0.01 }) {
     window.requestAnimationFrame(renderWithUpdatedTime);
   }
 
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  setUniform({
+    gl,
+    program,
+    uniformType: '2fv',
+    name: 'u_resolution',
+    value: [canvas.width, canvas.height],
+  });
+
+  // Set planet uniforms.
+
   const verticalBarDesiredCount = 8 + rollDie(8);
   const verticalBarXs = divideRangeRandomly({
     count: verticalBarDesiredCount,
@@ -136,14 +147,6 @@ function setUpShaders(canvas) {
   initializeGlAttributes();
 
   gl.useProgram(program);
-
-  setUniform({
-    gl,
-    program,
-    uniformType: '2fv',
-    name: 'u_resolution',
-    value: [canvas.width, canvas.height],
-  });
 
   // cleanup();
 }
