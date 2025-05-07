@@ -5,17 +5,13 @@ precision mediump float;
 #define TWOPI 2. * PI
 #define MAX_BAR_ARRAY_SIZE 18
 #define BIG 99.
+#define HBAR_COUNT 10.
+#define VBAR_COUNT 100.
 
 out vec4 outColor;
 
 uniform vec2 u_resolution;
 uniform float u_time;
-
-uniform int u_horizontalBarCount;
-uniform int u_verticalBarCount;
-uniform float u_horizontalBarYs[MAX_BAR_ARRAY_SIZE];
-uniform float u_verticalBarXs[MAX_BAR_ARRAY_SIZE];
-uniform float u_barThickness;
 
 bool debugLinesOn = false;
 // bool debugLinesOn = true;
@@ -42,8 +38,8 @@ float rand(vec2 st) {
   );
 }
 
-void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, float barDrift, out float destBarArray[MAX_BAR_ARRAY_SIZE]) {
-  int totalBarCount = srcBarCount;
+void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[MAX_BAR_ARRAY_SIZE]) {
+  int totalBarCount = int(srcBarCount);
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
     // This would be cool if it weren't possibly seizure-causing.
@@ -51,7 +47,7 @@ void setBarPositions(in float srcBarArray[MAX_BAR_ARRAY_SIZE], int srcBarCount, 
 
     float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
 
-    float barPos = srcBarArray[barIndex] + barDrift + individualBarDrift;
+    float barPos = 1./srcBarCount * float(barIndex) + barDrift + individualBarDrift;
   
     // TODO: Why is there a gap in the horizontal bars?
     // Wrap around.
@@ -84,10 +80,12 @@ vec3 getColorForHAndV(int hIndex, int vIndex) {
   return vec3(.96, .96, .86);
 }
 
-bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, int totalHBarCount, out int hitHBarIndex) {
-  for (int hBarIndex = 0; hBarIndex < totalHBarCount - 1; ++hBarIndex) {
+bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width,
+in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, float totalHBarCount, out int hitHBarIndex) {
+
+  for (int hBarIndex = 0; hBarIndex < int(totalHBarCount) - 1; ++hBarIndex) {
     float hBarY = horizontalBarYs[hBarIndex];
-    float boxY = hBarY + u_barThickness;
+    float boxY = hBarY + 1.;
     float nextBoxY = horizontalBarYs[hBarIndex + 1];
     bool isOn = false;
     if (nextBoxY < boxY) {
@@ -112,10 +110,6 @@ bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width, in float[MAX_B
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  // Patternize!
-  st *= mod(u_time, 4.);
-  st = fract(st);
-
   outColor = vec4(.05, .03, .01, 1.);
 
   float deltaFactor = u_time/2.;
@@ -125,20 +119,20 @@ void main() {
   if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
     hBarDrift = drift;
   } else {
-    vBarDrift = drift;
+    // vBarDrift = drift;
   }
 
   float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
   float verticalBarXs[MAX_BAR_ARRAY_SIZE];
 
-  setBarPositions(u_horizontalBarYs, u_horizontalBarCount, hBarDrift, horizontalBarYs);
-  setBarPositions(u_verticalBarXs, u_verticalBarCount, vBarDrift, verticalBarXs);
+  setBarPositions(10., hBarDrift, horizontalBarYs);
+  setBarPositions(100., vBarDrift, verticalBarXs);
 
-  for (int vBarIndex = 0; vBarIndex < u_verticalBarCount; ++vBarIndex) {
+  for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float vBarX = verticalBarXs[vBarIndex];
-    float boxX = vBarX + u_barThickness;
+    float boxX = vBarX + 1./VBAR_COUNT;
     int nextVBarIndex = vBarIndex + 1;
-    if (nextVBarIndex >= u_verticalBarCount) {
+    if (nextVBarIndex >= int(VBAR_COUNT)) {
       nextVBarIndex = 0;
     }
 
@@ -149,15 +143,15 @@ void main() {
     if (nextBoxX < boxX) {
       // This box is on the edge, so we split it and do checks for two boxes in this case.
       isOn = checkForBoxHitInVerticalStrip(st, boxX, 1. - boxX, 
-        horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+        horizontalBarYs, HBAR_COUNT, hitHBarIndex);
       if (!isOn) {
         isOn = checkForBoxHitInVerticalStrip(st, 0., nextBoxX,
-          horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+          horizontalBarYs, HBAR_COUNT, hitHBarIndex);
       }
     } else {
       float boxWidth = nextBoxX - boxX;
       isOn = checkForBoxHitInVerticalStrip(st, boxX, boxWidth,
-        horizontalBarYs, u_horizontalBarCount, hitHBarIndex);
+        horizontalBarYs, HBAR_COUNT, hitHBarIndex);
     }
     
     if (isOn) {
@@ -180,7 +174,7 @@ void main() {
     return;
   }
 
-  for (int hBarIndex = 0; hBarIndex < u_horizontalBarCount; ++hBarIndex) {
+  for (int hBarIndex = 0; hBarIndex < int(HBAR_COUNT); ++hBarIndex) {
     float hBarY = horizontalBarYs[hBarIndex];
     if (rect(st, vec2(0., hBarY), vec2(1., .01))) {
       outColor = vec4(0., 0., 1., 1.);
@@ -188,7 +182,7 @@ void main() {
     }
   }
 
-  for (int vBarIndex = 0; vBarIndex < u_verticalBarCount; ++vBarIndex) {
+  for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float vBarX = verticalBarXs[vBarIndex];
     if (rect(st, vec2(vBarX, 0.), vec2(.01, 1.))) {
       outColor = vec4(0., 0., 1., 1.);
