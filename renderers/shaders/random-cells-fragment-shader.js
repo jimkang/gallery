@@ -3,10 +3,10 @@ precision mediump float;
 
 #define PI 3.1415927
 #define TWOPI 2. * PI
-#define MAX_BAR_ARRAY_SIZE 18
+#define MAX_BAR_ARRAY_SIZE 100
 #define BIG 99.
-#define HBAR_COUNT 10.
-#define VBAR_COUNT 100.
+#define HBAR_COUNT 100.
+#define VBAR_COUNT 10.
 
 out vec4 outColor;
 
@@ -59,14 +59,14 @@ void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[M
   }
 }
 
-int cantorPair(int a, int b) {
+float cantorPair(int a, int b) {
   float sum = float(a + b);
-  return int(sum/2. * (sum + 1.) + float(b));
+  return sum/2. * (sum + 1.) + float(b);
 }
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
-  int sum = cantorPair(hIndex, vIndex);
-  int colorIndex = int(mod(float(sum), 10.));
+  float sum = cantorPair(hIndex, vIndex);
+  int colorIndex = int(mod(sum, 3.));
   if (colorIndex == 0) {
     return vec3(.65, .12, .05);
   }
@@ -76,8 +76,6 @@ vec3 getColorForHAndV(int hIndex, int vIndex) {
   if (colorIndex == 2) {
     return vec3(0., .38, .61);
   }
-  
-  return vec3(.96, .96, .86);
 }
 
 bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width,
@@ -125,8 +123,8 @@ void main() {
   float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
   float verticalBarXs[MAX_BAR_ARRAY_SIZE];
 
-  setBarPositions(10., hBarDrift, horizontalBarYs);
-  setBarPositions(100., vBarDrift, verticalBarXs);
+  setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
+  setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
   for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float vBarX = verticalBarXs[vBarIndex];
@@ -139,9 +137,11 @@ void main() {
     int hitHBarIndex = -1;
     float nextBoxX = verticalBarXs[nextVBarIndex];
     bool isOn = false;
+    isOn = true;
 
     if (nextBoxX < boxX) {
-      // This box is on the edge, so we split it and do checks for two boxes in this case.
+      // This box is on the edge, so we split it and do checks for two boxes in
+      // this case.
       isOn = checkForBoxHitInVerticalStrip(st, boxX, 1. - boxX, 
         horizontalBarYs, HBAR_COUNT, hitHBarIndex);
       if (!isOn) {
