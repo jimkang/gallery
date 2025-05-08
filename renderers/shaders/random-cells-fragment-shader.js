@@ -4,9 +4,8 @@ precision mediump float;
 #define PI 3.1415927
 #define TWOPI 2. * PI
 #define MAX_BAR_ARRAY_SIZE 100
-#define BIG 99.
-#define HBAR_COUNT 100.
-#define VBAR_COUNT 10.
+#define HBAR_COUNT 50.
+#define VBAR_COUNT 50.
 
 out vec4 outColor;
 
@@ -52,7 +51,7 @@ void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[M
     float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
 
     if (mod(float(barIndex), 2.) == .0) {
-      barDrift *= -1.;
+      // barDrift *= -1.;
     }
     float barPos = 1./srcBarCount * float(barIndex) + barDrift + individualBarDrift;
   
@@ -73,6 +72,9 @@ float cantorPair(int a, int b) {
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
   float cantorNumber = cantorPair(hIndex, vIndex);
+  float maxCantor = cantorPair(int(HBAR_COUNT), int(VBAR_COUNT));
+  return vec3(cantorNumber/maxCantor);
+
   return vec3(rand(mod(cantorNumber, 64.)), rand(mod(cantorNumber, 411.)), rand(mod(cantorNumber, 3.)));
 }
 
