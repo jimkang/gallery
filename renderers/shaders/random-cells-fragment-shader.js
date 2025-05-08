@@ -124,7 +124,7 @@ void main() {
   setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
   setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
-  for (int vBarIndex = 0; vBarIndex < 11; ++vBarIndex) {
+  for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float boxX = verticalBarXs[vBarIndex];
     int nextVBarIndex = vBarIndex + 1;
     if (nextVBarIndex >= int(VBAR_COUNT)) {
