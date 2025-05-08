@@ -51,6 +51,9 @@ void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[M
 
     float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
 
+    if (mod(float(barIndex), 2.) == .0) {
+      barDrift *= -1.;
+    }
     float barPos = 1./srcBarCount * float(barIndex) + barDrift + individualBarDrift;
   
     // TODO: Why is there a gap in the horizontal bars?
@@ -70,7 +73,7 @@ float cantorPair(int a, int b) {
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
   float cantorNumber = cantorPair(hIndex, vIndex);
-  return vec3(rand(mod(cantorNumber, 256.)), rand(mod(cantorNumber, 512.)), rand(cantorNumber));
+  return vec3(rand(mod(cantorNumber, 64.)), rand(mod(cantorNumber, 411.)), rand(mod(cantorNumber, 3.)));
 }
 
 bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width,
@@ -112,7 +115,7 @@ void main() {
   if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
     hBarDrift = drift;
   } else {
-    // vBarDrift = drift;
+    vBarDrift = drift;
   }
 
   float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
