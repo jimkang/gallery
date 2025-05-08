@@ -65,8 +65,8 @@ float cantorPair(int a, int b) {
 }
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
-  float sum = cantorPair(hIndex, vIndex);
-  int colorIndex = int(mod(sum, 3.));
+  float cantorNumber = cantorPair(hIndex, vIndex);
+  int colorIndex = int(mod(cantorNumber, 3.));
   if (colorIndex == 0) {
     return vec3(.65, .12, .05);
   }
@@ -126,9 +126,8 @@ void main() {
   setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
   setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
-  for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
-    float vBarX = verticalBarXs[vBarIndex];
-    float boxX = vBarX + 1./VBAR_COUNT;
+  for (int vBarIndex = 0; vBarIndex < 11; ++vBarIndex) {
+    float boxX = verticalBarXs[vBarIndex];
     int nextVBarIndex = vBarIndex + 1;
     if (nextVBarIndex >= int(VBAR_COUNT)) {
       nextVBarIndex = 0;
@@ -156,6 +155,7 @@ void main() {
     
     if (isOn) {
       outColor = vec4(getColorForHAndV(hitHBarIndex, vBarIndex), 1.0);
+      // outColor = vec4(getColorForHAndV(0, vBarIndex), 1.0);
       break;
     }
   }
