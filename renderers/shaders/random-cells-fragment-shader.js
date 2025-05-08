@@ -29,6 +29,10 @@ bool rect(vec2 st, vec2 corner, vec2 size) {
     return isAfterLeft && isBeforeRight && isInYBounds(st.y, corner.y, corner.y + size.y);
 }
 
+float rand(float seed) {
+  return fract(sin(seed) * 10000.);
+}
+
 float rand(vec2 st) {
   return fract(
     sin(
@@ -66,16 +70,7 @@ float cantorPair(int a, int b) {
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
   float cantorNumber = cantorPair(hIndex, vIndex);
-  int colorIndex = int(mod(cantorNumber, 3.));
-  if (colorIndex == 0) {
-    return vec3(.65, .12, .05);
-  }
-  if (colorIndex == 1) {
-    return vec3(.98, .76, .13);
-  }
-  if (colorIndex == 2) {
-    return vec3(0., .38, .61);
-  }
+  return vec3(rand(mod(cantorNumber, 256.)), rand(mod(cantorNumber, 512.)), rand(cantorNumber));
 }
 
 bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width,
