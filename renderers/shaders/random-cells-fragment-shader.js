@@ -42,16 +42,21 @@ float rand(vec2 st) {
   );
 }
 
-void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[MAX_BAR_ARRAY_SIZE]) {
+void setBarPositions(in float srcBarCount, in float barDrift, out float destBarArray[MAX_BAR_ARRAY_SIZE]) {
   int totalBarCount = int(srcBarCount);
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
-    float individualBarDrift = 0.;
+    float individualBarDrift = barDrift;
 
     if (mod(float(barIndex), 2.) == .0) {
-      // barDrift *= -1.;
+      individualBarDrift = -barDrift;
+
+      // Why does this change how things are rendered, even though it has
+      // nothing to do with whay goes into destBarArray?
+      // barDrift = -5.;
     }
-    float barPos = 1./srcBarCount * float(barIndex) + barDrift + individualBarDrift;
+
+    float barPos = 1./srcBarCount * float(barIndex) + individualBarDrift;
   
     // TODO: Why is there a gap in the horizontal bars?
     // Wrap around.
