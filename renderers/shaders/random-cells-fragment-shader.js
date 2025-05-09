@@ -6,6 +6,7 @@ precision mediump float;
 #define MAX_BAR_ARRAY_SIZE 100
 #define HBAR_COUNT 50.
 #define VBAR_COUNT 50.
+#define MAX_CANTOR 5100.
 #define OFFSET .2
 
 out vec4 outColor;
@@ -66,15 +67,15 @@ void setBarPositions(in float srcBarCount, in float barDrift, out float destBarA
   }
 }
 
-float cantorPair(int a, int b) {
-  float sum = float(a + b);
-  return sum/2. * (sum + 1.) + float(b);
+float cantorPair(float a, float b) {
+  float sum = a + b;
+  return sum/2. * (sum + 1.) + b;
 }
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
-  float cantorNumber = cantorPair(hIndex, vIndex);
-  float maxCantor = cantorPair(int(HBAR_COUNT), int(VBAR_COUNT));
-  return vec3(cantorNumber/maxCantor);
+  float cantorNumber = cantorPair(float(hIndex), float(vIndex));
+  // float maxCantor = cantorPair(HBAR_COUNT, VBAR_COUNT);
+  return vec3(cantorNumber/MAX_CANTOR);
 
   return vec3(rand(mod(cantorNumber, 64.)), rand(mod(cantorNumber, 411.)), rand(mod(cantorNumber, 3.)));
 }
