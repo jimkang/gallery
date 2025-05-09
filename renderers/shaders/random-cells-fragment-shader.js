@@ -106,31 +106,9 @@ in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, float totalHBarCount, out int hitH
   return false;
 }
 
-void main() {
-  vec2 st = gl_FragCoord.xy/u_resolution.xy;
-
-  // Zoom in and move closer to the center so that we never show the edge of the bars.
-  st *= .5;
-  st += OFFSET;
-
-  outColor = vec4(.05, .03, .01, 1.);
-
-  float deltaFactor = u_time/2.;
-  float drift = sin(deltaFactor)/4.;
-  float hBarDrift = 0.;
-  float vBarDrift = 0.;
-  if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
-    hBarDrift = drift;
-  } else {
-    vBarDrift = drift;
-  }
-
-  float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
-  float verticalBarXs[MAX_BAR_ARRAY_SIZE];
-
-  setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
-  setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
-
+void checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
+  float[MAX_BAR_ARRAY_SIZE] horizontalBarYs,
+vec2 st) {
   for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float boxX = verticalBarXs[vBarIndex];
     int nextVBarIndex = vBarIndex + 1;
@@ -164,6 +142,37 @@ void main() {
       break;
     }
   }
+}
+
+void main() {
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+  // Zoom in and move closer to the center so that we never show the edge of the bars.
+  st *= .5;
+  st += OFFSET;
+
+  outColor = vec4(.05, .03, .01, 1.);
+
+  float deltaFactor = u_time/2.;
+  float drift = sin(deltaFactor)/4.;
+  float hBarDrift = 0.;
+  float vBarDrift = 0.;
+  bool vDrift = false;
+
+  if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
+    hBarDrift = drift;
+  } else {
+    vDrift = true;
+    vBarDrift = drift;
+  }
+
+  float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
+  float verticalBarXs[MAX_BAR_ARRAY_SIZE];
+
+  setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
+  setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
+
+  checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st);
 
   // Debug line drawing
   if (!debugLinesOn) {
