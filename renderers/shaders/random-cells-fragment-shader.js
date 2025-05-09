@@ -49,8 +49,7 @@ void setBarPositions(in float srcBarCount, in float barDrift, out float destBarA
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
     float individualBarDrift = barDrift;
     // Every other barIndex, shift the barDrift
-    // individualBarDrift += step(1., mod(float(barIndex), 2.)) * rand(float(barIndex)/float(totalBarCount));
-    individualBarDrift = barDrift + cos(float(barIndex))/srcBarCount;
+    individualBarDrift += step(1., mod(float(barIndex), 2.)) * cos(float(barIndex))/srcBarCount;
 
     float barPos = 1./srcBarCount * float(barIndex) + individualBarDrift;
   
