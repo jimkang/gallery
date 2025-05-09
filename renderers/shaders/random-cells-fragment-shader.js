@@ -119,7 +119,6 @@ bool checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
 
     float nextBoxX = verticalBarXs[nextVBarIndex];
     bool isOn = false;
-    isOn = true;
 
     if (nextBoxX < boxX) {
       // This box is on the edge, so we split it and do checks for two boxes in
@@ -138,6 +137,49 @@ bool checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
 
     if (isOn) {
       hitVBarIndex = vBarIndex;
+      return isOn;
+    }
+  }
+  return false;
+}
+
+bool checkForBoxHitsInRows(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
+  float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, vec2 st,
+  out int hitVBarIndex, out int hitHBarIndex) {
+
+  vec2 flippedST = vec2(st.y, st.x);
+
+  for (int hBarIndex = 0; hBarIndex < int(HBAR_COUNT); ++hBarIndex) {
+    float boxY = horizontalBarYs[hBarIndex];
+    int nextHBarIndex = hBarIndex + 1;
+    if (nextHBarIndex >= int(HBAR_COUNT)) {
+      nextHBarIndex = 0;
+    }
+
+    float nextBoxY = horizontalBarYs[nextHBarIndex];
+    bool isOn = false;
+
+    if (nextBoxY < boxY) {
+      // This box is on the edge, so we split it and do checks for two boxes in
+      // this case.
+      isOn = checkForBoxHitInVerticalStrip(flippedST, boxY, 1. - boxY, 
+        verticalBarXs, HBAR_COUNT, hitVBarIndex);
+      if (!isOn) {
+        isOn = checkForBoxHitInVerticalStrip(flippedST, 0., nextBoxY,
+          verticalBarXs, HBAR_COUNT, hitVBarIndex);
+      }
+    } else {
+      float boxHeight = nextBoxY - boxY;
+
+      // We're using checkForBoxHitInVerticalStrip to check for a box hit in a
+      // horizontal strip by flipping x and y and passing in vertical stuff
+      // instead of horizontal stuff.
+      isOn = checkForBoxHitInVerticalStrip(flippedST, boxY, boxHeight,
+        verticalBarXs, HBAR_COUNT, hitVBarIndex);
+    }
+
+    if (isOn) {
+      hitHBarIndex = hBarIndex;
       return isOn;
     }
   }
@@ -175,8 +217,15 @@ void main() {
   setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
   setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
-  bool isOn = checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st,
-    hitVBarIndex, hitHBarIndex);
+  bool isOn = false;
+
+  if (vDrift) {
+    isOn = checkForBoxHitsInRows(verticalBarXs, horizontalBarYs, st,
+      hitVBarIndex, hitHBarIndex);
+  } else {
+    isOn = checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st,
+      hitVBarIndex, hitHBarIndex);
+  }
   
   if (isOn) {
     outColor = vec4(getColorForHAndV(hitHBarIndex, hitVBarIndex), 1.0);
