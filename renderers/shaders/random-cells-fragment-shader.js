@@ -46,10 +46,7 @@ void setBarPositions(float srcBarCount, float barDrift, out float destBarArray[M
   int totalBarCount = int(srcBarCount);
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
-    // This would be cool if it weren't possibly seizure-causing.
-    //float individualBarDrift = rand(vec2(float(barIndex) * PI/8., -1.));
-
-    float individualBarDrift = 0.;//cos(float(barIndex) * PI/4.)/16.;
+    float individualBarDrift = 0.;
 
     if (mod(float(barIndex), 2.) == .0) {
       // barDrift *= -1.;
@@ -202,13 +199,12 @@ void main() {
   float drift = sin(deltaFactor)/4.;
   float hBarDrift = 0.;
   float vBarDrift = 0.;
-  bool vDrift = false;
+  bool vDrift = mod(deltaFactor, 2. * TWOPI) <= TWOPI;
 
-  if (mod(deltaFactor, 2. * TWOPI) > TWOPI) {
-    hBarDrift = drift;
-  } else {
-    vDrift = true;
+  if (vDrift) {
     vBarDrift = drift;
+  } else {
+    hBarDrift = drift;
   }
 
   float horizontalBarYs[MAX_BAR_ARRAY_SIZE];
