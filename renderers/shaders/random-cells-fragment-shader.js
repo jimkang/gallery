@@ -106,9 +106,10 @@ in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, float totalHBarCount, out int hitH
   return false;
 }
 
-void checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
-  float[MAX_BAR_ARRAY_SIZE] horizontalBarYs,
-vec2 st) {
+bool checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
+  float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, vec2 st,
+  out int hitVBarIndex, out int hitHBarIndex) {
+
   for (int vBarIndex = 0; vBarIndex < int(VBAR_COUNT); ++vBarIndex) {
     float boxX = verticalBarXs[vBarIndex];
     int nextVBarIndex = vBarIndex + 1;
@@ -116,7 +117,6 @@ vec2 st) {
       nextVBarIndex = 0;
     }
 
-    int hitHBarIndex = -1;
     float nextBoxX = verticalBarXs[nextVBarIndex];
     bool isOn = false;
     isOn = true;
@@ -135,13 +135,13 @@ vec2 st) {
       isOn = checkForBoxHitInVerticalStrip(st, boxX, boxWidth,
         horizontalBarYs, HBAR_COUNT, hitHBarIndex);
     }
-    
+
     if (isOn) {
-      outColor = vec4(getColorForHAndV(hitHBarIndex, vBarIndex), 1.0);
-      // outColor = vec4(getColorForHAndV(0, vBarIndex), 1.0);
-      break;
+      hitVBarIndex = vBarIndex;
+      return isOn;
     }
   }
+  return false;
 }
 
 void main() {
@@ -152,6 +152,9 @@ void main() {
   st += OFFSET;
 
   outColor = vec4(.05, .03, .01, 1.);
+
+  int hitVBarIndex = -1;
+  int hitHBarIndex = -1;
 
   float deltaFactor = u_time/2.;
   float drift = sin(deltaFactor)/4.;
@@ -172,7 +175,12 @@ void main() {
   setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
   setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
-  checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st);
+  bool isOn = checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st,
+    hitVBarIndex, hitHBarIndex);
+  
+  if (isOn) {
+    outColor = vec4(getColorForHAndV(hitHBarIndex, hitVBarIndex), 1.0);
+  }
 
   // Debug line drawing
   if (!debugLinesOn) {
