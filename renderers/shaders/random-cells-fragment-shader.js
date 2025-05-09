@@ -48,12 +48,9 @@ void setBarPositions(in float srcBarCount, in float barDrift, out float destBarA
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
     float individualBarDrift = barDrift;
-    // Every other barIndex, shift the barDrift to the opposite side of 0. 
-    individualBarDrift += step(1., mod(float(barIndex), 2.)) * -2. * barDrift;
-
-    // Why does this change how things are rendered, even though it has
-    // nothing to do with whay goes into destBarArray?
-    // barDrift = -5.;
+    // Every other barIndex, shift the barDrift
+    // individualBarDrift += step(1., mod(float(barIndex), 2.)) * rand(float(barIndex)/float(totalBarCount));
+    individualBarDrift = barDrift + cos(float(barIndex))/srcBarCount;
 
     float barPos = 1./srcBarCount * float(barIndex) + individualBarDrift;
   
@@ -74,10 +71,8 @@ float cantorPair(float a, float b) {
 
 vec3 getColorForHAndV(int hIndex, int vIndex) {
   float cantorNumber = cantorPair(float(hIndex), float(vIndex));
-  // float maxCantor = cantorPair(HBAR_COUNT, VBAR_COUNT);
-  return vec3(cantorNumber/MAX_CANTOR);
-
-  return vec3(rand(mod(cantorNumber, 64.)), rand(mod(cantorNumber, 411.)), rand(mod(cantorNumber, 3.)));
+  float proportion = cantorNumber/MAX_CANTOR;
+  return vec3(proportion, rand(1. - proportion), rand(proportion));
 }
 
 bool checkForBoxHitInVerticalStrip(vec2 st, float x, float width,
