@@ -106,7 +106,7 @@ in float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, float totalHBarCount, out int hitH
   return false;
 }
 
-bool checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
+void checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
   float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, vec2 st,
   out int hitVBarIndex, out int hitHBarIndex) {
 
@@ -137,13 +137,12 @@ bool checkForBoxHitsInColumns(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
 
     if (isOn) {
       hitVBarIndex = vBarIndex;
-      return isOn;
+      return;
     }
   }
-  return false;
 }
 
-bool checkForBoxHitsInRows(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
+void checkForBoxHitsInRows(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
   float[MAX_BAR_ARRAY_SIZE] horizontalBarYs, vec2 st,
   out int hitVBarIndex, out int hitHBarIndex) {
 
@@ -180,10 +179,9 @@ bool checkForBoxHitsInRows(float[MAX_BAR_ARRAY_SIZE] verticalBarXs,
 
     if (isOn) {
       hitHBarIndex = hBarIndex;
-      return isOn;
+      return;
     }
   }
-  return false;
 }
 
 void main() {
@@ -216,19 +214,15 @@ void main() {
   setBarPositions(HBAR_COUNT, hBarDrift, horizontalBarYs);
   setBarPositions(VBAR_COUNT, vBarDrift, verticalBarXs);
 
-  bool isOn = false;
-
   if (vDrift) {
-    isOn = checkForBoxHitsInRows(verticalBarXs, horizontalBarYs, st,
+    checkForBoxHitsInRows(verticalBarXs, horizontalBarYs, st,
       hitVBarIndex, hitHBarIndex);
   } else {
-    isOn = checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st,
+    checkForBoxHitsInColumns(verticalBarXs, horizontalBarYs, st,
       hitVBarIndex, hitHBarIndex);
   }
   
-  if (isOn) {
-    outColor = vec4(getColorForHAndV(hitHBarIndex, hitVBarIndex), 1.0);
-  }
+  outColor = vec4(getColorForHAndV(hitHBarIndex, hitVBarIndex), 1.0);
 
   // Debug line drawing
   if (!debugLinesOn) {
