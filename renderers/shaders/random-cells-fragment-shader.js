@@ -47,14 +47,12 @@ void setBarPositions(in float srcBarCount, in float barDrift, out float destBarA
 
   for (int barIndex = 0; barIndex < totalBarCount; ++barIndex) {
     float individualBarDrift = barDrift;
+    // Every other barIndex, shift the barDrift to the opposite side of 0. 
+    individualBarDrift += step(1., mod(float(barIndex), 2.)) * -2. * barDrift;
 
-    if (mod(float(barIndex), 2.) == .0) {
-      individualBarDrift = -barDrift;
-
-      // Why does this change how things are rendered, even though it has
-      // nothing to do with whay goes into destBarArray?
-      // barDrift = -5.;
-    }
+    // Why does this change how things are rendered, even though it has
+    // nothing to do with whay goes into destBarArray?
+    // barDrift = -5.;
 
     float barPos = 1./srcBarCount * float(barIndex) + individualBarDrift;
   
