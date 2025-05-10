@@ -7,7 +7,8 @@ precision mediump float;
 #define HBAR_COUNT 50.
 #define VBAR_COUNT 50.
 #define MAX_CANTOR 5100.
-#define OFFSET .2
+#define ZOOM .4
+#define OFFSET .25
 
 out vec4 outColor;
 
@@ -183,7 +184,7 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   // Zoom in and move closer to the center so that we never show the edge of the bars.
-  st *= .5;
+  st *= ZOOM; 
   st += OFFSET;
 
   outColor = vec4(.05, .03, .01, 1.);
