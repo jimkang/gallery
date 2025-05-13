@@ -28,21 +28,12 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
     return pct * colorPart * baseColor;    
 }
 
-vec3 revolvingGlowBallColor(vec2 revolutionCenter, float revolutionRadius, float revolveRate, float radius, float halo, vec3 baseColor, vec2 st) {
-    float angle = mod(u_time * revolveRate, 2. * PI);
-    vec2 circleCenter = revolutionCenter + vec2(cos(angle), sin(angle)) * 0.3;
-    // Radius pulse
-    float pulseSpeed = 8.;
-    radius *= cos(pulseSpeed * mod(u_time, 2. * PI))/16. + 15./16.;
-    return circleColor(circleCenter, radius, halo, baseColor, st); 
-}
-
 void main(){
 	  vec2 st = gl_FragCoord.xy/u_resolution;
 
     vec3 color = circleColor(vec2(.6, .35), .5, .0, vec3(.7, .2, .15), st);
     color = max(circleColor(vec2(.5, .5), .4, .0, vec3(.4, .8, .2), st), color);
-    color = max(circleColor(vec2(.5), .3, .0, vec3(.4, .3, 1.), st), color);
+    // color = max(circleColor(vec2(.5), .3, .0, vec3(.4, .3, 1.), st), color);
     
 	  outColor = vec4(color, 1.);
 }
