@@ -4,11 +4,10 @@ import { version } from './package.json';
 import renderMovingMondrian from './renderers/render-moving-mondrian';
 import renderGlowPlanets from './renderers/render-glow-planets';
 import renderRandomCells from './renderers/render-random-cells';
+import renderRandomShapes from './renderers/render-random-shapes';
 import renderPieceControls from './renderers/render-piece-controls';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
-
-var normalCanvasSize = [320, 320];
 
 var randomId = RandomId();
 var urlStore;
@@ -17,6 +16,7 @@ var renderersForPieceNames = {
   'glow-planets': renderGlowPlanets,
   'moving-mondrian': renderMovingMondrian,
   'random-cells': renderRandomCells,
+  'random-shapes': renderRandomShapes,
 };
 
 (async function go() {

@@ -1,5 +1,5 @@
 import { RenderShader } from './render-shader.js';
-import fragmentShaderSrc from './shaders/random-cells-fragment-shader';
+import fragmentShaderSrc from './shaders/random-shapes-fragment-shader';
 
 var renderShader;
 
