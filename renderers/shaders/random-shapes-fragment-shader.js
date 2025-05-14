@@ -12,6 +12,12 @@ float rand(float n) {
   return fract(cos(n) * 400000.);
 }
 
+float getDistortFactor(vec2 center, vec2 st) {
+  vec2 fromCenter = st - center;
+  // How do I get this to be irregular?
+  return sin(3. * atan(fromCenter.x, fromCenter.y * rand(fromCenter.x)));
+}
+
 float distSquared(vec2 center, float radius, vec2 st) {
   vec2 distVec = st - center;
   return dot(distVec, distVec);
@@ -19,9 +25,15 @@ float distSquared(vec2 center, float radius, vec2 st) {
 
 float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, vec2 st) {
   float n = st.x/st.y;
-  float radius = rand(n) * rand(n) * baseRadius;
+  float radius = pow(rand(n), 1.5) * baseRadius;
+  vec2 fromCenter = st - center;
+  radius *= getDistortFactor(center, st);
+
   float distSq = distSquared(center, radius, st);
   distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
+
+  // distSq = .75 * distSq + .25 * distSq * roughRand(st.x * st.y);
+
   return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
 }
 
@@ -36,7 +48,7 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
   return pct * colorPart * baseColor;    
 }
 
-void main(){
+void main() {
   vec2 st = gl_FragCoord.xy/u_resolution;
 
   vec3 color = circleColor(vec2(.25, .5), .15, .0, vec3(.4, .3, 1.), st);
