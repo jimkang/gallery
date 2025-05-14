@@ -9,7 +9,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 
 float rand(float n) {
-  return fract(sin(n) * 110000.);
+  return fract(sin(n) * 400000.);
 }
 
 float distSquared(vec2 center, float radius, vec2 st) {
