@@ -18,7 +18,7 @@ float distSquared(vec2 center, float radius, vec2 st) {
 }
 
 float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, vec2 st) {
-  float radius = rand(st.x) * baseRadius;
+  float radius = rand(st.x * st.y) * baseRadius;
   float distSq = distSquared(center, radius, st);
   distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
   return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
