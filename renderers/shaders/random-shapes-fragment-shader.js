@@ -9,7 +9,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 
 float rand(float n) {
-  return fract(sin(n) * 400000.);
+  return fract(cos(n) * 400000.);
 }
 
 float distSquared(vec2 center, float radius, vec2 st) {
@@ -18,7 +18,7 @@ float distSquared(vec2 center, float radius, vec2 st) {
 }
 
 float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, vec2 st) {
-  float radius = rand(st.x * st.y) * baseRadius;
+  float radius = rand(st.y) * rand(st.x * st.y) * baseRadius;
   float distSq = distSquared(center, radius, st);
   distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
   return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
