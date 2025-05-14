@@ -23,7 +23,9 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
     float pct = 0.0;
     pct = isInCircle(center, radius, halo, 0.005, st);
     
-    float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
+    // float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
+    // Make it flat.
+    float colorPart = 1.;
 
     return pct * colorPart * baseColor;    
 }
@@ -31,9 +33,13 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
 void main(){
 	  vec2 st = gl_FragCoord.xy/u_resolution;
 
-    vec3 color = circleColor(vec2(.6, .35), .5, .0, vec3(.7, .2, .15), st);
-    color = max(circleColor(vec2(.5, .5), .4, .0, vec3(.4, .8, .2), st), color);
-    // color = max(circleColor(vec2(.5), .3, .0, vec3(.4, .3, 1.), st), color);
+    vec3 color = circleColor(vec2(.25, .5), .15, .0, vec3(.4, .3, 1.), st);
+    if (color == vec3(0)) {
+      color = circleColor(vec2(.5, .5), .2, .0, vec3(.4, .8, .2), st);
+    }
+    if (color == vec3(0)) {
+      color = circleColor(vec2(.6, .35), .25, .0, vec3(.7, .2, .15), st);
+    }
     
 	  outColor = vec4(color, 1.);
 }
