@@ -8,12 +8,17 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform float u_time;
 
+float rand(float n) {
+  return fract(sin(n) * 110000.);
+}
+
 float distSquared(vec2 center, float radius, vec2 st) {
   vec2 distVec = st - center;
   return dot(distVec, distVec);
 }
 
-float isInCircle(vec2 center, float radius, float halo, float fuzzThickness, vec2 st) {
+float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, vec2 st) {
+  float radius = rand(st.x) * baseRadius;
   float distSq = distSquared(center, radius, st);
   distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
   return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
@@ -21,7 +26,7 @@ float isInCircle(vec2 center, float radius, float halo, float fuzzThickness, vec
 
 vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st) {
   float pct = 0.0;
-  pct = isInCircle(center, radius, halo, 0.001, st);
+  pct = isInShape(center, radius, halo, 0.001, st);
   
   // float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
   // Make it flat.
