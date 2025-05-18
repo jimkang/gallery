@@ -17,9 +17,10 @@ float getDistortFactor(vec2 center, vec2 st) {
   float timeFactor = sin(u_time) * 2.;
   float spaceFactor = sin(fromCenter.x) * 1.;
   float warpedAngle = smoothstep(spaceFactor * PI, 2. * PI, atan(fromCenter.x, fromCenter.y * rand(fromCenter.x)));
-  float sinFactor = sin(5. * warpedAngle);
-  float cosFactor = cos(atan(st.x, st.y));
-  return cosFactor/sinFactor;
+  float spikeFactor = 6.;
+  float sinFactor = sin(spikeFactor * warpedAngle);
+  float cosFactor = cos(atan(fromCenter.y, fromCenter.x));
+  return sinFactor + sinFactor * cosFactor;
 }
 
 float distSquared(vec2 center, float radius, vec2 st) {
