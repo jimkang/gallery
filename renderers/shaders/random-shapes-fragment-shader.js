@@ -12,11 +12,18 @@ float rand(float n) {
   return fract(cos(n) * 400000.);
 }
 
+float rand2d(vec2 pt, vec2 st) {
+  return fract(sin(
+    dot(pt, st * (.8 + mod(rand(st.x), .2))) * 100.
+  ));
+}
+
 float getDistortFactor(vec2 center, vec2 st) {
   vec2 fromCenter = st - center;
   float timeFactor = sin(u_time) * 2.;
   float spaceFactor = sin(fromCenter.x) * 1.;
-  float warpedAngle = smoothstep(spaceFactor * PI, 2. * PI, atan(fromCenter.x, fromCenter.y * rand(fromCenter.x)));
+  float smearFactor = rand2d(fromCenter, st);
+  float warpedAngle = smoothstep(spaceFactor * PI, 2. * PI, atan(fromCenter.x, fromCenter.y * smearFactor));
   float spikeFactor = 6.;
   float sinFactor = sin(spikeFactor * warpedAngle);
   float cosFactor = cos(atan(fromCenter.y, fromCenter.x));
