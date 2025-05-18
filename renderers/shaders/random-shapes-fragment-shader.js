@@ -14,8 +14,12 @@ float rand(float n) {
 
 float getDistortFactor(vec2 center, vec2 st) {
   vec2 fromCenter = st - center;
-  // How do I get this to be irregular?
-  return sin(3. * atan(fromCenter.x, fromCenter.y * rand(fromCenter.x)));
+  float timeFactor = sin(u_time) * 2.;
+  float spaceFactor = sin(fromCenter.x) * 1.;
+  float warpedAngle = smoothstep(spaceFactor * PI, 2. * PI, atan(fromCenter.x, fromCenter.y * rand(fromCenter.x)));
+  float sinFactor = sin(5. * warpedAngle);
+  float cosFactor = cos(atan(st.x, st.y));
+  return cosFactor/sinFactor;
 }
 
 float distSquared(vec2 center, float radius, vec2 st) {
