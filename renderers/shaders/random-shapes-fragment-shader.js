@@ -12,6 +12,10 @@ float rand(float n) {
   return fract(cos(n) * 400000.);
 }
 
+float smoothrand(float n) {
+  return mix(rand(n), rand(n + 1.), smoothstep(0., 1., n));
+}
+
 float rand2d(vec2 pt, vec2 st) {
   return fract(sin(
     dot(pt, st * (.8 + mod(rand(st.x), .2))) * 100.
@@ -63,12 +67,18 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution;
 
-  vec3 color = circleColor(vec2(.25, .5), .15, .0, vec3(.4, .3, 1.), st);
+  vec2 guy1Pos = vec2(.25, .5);
+  guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
+  vec2 guy2Pos = vec2(.5);
+  // guy2Pos += guy2Pos * smoothrand(u_time);
+  vec2 guy3Pos = vec2(.6, .35);
+
+  vec3 color = circleColor(guy1Pos, .15, .0, vec3(.4, .3, 1.), st);
   if (color == vec3(0)) {
-    color = circleColor(vec2(.5, .5), .2, .0, vec3(.4, .8, .2), st);
+    color = circleColor(guy2Pos, .2, .0, vec3(.4, .8, .2), st);
   }
   if (color == vec3(0)) {
-    color = circleColor(vec2(.6, .35), .25, .0, vec3(.7, .2, .15), st);
+    color = circleColor(guy3Pos, .25, .0, vec3(.7, .2, .15), st);
   }
   
   outColor = vec4(color, 1.);
