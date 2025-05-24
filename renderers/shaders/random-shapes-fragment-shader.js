@@ -8,6 +8,14 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform float u_time;
 
+vec2 rotate2D(vec2 _st, float _angle) {
+  _st -= 0.5;
+  _st =  mat2(cos(_angle),-sin(_angle),
+              sin(_angle),cos(_angle)) * _st;
+  _st += 0.5;
+  return _st;
+}
+
 float rand(float n) {
   return fract(cos(n) * 400000.);
 }
@@ -73,7 +81,16 @@ void main() {
   // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
   vec2 guy2Pos = vec2(.5);
   // guy2Pos += guy2Pos * smoothrand(u_time);
-  vec2 guy3Pos = vec2(.6, .35);
+  //
+  // TODO: Pac-Man back around.
+  vec2 guy3LinearDrift = vec2((cos(u_time/4.) - 1.)/2. + .25, 0.);
+  // guy3LinearDrift = vec2(-2., 0.);
+  vec2 guy3RotationalDrift = vec2(cos(u_time/4.) + .125, sin(u_time/4.)) * .3;
+  float guy3Rotation = u_time;
+  vec2 guy3Pos = rotate2D(vec2(.5, .35), guy3Rotation) + guy3LinearDrift + guy3RotationalDrift;
+  
+
+  // TODO: Hook into distort factor from this level.
 
   vec3 color = circleColor(guy1Pos, .15, .0, vec3(.4, .3, 1.), st);
   if (color == vec3(0)) {
