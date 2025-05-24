@@ -67,8 +67,10 @@ vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st)
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution;
 
-  vec2 guy1Pos = vec2(.25, .5);
-  guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
+  // Stutter
+  //vec2 guy1Pos = vec2(.25, .5) + mix(sin(u_time), tan(rand(u_time)), .5);
+  vec2 guy1Pos = vec2(.25, .5) + vec2(cos(u_time/2.), sin(u_time * 2.))/4.;
+  // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
   vec2 guy2Pos = vec2(.5);
   // guy2Pos += guy2Pos * smoothrand(u_time);
   vec2 guy3Pos = vec2(.6, .35);
