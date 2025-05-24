@@ -30,8 +30,8 @@ float rand2d(vec2 pt, vec2 st) {
   ));
 }
 
-float getDistortFactor(vec2 center, vec2 st) {
-  vec2 fromCenter = st - center;
+float getDistortFactor(vec2 anchor, vec2 st) {
+  vec2 fromCenter = st - anchor;
   float timeFactor = sin(u_time) * 2.;
   float spaceFactor = sin(fromCenter.x) * 1.;
   float smearFactor = rand2d(fromCenter, st);
@@ -47,11 +47,12 @@ float distSquared(vec2 center, float radius, vec2 st) {
   return dot(distVec, distVec);
 }
 
-float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, vec2 st) {
+float isInShape(vec2 anchor, vec2 center, float baseRadius, float halo,
+float fuzzThickness, vec2 st) {
   float n = st.x/st.y;
   float radius = pow(rand(n), 1.5) * baseRadius;
   vec2 fromCenter = st - center;
-  radius *= getDistortFactor(center, st);
+  radius *= getDistortFactor(anchor, st);
 
   float distSq = distSquared(center, radius, st);
   distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
@@ -61,15 +62,23 @@ float isInShape(vec2 center, float baseRadius, float halo, float fuzzThickness, 
   return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
 }
 
-vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st) {
+vec3 circleColor(vec2 anchor, vec2 center, float radius, float halo, vec3 baseColor, vec2 st) {
   float pct = 0.0;
-  pct = isInShape(center, radius, halo, 0.001, st);
+  pct = isInShape(anchor, center, radius, halo, 0.001, st);
   
   // float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
   // Make it flat.
   float colorPart = 1.;
 
   return pct * colorPart * baseColor;    
+}
+
+vec2 calcLinearDrift(float f) {
+  return vec2((cos(f) - 1.)/2. + .25, 0.);
+}
+
+vec2 calcRotationalDrift(float f) {
+  return vec2((cos(f) + 1.)/2., sin(f)) * .2;
 }
 
 void main() {
@@ -79,25 +88,25 @@ void main() {
   //vec2 guy1Pos = vec2(.25, .5) + mix(sin(u_time), tan(rand(u_time)), .5);
   vec2 guy1Pos = vec2(.25, .5) + vec2(cos(u_time/2.), sin(u_time * 2.))/4.;
   // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
-  vec2 guy2Pos = vec2(.5);
+  vec2 guy2Pos = vec2(.3, .5);
   // guy2Pos += guy2Pos * smoothrand(u_time);
-  //
+
   // TODO: Pac-Man back around.
-  vec2 guy3LinearDrift = vec2((cos(u_time/4.) - 1.)/2. + .25, 0.);
-  // guy3LinearDrift = vec2(-2., 0.);
-  vec2 guy3RotationalDrift = vec2(cos(u_time/4.) + .125, sin(u_time/4.)) * .3;
-  float guy3Rotation = u_time;
-  vec2 guy3Pos = rotate2D(vec2(.5, .35), guy3Rotation) + guy3LinearDrift + guy3RotationalDrift;
+  vec2 guy3LinearDrift = calcLinearDrift(u_time/4.);
+  vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.)/4.);
+
+  vec2 guy3RotationalDrift = calcRotationalDrift(u_time/4.);
+  vec2 guy3RotationalDriftPrev = calcRotationalDrift((u_time - 1.)/4.);
+  vec2 guy3BasePos = vec2(.5, .6);
+  vec2 guy3Anchor = guy3BasePos + guy3LinearDriftPrev + guy3RotationalDriftPrev;
+  vec2 guy3Pos = guy3BasePos + guy3LinearDrift + guy3RotationalDrift;
   
-
-  // TODO: Hook into distort factor from this level.
-
-  vec3 color = circleColor(guy1Pos, .15, .0, vec3(.4, .3, 1.), st);
+  vec3 color = circleColor(guy1Pos, guy1Pos, .15, .0, vec3(.4, .3, 1.), st);
   if (color == vec3(0)) {
-    color = circleColor(guy2Pos, .2, .0, vec3(.4, .8, .2), st);
+    // color = circleColor(guy2Pos, guy2Pos, .2, .0, vec3(.4, .8, .2), st);
   }
   if (color == vec3(0)) {
-    color = circleColor(guy3Pos, .25, .0, vec3(.7, .2, .15), st);
+    color = circleColor(guy3Anchor, guy3Pos, .25, .0, vec3(.7, .2, .15), st);
   }
   
   outColor = vec4(color, 1.);
