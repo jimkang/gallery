@@ -91,11 +91,10 @@ void main() {
   // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
 
   vec2 guy2Drift = vec2(.01, .01) * mod(u_time, 110.);
-  vec2 guy2Pos = vec2(.1, .0) + guy2Drift;
+  vec2 guy2Pos = vec2(-0.05, .0) + guy2Drift;
   vec2 guy2Anchor = guy2Pos - vec2(.3, .1);
   vec2 guy2Direction = vec2(1., 1.);
 
-  // TODO: Pac-Man back around.
   vec2 guy3LinearDrift = calcLinearDrift(u_time/4.);
   vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.)/4.);
 
