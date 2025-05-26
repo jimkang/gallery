@@ -88,7 +88,9 @@ void main() {
   //vec2 guy1Pos = vec2(.25, .5) + mix(sin(u_time), tan(rand(u_time)), .5);
   vec2 guy1Pos = vec2(.25, .5) + vec2(cos(u_time/2.), sin(u_time * 2.))/4.;
   // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
-  vec2 guy2Pos = vec2(.3, .5);
+
+  vec2 guy2Anchor = vec2(.3, .4);
+  vec2 guy2Pos = vec2(.6, .5);
   vec2 guy2Direction = vec2(1., 1.);
   guy2Pos *= guy2Direction;
   // guy2Pos += guy2Pos * smoothrand(u_time);
@@ -105,7 +107,7 @@ void main() {
   
   vec3 color = circleColor(guy1Pos, guy1Pos, .15, .1, .0, vec3(.4, .3, 1.), st);
   if (color == vec3(0)) {
-    color = circleColor(guy2Pos, guy2Pos, .2, 1., .0, vec3(.4, .8, .2), st);
+    color = circleColor(guy2Anchor, guy2Pos, .2, 1., .0, vec3(.4, .8, .2), st);
   }
   if (color == vec3(0)) {
     color = circleColor(guy3Anchor, guy3Pos, .25, 1., .0, vec3(.7, .2, .15), st);
