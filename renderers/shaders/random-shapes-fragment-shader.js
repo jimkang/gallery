@@ -68,9 +68,9 @@ vec3 circleColor(vec2 anchor, vec2 center, float radius, float thinness, float h
   float pct = 0.0;
   pct = isInShape(anchor, center, radius, thinness, halo, 0.001, st);
   
-  // float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
+  float colorPart = max(distSquared(anchor, radius, st)/pow(radius, 1.7), 1.); 
   // Make it flat.
-  float colorPart = 1.;
+  // colorPart = 1.;
 
   return pct * colorPart * baseColor;    
 }
