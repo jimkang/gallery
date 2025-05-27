@@ -119,13 +119,18 @@ void main() {
   vec2 guy3BasePos = vec2(.5, .6);
   vec2 guy3Anchor = guy3BasePos + guy3LinearDriftPrev + guy3RotationalDriftPrev;
   vec2 guy3Pos = guy3BasePos + guy3LinearDrift + guy3RotationalDrift;
+
+  vec3 guy3Color = vec3(.7, .2, .15);
+  vec3 guy3ColorAlt = vec3(abs(guy3Anchor.x - st.y), guy3Anchor.x - guy3Pos.y, abs(guy3Pos.y - st.x));
+  float guy3AltFactor = sin(u_time/7. + PI);
+  guy3Color = min(mix(guy3Color, guy3ColorAlt, guy3AltFactor), vec3(1., .8, .8));
   
   vec3 color = circleColor(guy1Pos, guy1Pos, .1, .1, .0, guy1Color, st);
   if (color == vec3(0)) {
     color = circleColor(guy2Anchor, guy2Pos, guy2Radius, 1., .0, guy2Color, st);
   }
   if (color == vec3(0)) {
-    color = circleColor(guy3Anchor, guy3Pos, .25, 1., .0, vec3(.7, .2, .15), st);
+    color = circleColor(guy3Anchor, guy3Pos, .25, 1., .0, guy3Color, st);
   }
   
   outColor = vec4(color, 1.);
