@@ -86,11 +86,10 @@ vec2 calcRotationalDrift(float f) {
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution;
 
-  // Stutter
-  //vec2 guy1Pos = vec2(.25, .5) + mix(sin(u_time), tan(rand(u_time)), .5);
   vec2 guy1Pos = vec2(1.1, .6);
   guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
-  // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
+  vec3 guy1Color = vec3(.4, .0, 1.0);
+  guy1Color += vec3(0., min(guy1Pos.x, .6), 0.);
 
   float guy2TimeMax = 70.;
   float guy2TimeFactor = mod(u_time, guy2TimeMax);
@@ -109,7 +108,7 @@ void main() {
   vec2 guy3Anchor = guy3BasePos + guy3LinearDriftPrev + guy3RotationalDriftPrev;
   vec2 guy3Pos = guy3BasePos + guy3LinearDrift + guy3RotationalDrift;
   
-  vec3 color = circleColor(guy1Pos, guy1Pos, .1, .1, .0, vec3(.4, .3, 1.), st);
+  vec3 color = circleColor(guy1Pos, guy1Pos, .1, .1, .0, guy1Color, st);
   if (color == vec3(0)) {
     color = circleColor(guy2Anchor, guy2Pos, guy2Radius, 1., .0, vec3(.4, .8, .2), st);
   }
