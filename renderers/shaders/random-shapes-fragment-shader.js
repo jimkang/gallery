@@ -88,14 +88,12 @@ void main() {
 
   vec2 guy1Pos = vec2(1.1, .6);
   guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
-  vec3 guy1Color = vec3(.4, .0, 1.0);
-  // vec3 positionColor = vec3(min(st.y, 1. - baseColor.x), min(anchor.x - center.y, 1. - baseColor.y), min(1. - baseColor.z, st.x));
 
+  vec3 guy1Color = vec3(.4, .0, .8);
   vec3 guy1ColorAlt = vec3(2. * st.y, st.x, distSquared(guy1Pos, 0., st));
   float guy1AltFactor = sin(u_time/16.);
   guy1Color = max(mix(guy1Color, guy1ColorAlt, guy1AltFactor), vec3(0., 0., .5));
-  // guy1Color = min(guy1Color, vec3(.7, .7, 1.));
-  guy1Color += vec3(max(-guy1Pos.x, -.3), 0., max(-guy1Pos.x, -.3));
+  guy1Color += vec3(max(-guy1Pos.x, -.3), .2, max(-guy1Pos.x, -.3));
   guy1Color = min(guy1Color, vec3(.8, .8, 1.));
 
   float guy2TimeMax = 70.;
@@ -105,6 +103,12 @@ void main() {
   vec2 guy2Anchor = guy2Pos - vec2(.3, .1);
   vec2 guy2Direction = vec2(1., 1.);
   float guy2Radius = .2 * (1. + pow(guy2TimeFactor/guy2TimeMax, 4.));
+
+  vec3 guy2Color = vec3(.4, .8, .2);
+  vec3 guy2ColorAlt = vec3(st.y, guy2Anchor.x - guy2Pos.y, st.x);
+  float guy2AltFactor = cos(u_time/24.);
+  guy2Color = mix(guy2Color, guy2ColorAlt, guy2AltFactor);
+  guy2Color = max(guy2Color, vec3(0., .3, 0.));
 
   vec2 guy3LinearDrift = calcLinearDrift(u_time/4.);
   vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.)/4.);
@@ -117,7 +121,7 @@ void main() {
   
   vec3 color = circleColor(guy1Pos, guy1Pos, .1, .1, .0, guy1Color, st);
   if (color == vec3(0)) {
-    color = circleColor(guy2Anchor, guy2Pos, guy2Radius, 1., .0, vec3(.4, .8, .2), st);
+    color = circleColor(guy2Anchor, guy2Pos, guy2Radius, 1., .0, guy2Color, st);
   }
   if (color == vec3(0)) {
     color = circleColor(guy3Anchor, guy3Pos, .25, 1., .0, vec3(.7, .2, .15), st);
