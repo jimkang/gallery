@@ -89,12 +89,13 @@ void main() {
   vec2 guy1Pos = vec2(1.1, .6);
   guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
 
-  vec3 guy1Color = vec3(.4, .0, .8);
-  vec3 guy1ColorAlt = vec3(2. * st.y, st.x, distSquared(guy1Pos, 0., st));
-  float guy1AltFactor = sin(u_time/16.);
+  vec3 guy1Color = vec3(.2, .45, .9);
+  vec3 guy1ColorAlt = vec3(2. * st.y, max(st.x, .4), distSquared(guy1Pos, 0., st));
+  float guy1AltFactor = sin(u_time/9.);
+  // guy1AltFactor = 1.;
   guy1Color = max(mix(guy1Color, guy1ColorAlt, guy1AltFactor), vec3(0., 0., .5));
-  guy1Color += vec3(max(-guy1Pos.x, -.3), .2, max(-guy1Pos.x, -.3));
-  guy1Color = min(guy1Color, vec3(.8, .8, 1.));
+  // Purple shift.
+  guy1Color += vec3(max(-guy1Pos.x, -.3), .0, max(-guy1Pos.y, -.3))/2.;
 
   float guy2TimeMax = 70.;
   float guy2TimeFactor = mod(u_time, guy2TimeMax);
