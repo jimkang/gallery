@@ -52,6 +52,8 @@ float fuzzThickness, vec2 st) {
   float n = st.x/st.y;
   float radius = pow(rand(n), 1.5) * baseRadius;
   vec2 fromCenter = st - center;
+
+  // Transform the shape into a non-circle.
   radius *= getDistortFactor(anchor, st, thinness);
 
   float distSq = distSquared(center, radius, st);
@@ -90,10 +92,13 @@ void main() {
   guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
   // guy1Pos *= getDistortFactor(guy1Pos, st * u_time);
 
-  vec2 guy2Drift = vec2(.01, .01) * mod(u_time, 110.);
+  float guy2TimeMax = 70.;
+  float guy2TimeFactor = mod(u_time, guy2TimeMax);
+  vec2 guy2Drift = vec2(.02, .02) * guy2TimeFactor;
   vec2 guy2Pos = vec2(-0.05, .0) + guy2Drift;
   vec2 guy2Anchor = guy2Pos - vec2(.3, .1);
   vec2 guy2Direction = vec2(1., 1.);
+  float guy2Radius = .2 * (1. + pow(guy2TimeFactor/guy2TimeMax, 4.));
 
   vec2 guy3LinearDrift = calcLinearDrift(u_time/4.);
   vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.)/4.);
@@ -106,7 +111,7 @@ void main() {
   
   vec3 color = circleColor(guy1Pos, guy1Pos, .1, .1, .0, vec3(.4, .3, 1.), st);
   if (color == vec3(0)) {
-    color = circleColor(guy2Anchor, guy2Pos, .2, 1., .0, vec3(.4, .8, .2), st);
+    color = circleColor(guy2Anchor, guy2Pos, guy2Radius, 1., .0, vec3(.4, .8, .2), st);
   }
   if (color == vec3(0)) {
     color = circleColor(guy3Anchor, guy3Pos, .25, 1., .0, vec3(.7, .2, .15), st);
