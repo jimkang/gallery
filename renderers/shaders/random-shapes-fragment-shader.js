@@ -89,7 +89,14 @@ void main() {
   vec2 guy1Pos = vec2(1.1, .6);
   guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
   vec3 guy1Color = vec3(.4, .0, 1.0);
-  guy1Color += vec3(0., min(guy1Pos.x, .6), 0.);
+  // vec3 positionColor = vec3(min(st.y, 1. - baseColor.x), min(anchor.x - center.y, 1. - baseColor.y), min(1. - baseColor.z, st.x));
+
+  vec3 guy1ColorAlt = vec3(2. * st.y, st.x, distSquared(guy1Pos, 0., st));
+  float guy1AltFactor = sin(u_time/16.);
+  guy1Color = max(mix(guy1Color, guy1ColorAlt, guy1AltFactor), vec3(0., 0., .5));
+  // guy1Color = min(guy1Color, vec3(.7, .7, 1.));
+  guy1Color += vec3(max(-guy1Pos.x, -.3), 0., max(-guy1Pos.x, -.3));
+  guy1Color = min(guy1Color, vec3(.8, .8, 1.));
 
   float guy2TimeMax = 70.;
   float guy2TimeFactor = mod(u_time, guy2TimeMax);
