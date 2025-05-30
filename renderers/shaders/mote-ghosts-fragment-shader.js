@@ -108,11 +108,13 @@ void main() {
   vec2 guy2Direction = vec2(1., 1.);
   float guy2Radius = .2 * (1. + pow(guy2TimeFactor/guy2TimeMax, 4.));
 
-  vec3 guy2Color = vec3(.4, .8, .2);
+  vec3 guy2Color = vec3(.4, .8, .3);
   vec3 guy2ColorAlt = vec3(st.y, guy2Anchor.x - guy2Pos.y, st.x);
   float guy2AltFactor = cos(u_time/24.);
   guy2Color = mix(guy2Color, guy2ColorAlt, guy2AltFactor);
-  guy2Color = max(guy2Color, vec3(0., .3, 0.));
+  // Keep the green a little bit blue.
+  guy2Color = min(guy2Color, vec3(1., .8, 1.));
+  guy2Color = max(guy2Color, vec3(0., 0., .2));
 
   float guy3Rate = .125;
   vec2 guy3LinearDrift = calcLinearDrift(u_time * guy3Rate);
