@@ -87,7 +87,7 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution;
 
   vec2 guy1Pos = vec2(1.1, .6);
-  guy1Pos += vec2(-mod(u_time/10., 1.4), sin(u_time * 2.)/8.);
+  guy1Pos += vec2(-mod(u_time/12., 1.4), sin(u_time)/8.);
 
   vec3 guy1Color = vec3(.2, .45, .9);
   vec3 guy1ColorAlt = vec3(2. * st.y, max(st.x, .4), distSquared(guy1Pos, 0., st));
@@ -111,11 +111,12 @@ void main() {
   guy2Color = mix(guy2Color, guy2ColorAlt, guy2AltFactor);
   guy2Color = max(guy2Color, vec3(0., .3, 0.));
 
-  vec2 guy3LinearDrift = calcLinearDrift(u_time/4.);
-  vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.)/4.);
+  float guy3Rate = .125;
+  vec2 guy3LinearDrift = calcLinearDrift(u_time * guy3Rate);
+  vec2 guy3LinearDriftPrev = calcLinearDrift((u_time - 2.) * guy3Rate);
 
-  vec2 guy3RotationalDrift = calcRotationalDrift(u_time/4.);
-  vec2 guy3RotationalDriftPrev = calcRotationalDrift((u_time - 1.)/4.);
+  vec2 guy3RotationalDrift = calcRotationalDrift(u_time * guy3Rate);
+  vec2 guy3RotationalDriftPrev = calcRotationalDrift((u_time - 1.) * guy3Rate);
   vec2 guy3BasePos = vec2(.5, .6);
   vec2 guy3Anchor = guy3BasePos + guy3LinearDriftPrev + guy3RotationalDriftPrev;
   vec2 guy3Pos = guy3BasePos + guy3LinearDrift + guy3RotationalDrift;
