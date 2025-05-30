@@ -51,6 +51,28 @@ function onUpdate({ seed, focusPiece }) {
 function showPiece({ piece, seed, maximize = false }) {
   let container = document.getElementById(piece + '-piece');
   let canvas = document.getElementById(piece + '-canvas');
+
+  sizeCanvasToContainer({ container, canvas, maximize });
+  var resizeObserver = new ResizeObserver(onResizePieceContainer);
+  resizeObserver.observe(container as HTMLElement);
+
+  renderersForPieceNames[piece]({ canvas, seed });
+  renderPieceControls({ piece, urlStore });
+}
+
+function onResizePieceContainer(resizedEntries) {
+  for (let entry of resizedEntries) {
+    let container = entry.target;
+    let canvas = container.querySelector('canvas');
+    sizeCanvasToContainer({
+      container,
+      canvas,
+      maximize: container.classList.contains('maximized'),
+    });
+  }
+}
+
+function sizeCanvasToContainer({ container, canvas, maximize }) {
   if (!canvas || !container) {
     return;
   }
@@ -58,12 +80,13 @@ function showPiece({ piece, seed, maximize = false }) {
   container.classList[maximize ? 'add' : 'remove']('maximized');
 
   var rect = container.getBoundingClientRect();
-  const squareSideLength = Math.min(rect.width, rect.height);
-  canvas.setAttribute('width', '' + squareSideLength);
-  canvas.setAttribute('height', '' + squareSideLength);
+  const squareSideLength = '' + Math.min(rect.width, rect.height);
+  resizeCanvas({ canvas, width: squareSideLength, height: squareSideLength });
+}
 
-  renderersForPieceNames[piece]({ canvas, seed });
-  renderPieceControls({ piece, urlStore });
+function resizeCanvas({ canvas, width, height }) {
+  canvas.setAttribute('width', width);
+  canvas.setAttribute('height', height);
 }
 
 function reportTopLevelError(event: ErrorEvent) {
