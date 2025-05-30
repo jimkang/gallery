@@ -51,6 +51,8 @@ a:visited {
   grid-template-columns: repeat(auto-fill, 320px);
   grid-gap: 1rem;
   list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .piece-grid > * {
