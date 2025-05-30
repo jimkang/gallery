@@ -1,5 +1,5 @@
 import { RenderShader } from './render-shader.js';
-import fragmentShaderSrc from './shaders/random-shapes-fragment-shader';
+import fragmentShaderSrc from './shaders/mote-ghosts-fragment-shader';
 
 var renderShader;
 

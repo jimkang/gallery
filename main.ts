@@ -4,7 +4,7 @@ import { version } from './package.json';
 import renderMovingMondrian from './renderers/render-moving-mondrian';
 import renderGlowPlanets from './renderers/render-glow-planets';
 import renderRandomCells from './renderers/render-random-cells';
-import renderRandomShapes from './renderers/render-random-shapes';
+import renderMoteGhosts from './renderers/render-mote-ghosts';
 import renderPieceControls from './renderers/render-piece-controls';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
@@ -16,7 +16,7 @@ var renderersForPieceNames = {
   'glow-planets': renderGlowPlanets,
   'moving-mondrian': renderMovingMondrian,
   'random-cells': renderRandomCells,
-  'random-shapes': renderRandomShapes,
+  'mote-ghosts': renderMoteGhosts,
 };
 
 (async function go() {
