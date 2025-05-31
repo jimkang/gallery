@@ -12,12 +12,12 @@ import { URLStore } from '@jimkang/url-store';
 var randomId = RandomId();
 var urlStore;
 
-var renderersForPieceNames = {
-  'glow-planets': renderGlowPlanets,
-  'moving-mondrian': renderMovingMondrian,
-  'random-cells': renderRandomCells,
-  'mote-ghosts': renderMoteGhosts,
-};
+var pieceDefs = [
+  { id: 'glow-planets', renderer: renderGlowPlanets, wip: true },
+  { id: 'moving-mondrian', renderer: renderMovingMondrian, wip: true },
+  { id: 'random-cells', renderer: renderRandomCells, wip: true },
+  { id: 'mote-ghosts', renderer: renderMoteGhosts, wip: false },
+];
 
 (async function go() {
   window.addEventListener('error', reportTopLevelError);
@@ -28,36 +28,45 @@ var renderersForPieceNames = {
     windowObject: window,
     defaults: {
       seed: randomId(8),
+      showWIP: false,
     },
+    boolKeys: ['showWIP'],
   });
   urlStore.update();
 })();
 
-function onUpdate({ seed, focusPiece }) {
+function onUpdate({ seed, focusPiece, showWIP }) {
   if (!seed) {
     urlStore.update({ seed: randomId(8) });
     return;
   }
 
+  var filteredPieceDefs = pieceDefs.filter((def) => showWIP || !def.wip);
+
   if (focusPiece) {
-    showPiece({ piece: focusPiece, seed, maximize: true });
+    let piece = filteredPieceDefs.find((def) => def.id === focusPiece);
+    showPiece({
+      piece,
+      seed,
+      maximize: true,
+    });
   } else {
-    for (let piece in renderersForPieceNames) {
+    for (let piece of filteredPieceDefs) {
       showPiece({ piece, seed });
     }
   }
 }
 
 function showPiece({ piece, seed, maximize = false }) {
-  let container = document.getElementById(piece + '-piece');
-  let canvas = document.getElementById(piece + '-canvas');
+  let container = document.getElementById(piece.id + '-piece');
+  let canvas = document.getElementById(piece.id + '-canvas');
 
   sizeCanvasToContainer({ container, canvas, maximize });
   var resizeObserver = new ResizeObserver(onResizePieceContainer);
   resizeObserver.observe(container as HTMLElement);
 
-  renderersForPieceNames[piece]({ canvas, seed });
-  renderPieceControls({ piece, urlStore });
+  piece.renderer({ canvas, seed });
+  renderPieceControls({ piece: piece.id, urlStore });
 }
 
 function onResizePieceContainer(resizedEntries) {
