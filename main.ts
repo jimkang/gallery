@@ -13,10 +13,30 @@ var randomId = RandomId();
 var urlStore;
 
 var pieceDefs = [
-  { id: 'glow-planets', renderer: renderGlowPlanets, wip: true },
-  { id: 'moving-mondrian', renderer: renderMovingMondrian, wip: true },
-  { id: 'random-cells', renderer: renderRandomCells, wip: true },
-  { id: 'mote-ghosts', renderer: renderMoteGhosts, wip: false },
+  {
+    id: 'glow-planets',
+    name: 'Glow Planets',
+    renderer: renderGlowPlanets,
+    wip: true,
+  },
+  {
+    id: 'moving-mondrian',
+    name: 'Moving Mondrian',
+    renderer: renderMovingMondrian,
+    wip: true,
+  },
+  {
+    id: 'random-cells',
+    name: 'Random Cells',
+    renderer: renderRandomCells,
+    wip: true,
+  },
+  {
+    id: 'mote-ghosts',
+    name: 'Mote Ghosts',
+    renderer: renderMoteGhosts,
+    wip: false,
+  },
 ];
 
 (async function go() {
@@ -42,8 +62,9 @@ function onUpdate({ seed, focusPiece, showWIP }) {
   }
 
   renderPieces({
-    pieceDefs: pieceDefs.filter((def) => showWIP || !def.wip),
-    focusPiece,
+    pieceDefs: focusPiece
+      ? pieceDefs.filter((def) => def.id === focusPiece)
+      : pieceDefs.filter((def) => showWIP || !def.wip),
     seed,
     urlStore,
   });
