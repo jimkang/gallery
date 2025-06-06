@@ -28,12 +28,8 @@ export default function renderPieces({ urlStore, pieceDefs, seed }) {
     .select('.expand-link')
     .on('click', (_e, def) => urlStore.update({ focusPiece: def.id }));
 
-  showPieces();
-
-  function showPieces() {
-    for (let piece of pieceDefs) {
-      showPiece({ piece, seed });
-    }
+  for (let piece of pieceDefs) {
+    showPiece({ piece, seed });
   }
 
   function showPiece({ piece, seed, maximize = false }) {
