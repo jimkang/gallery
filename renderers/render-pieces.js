@@ -13,6 +13,7 @@ export default function renderPieces({
   pieceDefs,
   focusPiece,
   seed,
+  hideExpandCollapse = false,
 }) {
   var pieceSel = pieceGridSel.selectAll('li').data(pieceDefs, accessor('id'));
 
@@ -32,9 +33,7 @@ export default function renderPieces({
   extantPieceSel.select('.caption').text(accessor('name'));
   extantPieceSel
     .select('.expand-collapse-link')
-    .html((def) =>
-      def.id === focusPiece ? svgCollapseIconMarkup : svgExpandIconMarkup
-    )
+    .html(getExpandCollapseIcon)
     .on('click', onExpandCollapseClick);
 
   function showPiece(piece) {
@@ -56,6 +55,16 @@ export default function renderPieces({
 
   function onExpandCollapseClick(_e, def) {
     urlStore.update({ focusPiece: focusPiece ? null : def.id });
+  }
+
+  function getExpandCollapseIcon(def) {
+    if (hideExpandCollapse) {
+      return '';
+    }
+    if (def.id === focusPiece) {
+      return svgCollapseIconMarkup;
+    }
+    return svgExpandIconMarkup;
   }
 }
 

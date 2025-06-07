@@ -81,13 +81,15 @@ function onUpdate({ seed, focusPiece, showWIP }) {
     });
   }
 
+  var showablePieceDefs = pieceDefs.filter((def) => showWIP || !def.wip);
   renderPieces({
     pieceDefs: focusPiece
       ? pieceDefs.filter((def) => def.id === focusPiece)
-      : pieceDefs.filter((def) => showWIP || !def.wip),
+      : showablePieceDefs,
     seed,
     urlStore,
     focusPiece,
+    hideExpandCollapse: showablePieceDefs.length === 1,
   });
 }
 
