@@ -5,27 +5,44 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
   var gl;
   var program;
   var { setUniform } = UniformCache();
+  var updateKey;
 
-  return function render({ canvas }) {
-    if (!gl || !program) {
-      ({ gl, program } = setUpShaders({
-        gl,
-        program,
-        canvas,
-        fragmentShaderSrc,
-      }));
-      window.requestAnimationFrame(renderWithUpdatedTime);
+  return {
+    render,
+    updateViewport,
+  };
+
+  function updateViewport() {
+    if (!gl) {
+      return;
     }
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    console.log('Updated viewport', gl.canvas.width, gl.canvas.height);
 
     setUniform({
       gl,
       program,
       uniformType: '2fv',
       name: 'u_resolution',
-      value: [canvas.width, canvas.height],
+      value: [gl.canvas.width, gl.canvas.height],
     });
+  }
+
+  function render({ canvas }) {
+    if (gl && program) {
+      gl.deleteProgram(program);
+    }
+
+    ({ gl, program } = setUpShaders({
+      canvas,
+      fragmentShaderSrc,
+    }));
+    ({ setUniform } = UniformCache());
+    if (updateKey) {
+      window.cancelAnimationFrame(updateKey);
+    }
+    updateKey = window.requestAnimationFrame(renderWithUpdatedTime);
 
     if (setCustomUniforms) {
       setCustomUniforms({ gl, program, setUniform });
@@ -33,7 +50,7 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
 
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  };
+  }
 
   function renderWithUpdatedTime(timeStamp) {
     setUniform({
@@ -44,7 +61,7 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
       value: timeStamp / 1000,
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    requestAnimationFrame(renderWithUpdatedTime);
+    updateKey = requestAnimationFrame(renderWithUpdatedTime);
   }
 }
 

@@ -1,10 +1,11 @@
 import './app.css';
 import handleError from 'handle-error-web';
 import { version } from './package.json';
-import renderMovingMondrian from './renderers/render-moving-mondrian';
-import renderGlowPlanets from './renderers/render-glow-planets';
-import renderRandomCells from './renderers/render-random-cells';
-import renderMoteGhosts from './renderers/render-mote-ghosts';
+import moteGhostsFragmentShaderSrc from './renderers/shaders/mote-ghosts-fragment-shader';
+import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragment-shader';
+import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
+import { RenderShader } from './renderers/render-shader';
+import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
 import renderPieces from './renderers/render-pieces';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
@@ -12,31 +13,42 @@ import { URLStore } from '@jimkang/url-store';
 var randomId = RandomId();
 var urlStore;
 
+var movingMondrianPieceDef = {
+  id: 'moving-mondrian',
+  name: 'Moving Mondrian',
+  wip: true,
+  renderer: undefined,
+};
+
 var pieceDefs = [
   {
     id: 'glow-planets',
     name: 'Glow Planets',
-    renderer: renderGlowPlanets,
-    wip: true,
-  },
-  {
-    id: 'moving-mondrian',
-    name: 'Moving Mondrian',
-    renderer: renderMovingMondrian,
+    renderer: RenderShader({
+      fragmentShaderSrc: glowPlanetsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
     wip: true,
   },
   {
     id: 'random-cells',
     name: 'Random Cells',
-    renderer: renderRandomCells,
+    renderer: RenderShader({
+      fragmentShaderSrc: randomCellsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
     wip: true,
   },
   {
     id: 'mote-ghosts',
     name: 'Mote Ghosts',
-    renderer: renderMoteGhosts,
+    renderer: RenderShader({
+      fragmentShaderSrc: moteGhostsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
     wip: false,
   },
+  movingMondrianPieceDef,
 ];
 
 (async function go() {
@@ -61,6 +73,14 @@ function onUpdate({ seed, focusPiece, showWIP }) {
     return;
   }
 
+  if (movingMondrianPieceDef.renderer) {
+    movingMondrianPieceDef.renderer.setSeed({ seed });
+  } else {
+    movingMondrianPieceDef.renderer = RenderMovingMondrianShader({
+      seed,
+    });
+  }
+
   renderPieces({
     pieceDefs: focusPiece
       ? pieceDefs.filter((def) => def.id === focusPiece)
@@ -71,11 +91,11 @@ function onUpdate({ seed, focusPiece, showWIP }) {
   });
 }
 
-function reportTopLevelError(event: ErrorEvent) {
+function reportTopLevelError(event) {
   handleError(event.error);
 }
 
 function renderVersion() {
-  var versionInfo = document.getElementById('version-info') as HTMLElement;
+  var versionInfo = document.getElementById('version-info');
   versionInfo.textContent = version;
 }

@@ -4,16 +4,37 @@ import seedrandom from 'seedrandom';
 import { createProbable as Probable } from 'probable';
 import { range } from 'd3-array';
 
-var renderShader;
+var shaderRenderer;
 
-export default function render({ canvas, seed, barThickness = 0.005 }) {
-  var random = seedrandom(seed);
-  var { rollDie, shuffle } = Probable({ random });
-
-  if (!renderShader) {
-    renderShader = RenderShader({ fragmentShaderSrc, setCustomUniforms });
+export default function RenderMovingMondrianShader({
+  seed,
+  barThickness = 0.005,
+}) {
+  if (!shaderRenderer) {
+    shaderRenderer = RenderShader({
+      fragmentShaderSrc,
+      setCustomUniforms,
+    });
   }
-  renderShader({ canvas });
+  var rollDie;
+  var shuffle;
+
+  setSeed({ seed });
+
+  return {
+    render,
+    updateViewport: shaderRenderer.updateViewport,
+    setSeed,
+  };
+
+  function setSeed({ seed }) {
+    var random = seedrandom(seed);
+    ({ rollDie, shuffle } = Probable({ random }));
+  }
+
+  function render({ canvas }) {
+    shaderRenderer.render({ canvas });
+  }
 
   function setCustomUniforms({ gl, program, setUniform }) {
     const verticalBarDesiredCount = 8 + rollDie(8);

@@ -20,12 +20,14 @@ export default function renderPieces({
 
   var newPieceSel = pieceSel.enter().append('li');
   newPieceSel.append('canvas').attr('width', 320, 'height', 320);
+  newPieceSel.each(showPiece);
   var newPieceInfoSel = newPieceSel.append('div').classed('piece-info', true);
   newPieceInfoSel.append('span').classed('caption', true);
   newPieceInfoSel.append('a').classed('expand-collapse-link', true);
 
   var extantPieceSel = newPieceSel.merge(pieceSel);
   extantPieceSel.attr('id', (def) => def.id + '-piece');
+  extantPieceSel.each(updateViewport);
   extantPieceSel.select('canvas').attr('id', (def) => def.id + '-canvas');
   extantPieceSel.select('.caption').text(accessor('name'));
   extantPieceSel
@@ -35,21 +37,21 @@ export default function renderPieces({
     )
     .on('click', onExpandCollapseClick);
 
-  for (let piece of pieceDefs) {
-    showPiece({ piece, seed });
-  }
+  function showPiece(piece) {
+    let container = this;
+    let canvas = select(container).select('canvas').node();
 
-  function showPiece({ piece, seed, maximize = false }) {
-    let container = document.getElementById(piece.id + '-piece');
-    let canvas = document.getElementById(piece.id + '-canvas');
-
-    sizeCanvasToContainer({ container, canvas, maximize });
+    sizeCanvasToContainer({ container, canvas });
     var resizeObserver = new ResizeObserver(onResizePieceContainer);
     resizeObserver.observe(container);
 
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
-    setTimeout(() => piece.renderer({ canvas, seed }), 100);
+    setTimeout(() => piece.renderer.render({ canvas, seed }), 100);
+  }
+
+  function updateViewport(piece) {
+    setTimeout(() => piece.renderer.updateViewport(), 100);
   }
 
   function onExpandCollapseClick(_e, def) {
@@ -64,17 +66,14 @@ function onResizePieceContainer(resizedEntries) {
     sizeCanvasToContainer({
       container,
       canvas,
-      maximize: container.classList.contains('maximized'),
     });
   }
 }
 
-function sizeCanvasToContainer({ container, canvas, maximize }) {
+function sizeCanvasToContainer({ container, canvas }) {
   if (!canvas || !container) {
     return;
   }
-
-  container.classList[maximize ? 'add' : 'remove']('maximized');
 
   var rect = container.getBoundingClientRect();
   const squareSideLength = '' + Math.round(Math.min(rect.width, rect.height));
