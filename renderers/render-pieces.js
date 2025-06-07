@@ -4,9 +4,9 @@ import accessor from 'accessor';
 var pieceGridSel = select('#piece-grid');
 
 var svgExpandIconMarkup =
-  '<svg class="expand-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="0,100 100,0 100,100"></polygon></g></svg>';
+  '<svg class="expand-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="10,90 90,10 90,90"></polygon></g></svg>';
 var svgCollapseIconMarkup =
-  '<svg class="collapse-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="0,100 100,0, 0,0"></polygon></g></svg>';
+  '<svg class="collapse-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="10,90 10,10 90,10"></polygon></g></svg>';
 
 export default function renderPieces({
   urlStore,

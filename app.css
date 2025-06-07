@@ -1,3 +1,10 @@
+html {
+  --blending-darkest: hsl(250, 10%, 5%);
+  --blending-dark: hsl(250, 10%, 12%);
+  --blending-light: hsl(250, 10%, 75%);
+  --blending-lighter: hsl(250, 10%, 90%);
+}
+
 body {
   font-size: 24px;
   font-family: Helvetica, sans-serif;
@@ -5,13 +12,8 @@ body {
   margin-bottom: 2rem;
   margin: 0;
   margin-bottom: 2rem;
-  --time-blue: hsla(211, 70%, 50%, 0.6);
-  --time-blue-ghostly: hsla(211, 70%, 50%, 0.3);
-  --time-blue-dim: hsla(211, 70%, 50%, 0.1);
-  --ring: hsla(211, 70%, 50%, 0.95);
-  --diagnostic-line: hsla(44, 70%, 50%, 0.959);
-  background-color: hsl(250, 10%, 5%);
-  color: white;
+  color: var(--blending-lighter);
+  background-color: var(--blending-darkest);
 }
 
 .invisible {
@@ -51,14 +53,14 @@ a:visited {
 #piece-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  grid-gap: 2px;
+  grid-gap: 0px;
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
 #piece-grid > * {
-  border: solid 1px #444;
+  border: solid 1px var(--blending-dark);
 }
 
 .piece-info {
@@ -75,16 +77,18 @@ a:visited {
   padding-left: 0.25em;
 }
 
-.expand-link {
+.expand-collapse-link {
   height: 32px;
   justify-content: flex-end;
   display: flex;
   cursor: pointer;
+  margin-bottom: 3px;
 }
 
 .expand-icon, .collapse-icon polygon {
-  fill: white;
-  cursor: pointer;
+  stroke: var(--blending-light);
+  stroke-width: 3;
+  fill: var(--blending-dark);
 }
 
 @media all and (max-height: 568px) {
