@@ -67,6 +67,7 @@ function onUpdate({ seed, focusPiece, showWIP }) {
       : pieceDefs.filter((def) => showWIP || !def.wip),
     seed,
     urlStore,
+    focusPiece,
   });
 }
 

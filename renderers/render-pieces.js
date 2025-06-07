@@ -5,8 +5,15 @@ var pieceGridSel = select('#piece-grid');
 
 var svgExpandIconMarkup =
   '<svg class="expand-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="0,100 100,0 100,100"></polygon></g></svg>';
+var svgCollapseIconMarkup =
+  '<svg class="collapse-icon" width="34" height="34" viewBox="0 0 100 100"><g><polygon points="0,100 100,0, 0,0"></polygon></g></svg>';
 
-export default function renderPieces({ urlStore, pieceDefs, seed }) {
+export default function renderPieces({
+  urlStore,
+  pieceDefs,
+  focusPiece,
+  seed,
+}) {
   var pieceSel = pieceGridSel.selectAll('li').data(pieceDefs, accessor('id'));
 
   pieceSel.exit().remove();
@@ -15,18 +22,18 @@ export default function renderPieces({ urlStore, pieceDefs, seed }) {
   newPieceSel.append('canvas').attr('width', 320, 'height', 320);
   var newPieceInfoSel = newPieceSel.append('div').classed('piece-info', true);
   newPieceInfoSel.append('span').classed('caption', true);
-  newPieceInfoSel
-    .append('a')
-    .classed('expand-link', true)
-    .html(svgExpandIconMarkup);
+  newPieceInfoSel.append('a').classed('expand-collapse-link', true);
 
   var extantPieceSel = newPieceSel.merge(pieceSel);
   extantPieceSel.attr('id', (def) => def.id + '-piece');
   extantPieceSel.select('canvas').attr('id', (def) => def.id + '-canvas');
   extantPieceSel.select('.caption').text(accessor('name'));
   extantPieceSel
-    .select('.expand-link')
-    .on('click', (_e, def) => urlStore.update({ focusPiece: def.id }));
+    .select('.expand-collapse-link')
+    .html((def) =>
+      def.id === focusPiece ? svgCollapseIconMarkup : svgExpandIconMarkup
+    )
+    .on('click', onExpandCollapseClick);
 
   for (let piece of pieceDefs) {
     showPiece({ piece, seed });
@@ -43,6 +50,10 @@ export default function renderPieces({ urlStore, pieceDefs, seed }) {
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
     setTimeout(() => piece.renderer({ canvas, seed }), 100);
+  }
+
+  function onExpandCollapseClick(_e, def) {
+    urlStore.update({ focusPiece: focusPiece ? null : def.id });
   }
 }
 

@@ -82,8 +82,9 @@ a:visited {
   cursor: pointer;
 }
 
-.expand-icon polygon {
+.expand-icon, .collapse-icon polygon {
   fill: white;
+  cursor: pointer;
 }
 
 @media all and (max-height: 568px) {
