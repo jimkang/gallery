@@ -18,7 +18,6 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
     }
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    console.log('Updated viewport', gl.canvas.width, gl.canvas.height);
 
     setUniform({
       gl,
