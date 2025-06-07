@@ -10,10 +10,11 @@ body {
   font-family: Helvetica, sans-serif;
   margin: 0;
   margin-bottom: 2rem;
-  margin: 0;
-  margin-bottom: 2rem;
   color: var(--blending-lighter);
   background-color: var(--blending-darkest);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .invisible {
@@ -39,9 +40,9 @@ a:visited {
 #version-info {
   position: absolute;
   right: 1.5em;
-  top: 1.5em;
+  bottom: 1em;
   font-size: 0.5em;
-  color: #666;
+  color: var(--blending-dark);
 }
 
 .hidden {
@@ -51,9 +52,11 @@ a:visited {
 }
 
 #piece-grid {
+  width: 100vmin;
+  height: 100vmin;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  grid-gap: 0px;
+  grid-gap: 4px;
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -74,7 +77,6 @@ a:visited {
 
 .caption {
   flex: auto;
-  padding-left: 0.25em;
 }
 
 .expand-collapse-link {
