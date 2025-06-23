@@ -4,6 +4,8 @@ import { version } from './package.json';
 import moteGhostsFragmentShaderSrc from './renderers/shaders/mote-ghosts-fragment-shader';
 import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragment-shader';
 import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
+import waterNoiseFragmentShaderSrc from './renderers/shaders/water-noise-fragment-shader';
+import lightningFragmentShaderSrc from './renderers/shaders/lightning-fragment-shader';
 import { RenderShader } from './renderers/render-shader';
 import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
 import renderPieces from './renderers/render-pieces';
@@ -49,6 +51,24 @@ var pieceDefs = [
     wip: false,
   },
   movingMondrianPieceDef,
+  {
+    id: 'water-noise',
+    name: 'Water Noise',
+    renderer: RenderShader({
+      fragmentShaderSrc: waterNoiseFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    wip: false,
+  },
+  {
+    id: 'lightning',
+    name: 'Lightning',
+    renderer: RenderShader({
+      fragmentShaderSrc: lightningFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    wip: false,
+  },
 ];
 
 (async function go() {

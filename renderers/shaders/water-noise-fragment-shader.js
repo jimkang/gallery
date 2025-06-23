@@ -175,47 +175,56 @@ float psrddnoise(vec2 x, vec2 period, float alpha, out vec2 gradient,
 out vec4 outColor;
 
 uniform vec2 u_resolution;
+uniform vec2 u_mouse;
 uniform float u_time;
 
-float distSquared(vec2 center, float radius, vec2 st) {
-    vec2 distVec = st - center;
-    return dot(distVec, distVec);
+// 2D Random
+float random (in vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))
+                 * 43758.5453123);
 }
 
-float isInCircle(vec2 center, float radius, float halo, float fuzzThickness, vec2 st) {
-    float distSq = distSquared(center, radius, st);
-    // vec2 gradient;
-    // vec3 dg;
-    // float noiseValue = psrddnoise(vec2(distSq), vec2(0.), 0., gradient, dg);
-    distSq = max(.5 * distSq, .5 * distSquared(center, radius + halo, st));
-    return smoothstep(distSq, distSq + fuzzThickness, radius * radius);
+// 2D Noise based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    // Smooth Interpolation
+
+    // Cubic Hermine Curve.  Same as SmoothStep()
+    vec2 u = f*f*(3.0-2.0*f);
+    // u = smoothstep(0.,1.,f);
+
+    // Mix 4 coorners percentages
+    return mix(a, b, u.x) +
+            (c - a) * u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
 }
 
-vec3 circleColor(vec2 center, float radius, float halo, vec3 baseColor, vec2 st) {
-    float pct = 0.0;
-    pct = isInCircle(center, radius, halo, 0.005, st);
-    
-    float colorPart = 1. - distSquared(center, radius, st)/(radius * radius);
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-    return pct * colorPart * baseColor;    
-}
+    // Scale the coordinate system to see
+    // some noise in action
+    vec2 pos = vec2(st*sin(u_time/100.)*1000.);
+   
+    // Keep the coordinates still.
+    pos = vec2(st*1000.);
 
-vec3 revolvingGlowBallColor(vec2 revolutionCenter, float revolutionRadius, float revolveRate, float radius, float halo, vec3 baseColor, vec2 st) {
-    float angle = mod(u_time * revolveRate, 2. * PI);
-    vec2 circleCenter = revolutionCenter + vec2(cos(angle), sin(angle)) * 0.3;
-    // Radius pulse
-    float pulseSpeed = 8.;
-    radius *= cos(pulseSpeed * mod(u_time, 2. * PI))/16. + 15./16.;
-    return circleColor(circleCenter, radius, halo, baseColor, st); 
-}
+    vec2 gradient;
+    vec3 dg;
+    float noiseValue = psrddnoise(pos, vec2(0.), 0., gradient, dg);
+    noiseValue = psrddnoise(pos, vec2(3., 2.), PI/4., gradient, dg);
+    noiseValue = noise(pos);
 
-void main(){
-	  vec2 st = gl_FragCoord.xy/u_resolution;
-
-    vec3 color = revolvingGlowBallColor(vec2(.5), .3, 1., .4, .194, vec3(.4, .3, 1.), st);
-    color += revolvingGlowBallColor(vec2(.5, .5), .4, 1.25, .1, 0., vec3(.4, .8, .2), st);
-    color += revolvingGlowBallColor(vec2(.6, .35), .5, -.5, .2, .6, vec3(.7, .2, .15), st);
-    
-	  outColor = vec4(color, 1.);
+    outColor = vec4(vec3(noiseValue), 1.0);
 }
 `;
