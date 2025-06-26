@@ -5,7 +5,7 @@ import moteGhostsFragmentShaderSrc from './renderers/shaders/mote-ghosts-fragmen
 import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragment-shader';
 import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
 import waterNoiseFragmentShaderSrc from './renderers/shaders/water-noise-fragment-shader';
-import lightningFragmentShaderSrc from './renderers/shaders/lightning-fragment-shader';
+import electricalPartyFragmentShaderSrc from './renderers/shaders/electrical-party-fragment-shader';
 import { RenderShader } from './renderers/render-shader';
 import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
 import renderPieces from './renderers/render-pieces';
@@ -58,13 +58,13 @@ var pieceDefs = [
       fragmentShaderSrc: waterNoiseFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
-    wip: false,
+    wip: true,
   },
   {
-    id: 'lightning',
-    name: 'Lightning',
+    id: 'electrical-party',
+    name: 'Electrical Party',
     renderer: RenderShader({
-      fragmentShaderSrc: lightningFragmentShaderSrc,
+      fragmentShaderSrc: electricalPartyFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
     wip: false,
