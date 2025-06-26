@@ -12,9 +12,9 @@ const float speed = 5.;
 const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .3;
 const float bigWaveTimeVaryingPeriodFactor = .8;
-const float smallWavePeriodFactor = .16;
+const float smallWavePeriodFactor = .02;
 const float smallWaveTimeVaryingPeriodFactor = .25;
-const float smallWaveAmpFactor = .02;
+const float smallWaveAmpFactor = .003;
 const float pulseWavePulseBasePeriod = 1.25;
 const float pulseWaveAmplitude = .2;
 
@@ -60,9 +60,10 @@ void main() {
     * smallWaveAmpFactor;
     
   // Triangle wave.
-  float halfPeriod = smallWavePeriodFactor / 2.;
-  float ampTerm = 4. * smallWaveAmpFactor / smallWavePeriodFactor;
-  float mirroredLineY = mod(x + halfPeriod, smallWavePeriodFactor);
+  float p = smallWavePeriodFactor;
+  float halfPeriod = p / 2.;
+  float ampTerm = 4. * (smallWaveAmpFactor / p) * 2. * cos(u_time * 80.);
+  float mirroredLineY = mod(x + halfPeriod, p);
   float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
   y += triWaveY;
 
