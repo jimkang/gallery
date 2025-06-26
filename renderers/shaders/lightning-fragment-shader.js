@@ -7,14 +7,19 @@ out vec4 outColor;
 
 const float lineThickness = .02;
 const float lineBlur = .0025;
-const vec4 color = vec4(.1, .9, .4, 1.);
-const float speed = 5.;
+const vec4 green = vec4(.1, .9, .4, 1.);
+const vec4 blue = vec4(.3, .2, 1., 1.);
+const vec4 white = vec4(1., .99, 1., 1.);
+const vec4 yellow = vec4(.95, 1., .3, 1.);
+const float speed = 8.;
 const float bigWaveAmpFactor = .0625;
-const float bigWavePeriodFactor = .3;
+const float bigWavePeriodFactor = .4;
 const float bigWaveTimeVaryingPeriodFactor = .8;
-const float smallWavePeriodFactor = .02;
+const float smallWavePeriodFactor = .03;
 const float smallWaveTimeVaryingPeriodFactor = .25;
-const float smallWaveAmpFactor = .003;
+const float smallWaveAmpFactor = .005;
+const float triWavePeriod = .02;
+const float triWaveAmp = .005;
 const float pulseWavePulseBasePeriod = 1.25;
 const float pulseWaveAmplitude = .2;
 
@@ -56,13 +61,14 @@ void main() {
   float t = u_time * speed;
   float y = sin(x * frequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
     * bigWaveAmpFactor;
+
   y += sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
     * smallWaveAmpFactor;
     
   // Triangle wave.
-  float p = smallWavePeriodFactor;
+  float p = triWavePeriod;
   float halfPeriod = p / 2.;
-  float ampTerm = 4. * (smallWaveAmpFactor / p) * 2. * cos(u_time * 80.);
+  float ampTerm = 4. * (triWaveAmp / p) * 2. * cos(u_time * 80.);
   float mirroredLineY = mod(x + halfPeriod, p);
   float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
   y += triWaveY;
@@ -86,6 +92,9 @@ void main() {
   float on = hill(bottomEdge - lineBlur, bottomEdge, topEdge, topEdge 
   + lineBlur, st.y);
 
+  vec4 nonWhite = vec4(max(cos(u_time * 100.), .7), max(sin(u_time * 10.), .7), max(cos(u_time * 1000.), .5), 1.);
+  // vec4 normalColor = mix(yellow, white, step(.5, sin(u_time * 100.)));
+  vec4 color = mix(green, nonWhite, smoothstep(.94, .95, sin(u_time)));
   outColor = color * on;
 }
 `;
