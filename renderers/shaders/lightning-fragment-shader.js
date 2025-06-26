@@ -5,6 +5,7 @@ precision mediump float;
 
 out vec4 outColor;
 
+const float centeringNudge = .5;
 const float lineThickness = .02;
 const float lineBlur = .0025;
 const vec4 purple = vec4(.48, .1, 1., 1.);
@@ -12,7 +13,7 @@ const vec4 green = vec4(.1, .9, .4, 1.);
 const vec4 blue = vec4(.16, .3, .9, 1.);
 const vec4 white = vec4(1., .99, 1., 1.);
 const vec4 yellow = vec4(.9, 92., .1, 1.);
-const float speed = 8.;
+const float speed = 7.;
 const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .4;
 const float bigWaveTimeVaryingPeriodFactor = .8;
@@ -60,8 +61,9 @@ void main() {
   float frequency = 4.;
 
   float t = u_time * speed;
-  float y = sin(x * frequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
+  float bigWaveY = sin(x * frequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
     * bigWaveAmpFactor;
+  float y = bigWaveY;
 
   y += sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
     * smallWaveAmpFactor;
@@ -86,15 +88,19 @@ void main() {
   y += pulseY;
   // y = pulseY;
 
-  y += .5;
+  y += centeringNudge;
 
   float bottomEdge = y - lineThickness;
   float topEdge = y + lineThickness;
   float on = hill(bottomEdge - lineBlur, bottomEdge, topEdge, topEdge 
   + lineBlur, st.y);
 
-  vec4 nonWhite = vec4(max(cos(u_time * 100.), .5), max(sin(u_time * 10.), .5), max(cos(u_time * 1000.), .5), 1.);
-  vec4 color = mix(green, nonWhite, smoothstep(.94, .95, sin(u_time * 4.)));
+  vec4 offWhite = vec4(max(cos(u_time * 100.), .8), max(sin(u_time * 100.), .8), max(cos(u_time * 100.), .8), 1.);
+  // vec4 color = mix(green, offWhite, smoothstep(.94, .95, sin(u_time * 4.)));
+  vec4 color = mix(yellow, mix(offWhite, white, sin(u_time)), hill(bottomEdge - lineBlur, bottomEdge + 8. * lineBlur, topEdge - 8. * lineBlur, topEdge + lineBlur, st.y));
+
+  float distFromBigWave = abs(bigWaveY + centeringNudge - st.y);
+  color = mix(white, color, smoothstep(.0025, .005, distFromBigWave));
   outColor = color * on;
 }
 `;
