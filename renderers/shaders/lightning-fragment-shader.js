@@ -75,7 +75,7 @@ void main() {
   float p = triWavePeriod;
   float halfPeriod = p / 2.;
   float spikeErraticness = 82.;
-  float ampTerm = 4. * (triWaveAmp / p) * 2. * cos(st.x * spikeErraticness);
+  float ampTerm = 4. * (triWaveAmp / p) * cos(st.x * spikeErraticness);
   float mirroredLineY = mod(x + halfPeriod, p);
   float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
   y += triWaveY;
