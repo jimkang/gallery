@@ -18,10 +18,11 @@ const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .4;
 const float bigWaveTimeVaryingPeriodFactor = .8;
 const float smallWavePeriodFactor = .03;
-const float smallWaveTimeVaryingPeriodFactor = .25;
-const float smallWaveAmpFactor = .005;
+const float smallWaveTimeVaryingPeriodFactor = .3;
+const float smallWaveAmpFactor = .002;
+const float smallWaveVaryingAmpFactor = .015;
 const float triWavePeriod = .02;
-const float triWaveAmp = .005;
+const float triWaveAmp = .0022;
 const float pulseWavePulseBasePeriod = 1.25;
 const float pulseWaveAmplitude = .2;
 
@@ -65,13 +66,16 @@ void main() {
     * bigWaveAmpFactor;
   float y = bigWaveY;
 
-  y += sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
-    * smallWaveAmpFactor;
+  float smallWaveY = sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
+    * (smallWaveAmpFactor + smallWaveVaryingAmpFactor * smoothstep(.96, .98, sin(u_time * 10000.)));
+
+  y += smallWaveY;
     
   // Triangle wave.
   float p = triWavePeriod;
   float halfPeriod = p / 2.;
-  float ampTerm = 4. * (triWaveAmp / p) * 2. * cos(u_time * 80.);
+  float spikeErraticness = 82.;
+  float ampTerm = 4. * (triWaveAmp / p) * 2. * cos(st.x * spikeErraticness);
   float mirroredLineY = mod(x + halfPeriod, p);
   float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
   y += triWaveY;
@@ -96,11 +100,14 @@ void main() {
   + lineBlur, st.y);
 
   vec4 offWhite = vec4(max(cos(u_time * 100.), .8), max(sin(u_time * 100.), .8), max(cos(u_time * 100.), .8), 1.);
-  // vec4 color = mix(green, offWhite, smoothstep(.94, .95, sin(u_time * 4.)));
-  vec4 color = mix(yellow, mix(offWhite, white, sin(u_time)), hill(bottomEdge - lineBlur, bottomEdge + 8. * lineBlur, topEdge - 8. * lineBlur, topEdge + lineBlur, st.y));
+  float fastCosTime = cos(u_time * 10.);
+  vec4 altColorA = mix(yellow, purple, fastCosTime);
+  vec4 altColorB = mix(blue, green, fastCosTime);
+  vec4 altColor = mix(altColorA, altColorB, sin(u_time * u_time));
+  vec4 color = mix(altColor, white, hill(bottomEdge - lineBlur, bottomEdge + 8. * lineBlur, topEdge - 8. * lineBlur, topEdge + lineBlur, st.y));
 
   float distFromBigWave = abs(bigWaveY + centeringNudge - st.y);
-  color = mix(white, color, smoothstep(.0025, .005, distFromBigWave));
+  color = mix(white, color, smoothstep(.0, .015, distFromBigWave));
   outColor = color * on;
 }
 `;
