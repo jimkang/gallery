@@ -16,7 +16,7 @@ const vec4 yellow = vec4(.96, 1., .1, 1.);
 const float speed = 7.;
 const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .4;
-const float bigWaveTimeVaryingPeriodFactor = .8;
+const float bigWaveTimeVaryingPeriodBase = .8;
 const float smallWavePeriodFactor = .03;
 const float smallWaveTimeVaryingPeriodFactor = .3;
 const float smallWaveAmpFactor = .002;
@@ -62,6 +62,7 @@ void main() {
   float frequency = 4.;
 
   float t = u_time * speed;
+  float bigWaveTimeVaryingPeriodFactor = bigWaveTimeVaryingPeriodBase - sin(u_time/200.) * (bigWaveTimeVaryingPeriodBase - .0001);
   float bigWaveY = sin(x * frequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
     * bigWaveAmpFactor;
   float y = bigWaveY;
