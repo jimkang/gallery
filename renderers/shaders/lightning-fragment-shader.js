@@ -7,10 +7,11 @@ out vec4 outColor;
 
 const float lineThickness = .02;
 const float lineBlur = .0025;
+const vec4 purple = vec4(.48, .1, 1., 1.);
 const vec4 green = vec4(.1, .9, .4, 1.);
-const vec4 blue = vec4(.3, .2, 1., 1.);
+const vec4 blue = vec4(.16, .3, .9, 1.);
 const vec4 white = vec4(1., .99, 1., 1.);
-const vec4 yellow = vec4(.95, 1., .3, 1.);
+const vec4 yellow = vec4(.9, 92., .1, 1.);
 const float speed = 8.;
 const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .4;
@@ -92,9 +93,8 @@ void main() {
   float on = hill(bottomEdge - lineBlur, bottomEdge, topEdge, topEdge 
   + lineBlur, st.y);
 
-  vec4 nonWhite = vec4(max(cos(u_time * 100.), .7), max(sin(u_time * 10.), .7), max(cos(u_time * 1000.), .5), 1.);
-  // vec4 normalColor = mix(yellow, white, step(.5, sin(u_time * 100.)));
-  vec4 color = mix(green, nonWhite, smoothstep(.94, .95, sin(u_time)));
+  vec4 nonWhite = vec4(max(cos(u_time * 100.), .5), max(sin(u_time * 10.), .5), max(cos(u_time * 1000.), .5), 1.);
+  vec4 color = mix(green, nonWhite, smoothstep(.94, .95, sin(u_time * 4.)));
   outColor = color * on;
 }
 `;
