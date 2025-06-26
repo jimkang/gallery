@@ -102,7 +102,7 @@ void main() {
   vec4 offWhite = vec4(max(cos(u_time * 100.), .8), max(sin(u_time * 100.), .8), max(cos(u_time * 100.), .8), 1.);
   float fastCosTime = cos(u_time * 10.);
   vec4 altColorA = mix(yellow, purple, fastCosTime);
-  vec4 altColorB = mix(blue, green, fastCosTime);
+  vec4 altColorB = mix(blue, green, cos(u_time * 19.));
   vec4 altColor = mix(altColorA, altColorB, sin(u_time * u_time));
   vec4 color = mix(altColor, white, hill(bottomEdge - lineBlur, bottomEdge + 8. * lineBlur, topEdge - 8. * lineBlur, topEdge + lineBlur, st.y));
 
