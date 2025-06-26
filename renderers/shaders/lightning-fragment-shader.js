@@ -60,10 +60,16 @@ void main() {
     * smallWaveAmpFactor;
     
   // Triangle wave.
+  float halfPeriod = smallWavePeriodFactor / 2.;
+  float ampTerm = 4. * smallWaveAmpFactor / smallWavePeriodFactor;
+  float mirroredLineY = mod(x + halfPeriod, smallWavePeriodFactor);
+  float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
+  y += triWaveY;
+
   // y += smallWaveAmpFactor / smallWaveAmpFactor / 2. * (smallWavePeriodFactor/2. - abs(mod(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor, 2. * smallWavePeriodFactor)) - 2. * smallWavePeriodFactor);
 
-  sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
-    * smallWaveAmpFactor;
+  // sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
+    // * smallWaveAmpFactor;
 
   float pulseWavePulsePeriod = pulseWavePulseBasePeriod * (1. + mod(u_time, 1.));
   float pulseY = sin(x * frequency + t) * pulseWaveAmplitude
