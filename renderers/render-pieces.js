@@ -24,6 +24,15 @@ export default function renderPieces({
   newPieceSel.each(showPiece);
   var newPieceInfoSel = newPieceSel.append('div').classed('piece-info', true);
   newPieceInfoSel.append('span').classed('caption', true);
+  newPieceInfoSel
+    .append('input')
+    .attr('type', 'checkbox')
+    .attr('id', (def) => def.id + '-toggle')
+    .classed('execute-toggle', true);
+  newPieceInfoSel
+    .append('label')
+    .attr('for', (def) => def.id + '-toggle')
+    .text('on');
   newPieceInfoSel.append('a').classed('expand-collapse-link', true);
 
   var extantPieceSel = newPieceSel.merge(pieceSel);
@@ -35,9 +44,17 @@ export default function renderPieces({
     .select('.expand-collapse-link')
     .html(getExpandCollapseIcon)
     .on('click', onExpandCollapseClick);
+  extantPieceSel
+    .select('.execute-toggle')
+    .each(setExecuteToggle)
+    .on('change', updatePieceOn);
 
   function showPiece(piece) {
     let container = this;
+    showPieceInContainer({ container, piece });
+  }
+
+  function showPieceInContainer({ container, piece }) {
     let canvas = select(container).select('canvas').node();
 
     sizeCanvasToContainer({ container, canvas });
@@ -46,7 +63,10 @@ export default function renderPieces({
 
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
-    setTimeout(() => piece.renderer.render({ canvas, seed }), 100);
+    setTimeout(
+      () => piece.renderer.render({ canvas, seed, on: piece.on }),
+      100
+    );
   }
 
   function updateViewport(piece) {
@@ -65,6 +85,15 @@ export default function renderPieces({
       return svgCollapseIconMarkup;
     }
     return svgExpandIconMarkup;
+  }
+
+  function updatePieceOn(_e, def) {
+    def.on = this.checked;
+    showPieceInContainer({
+      container: this?.parentElement?.parentElement,
+      piece: def,
+    });
+    updateViewport(def);
   }
 }
 
@@ -96,4 +125,8 @@ function sizeCanvasToContainer({ container, canvas }) {
 function resizeCanvas({ canvas, width, height }) {
   canvas.setAttribute('width', width);
   canvas.setAttribute('height', height);
+}
+
+function setExecuteToggle(def) {
+  this.checked = def.on;
 }

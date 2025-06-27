@@ -28,7 +28,15 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
     });
   }
 
-  function render({ canvas }) {
+  function render({ canvas, on }) {
+    if (!on) {
+      if (updateKey) {
+        window.cancelAnimationFrame(updateKey);
+      }
+
+      return;
+    }
+
     if (gl && program) {
       gl.deleteProgram(program);
     }
@@ -38,9 +46,6 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
       fragmentShaderSrc,
     }));
     ({ setUniform } = UniformCache());
-    if (updateKey) {
-      window.cancelAnimationFrame(updateKey);
-    }
     updateKey = window.requestAnimationFrame(renderWithUpdatedTime);
 
     if (setCustomUniforms) {

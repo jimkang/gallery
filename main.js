@@ -20,6 +20,7 @@ var movingMondrianPieceDef = {
   name: 'Moving Mondrian',
   wip: true,
   renderer: undefined,
+  on: true,
 };
 
 var pieceDefs = [
@@ -30,6 +31,7 @@ var pieceDefs = [
       fragmentShaderSrc: glowPlanetsFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
+    on: true,
     wip: true,
   },
   {
@@ -39,6 +41,7 @@ var pieceDefs = [
       fragmentShaderSrc: randomCellsFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
+    on: true,
     wip: true,
   },
   {
@@ -48,6 +51,7 @@ var pieceDefs = [
       fragmentShaderSrc: moteGhostsFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
+    on: true,
     wip: false,
   },
   movingMondrianPieceDef,
@@ -58,6 +62,7 @@ var pieceDefs = [
       fragmentShaderSrc: waterNoiseFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
+    on: true,
     wip: true,
   },
   {
@@ -67,6 +72,7 @@ var pieceDefs = [
       fragmentShaderSrc: electricalPartyFragmentShaderSrc,
       setCustomUniforms: undefined,
     }),
+    on: false,
     wip: false,
   },
 ];
