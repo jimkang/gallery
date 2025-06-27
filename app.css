@@ -69,6 +69,11 @@ a:visited {
 .piece-info {
   justify-content: space-between;
   display: flex;
+  min-height: 3em;
+}
+
+.piece-info input[type=checkbox],label {
+  cursor: pointer;
 }
 
 #piece-grid canvas {
@@ -79,9 +84,24 @@ a:visited {
   flex: auto;
 }
 
+.name {
+  font-weight: bold;
+}
+
+.note {
+  font-size: smaller;
+  margin-top: 2px;
+}
+
+.execute-toggle-container {
+  flex: auto;
+  align-self: flex-end;
+}
+
 .expand-collapse-link {
   height: 32px;
   justify-content: flex-end;
+  align-self: flex-end;
   display: flex;
   cursor: pointer;
   margin-bottom: 3px;

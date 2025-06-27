@@ -23,23 +23,28 @@ export default function renderPieces({
   newPieceSel.append('canvas').attr('width', 320, 'height', 320);
   newPieceSel.each(showPiece);
   var newPieceInfoSel = newPieceSel.append('div').classed('piece-info', true);
-  newPieceInfoSel.append('span').classed('caption', true);
-  newPieceInfoSel
+
+  var captionSel = newPieceInfoSel.append('div').classed('caption', true);
+  captionSel
+    .append('label')
+    .attr('for', (def) => def.id + '-toggle')
+    .classed('name', true);
+  captionSel
     .append('input')
     .attr('type', 'checkbox')
     .attr('id', (def) => def.id + '-toggle')
     .classed('execute-toggle', true);
-  newPieceInfoSel
-    .append('label')
-    .attr('for', (def) => def.id + '-toggle')
-    .text('on');
+
+  captionSel.append('div').classed('note', true);
+
   newPieceInfoSel.append('a').classed('expand-collapse-link', true);
 
   var extantPieceSel = newPieceSel.merge(pieceSel);
   extantPieceSel.attr('id', (def) => def.id + '-piece');
   extantPieceSel.each(updateViewport);
   extantPieceSel.select('canvas').attr('id', (def) => def.id + '-canvas');
-  extantPieceSel.select('.caption').text(accessor('name'));
+  extantPieceSel.select('.name').text(accessor('name'));
+  extantPieceSel.select('.note').text(accessor('note'));
   extantPieceSel
     .select('.expand-collapse-link')
     .html(getExpandCollapseIcon)
@@ -56,6 +61,11 @@ export default function renderPieces({
 
   function showPieceInContainer({ container, piece }) {
     let canvas = select(container).select('canvas').node();
+    if (!canvas) {
+      throw new Error(
+        'Could not find canvas onto which to render piece: ' + piece.name
+      );
+    }
 
     sizeCanvasToContainer({ container, canvas });
     var resizeObserver = new ResizeObserver(onResizePieceContainer);
@@ -90,7 +100,7 @@ export default function renderPieces({
   function updatePieceOn(_e, def) {
     def.on = this.checked;
     showPieceInContainer({
-      container: this?.parentElement?.parentElement,
+      container: this?.parentElement?.parentElement?.parentElement,
       piece: def,
     });
     updateViewport(def);

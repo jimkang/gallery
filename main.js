@@ -68,6 +68,7 @@ var pieceDefs = [
   {
     id: 'electrical-party',
     name: 'Electrical Party',
+    note: 'Warning: flashing lights',
     renderer: RenderShader({
       fragmentShaderSrc: electricalPartyFragmentShaderSrc,
       setCustomUniforms: undefined,
