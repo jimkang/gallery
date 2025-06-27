@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
 import accessor from 'accessor';
 
-const captionSpace = 40;
+const captionSpace = 60;
 
 var pieceGridSel = select('#piece-grid');
 
