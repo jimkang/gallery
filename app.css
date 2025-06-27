@@ -60,7 +60,7 @@ a:visited {
   list-style-type: none;
   padding: 0;
   margin: 0;
-  border: solid 1px #888;
+  border: solid 1px #444;
 }
 
 #piece-grid > * {
@@ -78,7 +78,6 @@ a:visited {
 }
 
 #piece-grid canvas {
-  width: 100%;
 }
 
 .caption {

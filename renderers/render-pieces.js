@@ -1,6 +1,8 @@
 import { select } from 'd3-selection';
 import accessor from 'accessor';
 
+const captionSpace = 40;
+
 var pieceGridSel = select('#piece-grid');
 
 var svgExpandIconMarkup =
@@ -124,7 +126,9 @@ function sizeCanvasToContainer({ container, canvas }) {
   }
 
   var rect = container.getBoundingClientRect();
-  const squareSideLength = '' + Math.round(Math.min(rect.width, rect.height));
+  const squareSideLength =
+    '' +
+    Math.round(Math.min(rect.width - captionSpace, rect.height - captionSpace));
   resizeCanvas({
     canvas,
     width: squareSideLength,
