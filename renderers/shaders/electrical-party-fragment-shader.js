@@ -14,6 +14,7 @@ const vec4 blue = vec4(.16, .3, .9, 1.);
 const vec4 white = vec4(1., .99, 1., 1.);
 const vec4 yellow = vec4(.96, 1., .1, 1.);
 const float speed = 7.;
+const float baseFrequency = 2.;
 const float bigWaveAmpFactor = .0625;
 const float bigWavePeriodFactor = .4;
 const float bigWaveTimeVaryingPeriodBase = .8;
@@ -57,17 +58,15 @@ void main() {
   st = rotate2D(st, PI/2.);
 
   float x = st.x * 2.;
-
-  float amplitude = .02;
-  float frequency = 4.;
-
   float t = u_time * speed;
+  float bigWaveFrequency = baseFrequency * (1. + pow(cos(u_time/10.), 2.));
+
   float bigWaveTimeVaryingPeriodFactor = bigWaveTimeVaryingPeriodBase - sin(u_time/200.) * (bigWaveTimeVaryingPeriodBase - .0001);
-  float bigWaveY = sin(x * frequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
+  float bigWaveY = sin(x * bigWaveFrequency / bigWavePeriodFactor + t / bigWaveTimeVaryingPeriodFactor)
     * bigWaveAmpFactor;
   float y = bigWaveY;
 
-  float smallWaveY = sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
+  float smallWaveY = sin(x * baseFrequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
     * (smallWaveAmpFactor + smallWaveVaryingAmpFactor * smoothstep(.96, .98, sin(u_time * 10000.)));
 
   y += smallWaveY;
@@ -82,7 +81,7 @@ void main() {
   y += triWaveY;
 
   float pulseWavePulsePeriod = pulseWavePulseBasePeriod * (1. + mod(u_time, 1.));
-  float pulseY = sin(x * frequency + t) * pulseWaveAmplitude
+  float pulseY = sin(x * baseFrequency + t) * pulseWaveAmplitude
   * sin(u_time/pulseWavePulsePeriod) * hill(.1, .4, .6, .9, mod(u_time, pulseWavePulsePeriod));
   
   y += pulseY;
