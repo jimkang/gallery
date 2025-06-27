@@ -40,7 +40,7 @@ uniform float u_time;
 float hill(float foot1, float peak1, float peak2, float foot2, float x) {
   return smoothstep(foot1, peak1, x) *
     // This smoothstep returns "on" for stuff higher than foot2. But
-    // we want the opposite, "off" for stuff higher than foot2. So, we applt
+    // we want the opposite, "off" for stuff higher than foot2. So, we apply
     // the 1. - result modification.
     (1. - smoothstep(peak2, foot2, x));
 }
