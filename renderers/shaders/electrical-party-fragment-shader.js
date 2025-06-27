@@ -81,17 +81,11 @@ void main() {
   float triWaveY = ampTerm * abs(mirroredLineY - halfPeriod);
   y += triWaveY;
 
-  // y += smallWaveAmpFactor / smallWaveAmpFactor / 2. * (smallWavePeriodFactor/2. - abs(mod(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor, 2. * smallWavePeriodFactor)) - 2. * smallWavePeriodFactor);
-
-  // sin(x * frequency / smallWavePeriodFactor + t / smallWaveTimeVaryingPeriodFactor)
-    // * smallWaveAmpFactor;
-
   float pulseWavePulsePeriod = pulseWavePulseBasePeriod * (1. + mod(u_time, 1.));
   float pulseY = sin(x * frequency + t) * pulseWaveAmplitude
   * sin(u_time/pulseWavePulsePeriod) * hill(.1, .4, .6, .9, mod(u_time, pulseWavePulsePeriod));
   
   y += pulseY;
-  // y = pulseY;
 
   y += centeringNudge;
 
