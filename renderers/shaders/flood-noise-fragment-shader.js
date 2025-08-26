@@ -10,8 +10,9 @@ uniform vec2 u_mouse;
 uniform float u_time;
 
 void main() {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-    outColor = vec4(vec3(.5), 1.0);
+  float on = smoothstep(abs(st.y - sin(st.x * 10.)), 0., .1);
+  outColor = vec4(vec3(on), 1.0);
 }
 `;
