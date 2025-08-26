@@ -1,0 +1,17 @@
+export default `#version 300 es
+precision mediump float;
+
+#define PI 3.1415927
+
+out vec4 outColor;
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    outColor = vec4(vec3(.5), 1.0);
+}
+`;

@@ -6,6 +6,7 @@ import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragm
 import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
 import waterNoiseFragmentShaderSrc from './renderers/shaders/water-noise-fragment-shader';
 import electricalPartyFragmentShaderSrc from './renderers/shaders/electrical-party-fragment-shader';
+import floodNoiseFragmentShaderSrc from './renderers/shaders/flood-noise-fragment-shader';
 import { RenderShader } from './renderers/render-shader';
 import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
 import renderPieces from './renderers/render-pieces';
@@ -75,6 +76,16 @@ var pieceDefs = [
     }),
     on: false,
     wip: false,
+  },
+  {
+    id: 'flood-noise',
+    name: 'Flood noise',
+    renderer: RenderShader({
+      fragmentShaderSrc: floodNoiseFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: true,
   },
 ];
 
