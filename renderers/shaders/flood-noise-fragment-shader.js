@@ -21,7 +21,7 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   float fSquared = f * f;
   // Remap p to be inside of a period.
   p = vec2(
-    mod(p.x, period) - halfPeriod,
+    mod(p.x, period),
     p.y * sign(period - mod(p.x + halfPeriod, 2.0 * period))
   ); 
 
