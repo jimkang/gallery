@@ -15,12 +15,12 @@ uniform float u_time;
 // a: amplitude
 float signedDistanceSine(in vec2 p, in float f, in float a) {
   f *= PI * a;
-  // p /= a; // Modify to handle varying amplitude
+  p /= a; // Modify to handle varying amplitude
   float period = PI / f;
   float halfPeriod = 0.5 * period;
   float fSquared = f * f;
   // Remap p to be inside of a period.
-  p = vec2(mod(p.x + halfPeriod, period) - halfPeriod, p.y * sign(period - mod(p.x + halfPeriod, 2.0 * period))); 
+  // p = vec2(mod(p.x + halfPeriod, period) - halfPeriod, p.y * sign(period - mod(p.x + halfPeriod, 2.0 * period))); 
 
   // Get closest on linear approximation
   float closestXGuess = clamp((0.818309886184 * f * p.y + p.x) / (0.669631069826 * fSquared + 1.0), -halfPeriod, halfPeriod);
@@ -38,7 +38,7 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
-  float on = signedDistanceSine(vec2(st.x, st.y - .5), 2., .5);
+  float on = 1. - signedDistanceSine(vec2(st.x, st.y - .5), 4., .125);
   outColor = vec4(vec3(on), 1.0);
 }
 `;
