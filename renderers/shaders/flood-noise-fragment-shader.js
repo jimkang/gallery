@@ -17,11 +17,12 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   f *= PI * a;
   p /= a; // Modify to handle varying amplitude
   float period = PI / f;
-  float halfPeriod = 0.5 * period;
+  // Use .51 to cover up discontinuities.
+  float halfPeriod = .51 * period;
   float fSquared = f * f;
   // Remap p to be inside of a period.
   p = vec2(
-    mod(p.x, period),
+    mod(p.x + halfPeriod, period) - halfPeriod,
     p.y * sign(period - mod(p.x + halfPeriod, 2.0 * period))
   ); 
 
@@ -29,7 +30,7 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   float closestXGuess = clamp((0.818309886184 * f * p.y + p.x) / (0.669631069826 * fSquared + 1.0), -halfPeriod, halfPeriod);
 
   // Iterations of Newton-Raphson
-  for (int n=0; n < 5; n++) {
+  for (int n=0; n < 1; n++) {
     float k = closestXGuess * f, c = cos(k), s = sin(k);
     closestXGuess -= ((s - p.y) * c * f + closestXGuess - p.x) / ((c * c - s * s + s * p.y) * fSquared + 1.0);
   }
@@ -41,7 +42,11 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
-  float on = signedDistanceSine(vec2(st.x, st.y - .5), 4., .125);
+  float on = signedDistanceSine(vec2(st.x, st.y - .5), u_time/10., .125);
+  on = max(
+    on,
+    signedDistanceSine(vec2(st.x, st.y - .25), u_time/7., .1)
+  );
   outColor = vec4(vec3(on), 1.0);
 }
 `;
