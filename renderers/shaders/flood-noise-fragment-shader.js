@@ -38,17 +38,24 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   return length(p - vec2(closestXGuess, sin(closestXGuess * f))) * a;
 }
 
+float wave(vec2 st, float amp, float baseFreq, float yOffset, float invMaxWaveSpan, float waveFadeFactor) {
+  return pow(1. - invMaxWaveSpan * signedDistanceSine(vec2(st.x, st.y + yOffset), baseFreq, amp), waveFadeFactor);
+}
+
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   float baseFreq = sin(u_time);
-  baseFreq = 3.;
+  baseFreq = PI;
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
-  float on = pow(1. - 5. * signedDistanceSine(vec2(st.x, st.y - .75), baseFreq, .125), 5.);
-  // on = max(
-  //   on,
-  //   step(signedDistanceSine(vec2(st.x, st.y), baseFreq * 1.3, .1), .9)
-  // );
+  float invMaxWaveSpan = 3.;
+  float waveFadeFactor = 5.;
+  
+  float on = wave(st, .125, baseFreq, -.75, invMaxWaveSpan, waveFadeFactor);
+  on = max(
+    on,
+   wave(vec2(st.x + 1.75 * PI, st.y), .1, baseFreq, -.6, invMaxWaveSpan, waveFadeFactor)
+  );
   outColor = vec4(vec3(on), 1.0);
 }
 `;
