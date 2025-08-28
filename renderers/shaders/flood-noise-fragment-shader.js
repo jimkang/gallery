@@ -30,7 +30,7 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   float closestXGuess = clamp((0.818309886184 * f * p.y + p.x) / (0.669631069826 * fSquared + 1.0), -halfPeriod, halfPeriod);
 
   // Iterations of Newton-Raphson
-  for (int n=0; n < 1; n++) {
+  for (int n=0; n < 2; n++) {
     float k = closestXGuess * f, c = cos(k), s = sin(k);
     closestXGuess -= ((s - p.y) * c * f + closestXGuess - p.x) / ((c * c - s * s + s * p.y) * fSquared + 1.0);
   }
@@ -45,16 +45,16 @@ float wave(vec2 st, float amp, float baseFreq, float yOffset, float invMaxWaveSp
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float baseFreq = sin(u_time);
-  baseFreq = PI;
+  float baseFreq = PI;
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 5.;
+  float basePhaseShift = u_time * PI * .125;
   
-  float on = wave(st, .125, baseFreq, -.75, invMaxWaveSpan, waveFadeFactor);
+  float on = wave(vec2(st.x + basePhaseShift, st.y), .125, baseFreq, -.75, invMaxWaveSpan, waveFadeFactor);
   on = max(
     on,
-   wave(vec2(st.x + 1.75 * PI, st.y), .1, baseFreq, -.6, invMaxWaveSpan, waveFadeFactor)
+   wave(vec2(st.x + 1.75 * basePhaseShift, st.y), .1, baseFreq, -.6, invMaxWaveSpan, waveFadeFactor)
   );
   outColor = vec4(vec3(on), 1.0);
 }
