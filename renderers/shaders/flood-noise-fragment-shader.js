@@ -17,7 +17,7 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
   f *= PI * a;
   p /= a; // Modify to handle varying amplitude
   float period = PI / f;
-  // Use .51 to cover up discontinuities.
+  // Use .51 to cover up discontinuities somewhat.
   float halfPeriod = .51 * period;
   float fSquared = f * f;
   // Remap p to be inside of a period.
@@ -41,12 +41,14 @@ float signedDistanceSine(in vec2 p, in float f, in float a) {
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
+  float baseFreq = sin(u_time);
+  baseFreq = 3.;
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
-  float on = signedDistanceSine(vec2(st.x, st.y - .5), u_time/10., .125);
-  on = max(
-    on,
-    signedDistanceSine(vec2(st.x, st.y - .25), u_time/7., .1)
-  );
+  float on = pow(1. - 5. * signedDistanceSine(vec2(st.x, st.y - .75), baseFreq, .125), 5.);
+  // on = max(
+  //   on,
+  //   step(signedDistanceSine(vec2(st.x, st.y), baseFreq * 1.3, .1), .9)
+  // );
   outColor = vec4(vec3(on), 1.0);
 }
 `;
