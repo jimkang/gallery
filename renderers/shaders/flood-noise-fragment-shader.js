@@ -49,12 +49,21 @@ void main() {
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 5.;
-  float basePhaseShift = u_time * PI * .125;
+  float basePhaseShift = 0.;//u_time * PI * .125;
+  float baseYShift = mod(u_time/5., 1.25) - .5;
+  // We can't put in an amp of 0.
+  float baseAmp = max(sin(u_time), .01);
   
-  float on = wave(vec2(st.x + basePhaseShift, st.y), .125, baseFreq, -.75, invMaxWaveSpan, waveFadeFactor);
+  float on = wave(
+    vec2(st.x + basePhaseShift, st.y),
+    .125 * baseAmp, baseFreq, baseYShift - .75, invMaxWaveSpan, waveFadeFactor
+  );
   on = max(
     on,
-   wave(vec2(st.x + 1.75 * basePhaseShift, st.y), .1, baseFreq, -.6, invMaxWaveSpan, waveFadeFactor)
+    wave(
+      vec2(st.x + 1.75 * PI + basePhaseShift, st.y),
+      .1 * baseAmp, baseFreq, baseYShift - .6, invMaxWaveSpan, waveFadeFactor
+    )
   );
   outColor = vec4(vec3(on), 1.0);
 }
