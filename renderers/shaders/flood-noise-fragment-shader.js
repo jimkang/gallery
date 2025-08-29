@@ -2,6 +2,7 @@ export default `#version 300 es
 precision mediump float;
 
 #define PI 3.14159265359
+#define WAVE_COUNT 5
 
 out vec4 outColor;
 
@@ -50,21 +51,26 @@ void main() {
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 5.;
   float basePhaseShift = 0.;//u_time * PI * .125;
-  float baseYShift = mod(u_time/5., 1.25) - .5;
+  float baseYShift = mod(u_time/5., 2.25) - 2.;
   // We can't put in an amp of 0.
   float baseAmp = max(sin(u_time), .01);
   
-  float on = wave(
-    vec2(st.x + basePhaseShift, st.y),
-    .125 * baseAmp, baseFreq, baseYShift - .75, invMaxWaveSpan, waveFadeFactor
-  );
-  on = max(
-    on,
-    wave(
-      vec2(st.x + 1.75 * PI + basePhaseShift, st.y),
-      .1 * baseAmp, baseFreq, baseYShift - .6, invMaxWaveSpan, waveFadeFactor
-    )
-  );
+  float on = 0.;
+
+  for (int waveIndex = 0; waveIndex < WAVE_COUNT; ++waveIndex) {
+    float phaseShift = float(waveIndex) * PI * .5;
+    float yShift = baseYShift + float(waveIndex) * .15;
+    float amp = .1 + sin(float(waveIndex) * PI) * .025;
+
+    on = max(
+      on,
+      wave(
+        vec2(st.x + phaseShift + basePhaseShift, st.y),
+        amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
+      )
+    );
+  }
+
   outColor = vec4(vec3(on), 1.0);
 }
 `;
