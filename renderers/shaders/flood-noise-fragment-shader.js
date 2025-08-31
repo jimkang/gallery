@@ -56,7 +56,7 @@ float wave(vec2 st, float amp, float baseFreq, float yOffset,
   float invMaxWaveSpan, float waveFadeFactor) {
 
   return pow(
-    1. - invMaxWaveSpan * signedDistanceCos(vec2(st.x, st.y + yOffset), 0., amp, baseFreq, 0.),
+    1. - invMaxWaveSpan * signedDistanceCos(st, yOffset, amp, baseFreq, 0.),
     waveFadeFactor
   );
 }
