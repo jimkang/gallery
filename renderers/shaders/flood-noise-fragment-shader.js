@@ -2,7 +2,8 @@ export default `#version 300 es
 precision mediump float;
 
 #define PI 3.14159265359
-#define WAVE_COUNT 5
+#define WAVE_COUNT 2
+#define WAVE_YSPAN 1.25
 
 out vec4 outColor;
 
@@ -67,21 +68,25 @@ void main() {
   float baseFreq = PI;
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
-  float waveFadeFactor = 5.;
-  // waveFadeFactor = 1.;
+  float waveFadeFactor = 3.;
   float basePhaseShift = 0.;//u_time * PI * .125;
-  float baseYShift = mod(u_time/5., 2.25) - 2.;
-  // baseYShift = -.6;
-  // We can't put in an amp of 0.
-  float baseAmp = max(sin(u_time), .01);
+  float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
+  float baseYShift = mod(u_time/5., WAVE_YSPAN);
+  float baseAmp = sin(u_time);
   
   float on = 0.;
 
   for (int waveIndex = 0; waveIndex < WAVE_COUNT; ++waveIndex) {
-    float phaseShift = float(waveIndex) * PI * .5;
-    float yShift = baseYShift + float(waveIndex) * .15;
-    float amp = .1 + sin(float(waveIndex) * PI) * .025;
-    amp = .1 * sin(u_time);
+    float fWaveindex = float(waveIndex);
+    float phaseShift = fWaveindex * PI * .5;
+    float yShift = baseYShift + fWaveindex * 1./float(WAVE_COUNT);
+    if (yShift > WAVE_YSPAN) {
+      yShift = mod(yShift, WAVE_YSPAN);
+    }
+    yShift -= offscreenHeight;
+
+    float amp = .1 + sin(fWaveindex * PI) * .025;
+    amp = .2 * sin(u_time);
 
     on = max(
       on,
