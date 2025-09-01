@@ -2,8 +2,10 @@ export default `#version 300 es
 precision mediump float;
 
 #define PI 3.14159265359
-#define WAVE_COUNT 2
-#define WAVE_YSPAN 1.25
+#define WAVE_COUNT 10
+#define WAVE_YSPAN 1.4
+// Extra waves to avoid a gap in the scroll-around space
+#define SCROLL_FILLERS 2
 
 out vec4 outColor;
 
@@ -76,7 +78,7 @@ void main() {
   
   float on = 0.;
 
-  for (int waveIndex = 0; waveIndex < WAVE_COUNT; ++waveIndex) {
+  for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < WAVE_COUNT + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveindex = float(waveIndex);
     float phaseShift = fWaveindex * PI * .5;
     float yShift = baseYShift + fWaveindex * 1./float(WAVE_COUNT);
