@@ -80,8 +80,9 @@ void main() {
 
   for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < WAVE_COUNT + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveindex = float(waveIndex);
-    float shiftSign = 1. + mod(abs(fWaveindex), 2.) * -2.;
-    float phaseShift = basePhaseShift * shiftSign;
+    // -1 or 3.
+    float shiftMult = -1. + mod(abs(fWaveindex), 2.) * 4.;
+    float phaseShift = basePhaseShift * shiftMult;
     float yShift = baseYShift + fWaveindex * 1./float(WAVE_COUNT);
     if (yShift > WAVE_YSPAN) {
       yShift = mod(yShift, WAVE_YSPAN);
