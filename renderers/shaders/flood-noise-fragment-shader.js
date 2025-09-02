@@ -71,7 +71,7 @@ void main() {
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 3.;
-  float basePhaseShift = 0.;//u_time * PI * .125;
+  float basePhaseShift = u_time * PI * .125;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
   float baseAmp = sin(u_time);
@@ -80,7 +80,8 @@ void main() {
 
   for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < WAVE_COUNT + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveindex = float(waveIndex);
-    float phaseShift = fWaveindex * PI * .5;
+    float shiftSign = 1. + mod(abs(fWaveindex), 2.) * -2.;
+    float phaseShift = basePhaseShift * shiftSign;
     float yShift = baseYShift + fWaveindex * 1./float(WAVE_COUNT);
     if (yShift > WAVE_YSPAN) {
       yShift = mod(yShift, WAVE_YSPAN);
@@ -93,7 +94,7 @@ void main() {
     on = max(
       on,
       wave(
-        vec2(st.x + phaseShift + basePhaseShift, st.y),
+        vec2(st.x + phaseShift, st.y),
         amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
       )
     );
