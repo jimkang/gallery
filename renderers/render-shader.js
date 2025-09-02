@@ -64,6 +64,11 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
       name: 'u_time',
       value: timeStamp / 1000,
     });
+
+    if (setCustomUniforms) {
+      setCustomUniforms({ gl, program, setUniform });
+    }
+
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     updateKey = requestAnimationFrame(renderWithUpdatedTime);
   }
