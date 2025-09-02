@@ -32,8 +32,8 @@ export default function RenderMovingMondrianShader({
     ({ rollDie, shuffle } = Probable({ random }));
   }
 
-  function render({ canvas }) {
-    shaderRenderer.render({ canvas });
+  function render({ canvas, on }) {
+    shaderRenderer.render({ canvas, on });
   }
 
   function setCustomUniforms({ gl, program, setUniform }) {
