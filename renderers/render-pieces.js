@@ -14,6 +14,7 @@ export default function renderPieces({
   focusPiece,
   seed,
   hideExpandCollapse = false,
+  customParams,
 }) {
   var pieceSel = pieceGridSel.selectAll('li').data(pieceDefs, accessor('id'));
 
@@ -74,7 +75,7 @@ export default function renderPieces({
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
     setTimeout(
-      () => piece.renderer.render({ canvas, seed, on: piece.on }),
+      () => piece.renderer.render({ canvas, seed, on: piece.on, customParams }),
       100
     );
   }

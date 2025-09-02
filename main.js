@@ -6,9 +6,9 @@ import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragm
 import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
 import waterNoiseFragmentShaderSrc from './renderers/shaders/water-noise-fragment-shader';
 import electricalPartyFragmentShaderSrc from './renderers/shaders/electrical-party-fragment-shader';
-import floodNoiseFragmentShaderSrc from './renderers/shaders/flood-noise-fragment-shader';
 import { RenderShader } from './renderers/render-shader';
 import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
+import RenderFloodNoiseShader from './renderers/render-flood-noise';
 import renderPieces from './renderers/render-pieces';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
@@ -19,6 +19,13 @@ var urlStore;
 var movingMondrianPieceDef = {
   id: 'moving-mondrian',
   name: 'Moving Mondrian',
+  wip: true,
+  renderer: undefined,
+  on: true,
+};
+var floodNoisePieceDef = {
+  id: 'flood-noise',
+  name: 'Flood noise',
   wip: true,
   renderer: undefined,
   on: true,
@@ -77,16 +84,7 @@ var pieceDefs = [
     on: false,
     wip: false,
   },
-  {
-    id: 'flood-noise',
-    name: 'Flood noise',
-    renderer: RenderShader({
-      fragmentShaderSrc: floodNoiseFragmentShaderSrc,
-      setCustomUniforms: undefined,
-    }),
-    on: true,
-    wip: true,
-  },
+  floodNoisePieceDef,
 ];
 
 (async function go() {
@@ -99,13 +97,15 @@ var pieceDefs = [
     defaults: {
       seed: randomId(8),
       showWIP: false,
+      density: 0.5,
     },
     boolKeys: ['showWIP'],
+    numberKeys: ['density'],
   });
   urlStore.update();
 })();
 
-function onUpdate({ seed, focusPiece, showWIP }) {
+function onUpdate({ seed, focusPiece, showWIP, density }) {
   if (!seed) {
     urlStore.update({ seed: randomId(8) });
     return;
@@ -118,6 +118,14 @@ function onUpdate({ seed, focusPiece, showWIP }) {
       seed,
     });
   }
+  if (!floodNoisePieceDef.renderer) {
+    floodNoisePieceDef.renderer = RenderFloodNoiseShader({
+      density,
+      onDensityChange,
+    });
+  } else {
+    floodNoisePieceDef.renderer.setDensity({ density });
+  }
 
   var showablePieceDefs = pieceDefs.filter((def) => showWIP || !def.wip);
   renderPieces({
@@ -129,6 +137,10 @@ function onUpdate({ seed, focusPiece, showWIP }) {
     focusPiece,
     hideExpandCollapse: showablePieceDefs.length === 1,
   });
+}
+
+function onDensityChange({ density }) {
+  urlStore.update({ density });
 }
 
 function reportTopLevelError(event) {

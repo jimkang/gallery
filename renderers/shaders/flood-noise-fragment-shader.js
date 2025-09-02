@@ -12,6 +12,7 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform float u_density;
 
 // signedDistanceCos from https://www.shadertoy.com/view/3t23WG
 // f: frequency
@@ -71,10 +72,10 @@ void main() {
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 3.;
-  float basePhaseShift = u_time * PI * .125;
+  float basePhaseShift = u_time * PI * .125 * u_density;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
-  float baseAmp = sin(u_time);
+  float baseAmp = sin(u_time) * u_density;
   
   float on = 0.;
 
