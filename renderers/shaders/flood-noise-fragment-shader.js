@@ -68,7 +68,7 @@ float wave(vec2 st, float amp, float baseFreq, float yOffset,
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float baseFreq = PI;
+  float baseFreq = PI * (.5 + u_density * 2.);
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 3.;
