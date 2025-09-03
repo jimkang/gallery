@@ -75,7 +75,7 @@ void main() {
   float baseFreq = PI * (.5 + u_density * 2.);
   // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
-  float waveFadeFactor = 3.;
+  float waveFadeFactor = 2.5 * (u_density * .5 + .5);
   float basePhaseShift = u_time * PI * .125 * u_density;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
