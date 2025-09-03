@@ -14,6 +14,10 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_density;
 
+float easeSinInOut(float x) {
+  return (1. - cos(PI * x))/2.;
+}
+
 // signedDistanceCos from https://www.shadertoy.com/view/3t23WG
 // f: frequency
 // a: amplitude
@@ -76,15 +80,16 @@ void main() {
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
   float baseAmp = sin(u_time) * u_density;
+  int waveCount = int(max(1., float(WAVE_COUNT) * (.5 + .5 * easeSinInOut(u_density)/2.)));
   
   float on = 0.;
 
-  for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < WAVE_COUNT + SCROLL_FILLERS/2; ++waveIndex) {
+  for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < waveCount + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveindex = float(waveIndex);
     // -1 or 3.
     float shiftMult = -1. + mod(abs(fWaveindex), 2.) * 4.;
     float phaseShift = basePhaseShift * shiftMult;
-    float yShift = baseYShift + fWaveindex * 1./float(WAVE_COUNT);
+    float yShift = baseYShift + fWaveindex * 1./float(waveCount);
     if (yShift > WAVE_YSPAN) {
       yShift = mod(yShift, WAVE_YSPAN);
     }
