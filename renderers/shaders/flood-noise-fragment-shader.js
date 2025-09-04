@@ -73,10 +73,9 @@ void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   float baseFreq = PI * (.5 + u_density * 2.);
-  // float on = step(distance(st, vec2(st.x, .5 * sin(st.x * 2. * PI) + .5)), .1);
   float invMaxWaveSpan = 3.;
   float waveFadeFactor = 2.5 * (u_density * .5 + .5);
-  float basePhaseShift = u_time * PI * .125 * u_density;
+  float basePhaseShift = u_time * PI * .25 * u_density;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
   float baseAmp = sin(u_time) * u_density;
@@ -85,17 +84,18 @@ void main() {
   float on = 0.;
 
   for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < waveCount + SCROLL_FILLERS/2; ++waveIndex) {
-    float fWaveindex = float(waveIndex);
+    float fWaveIndex = float(waveIndex);
     // -1 or 3.
-    float shiftMult = -1. + mod(abs(fWaveindex), 2.) * 4.;
+    float fIndexAbs = abs(fWaveIndex);
+    float shiftMult = -1. + mod(fIndexAbs, 2.) * 3. + mod(fIndexAbs, 3.) * 7.;
     float phaseShift = basePhaseShift * shiftMult;
-    float yShift = baseYShift + fWaveindex * 1./float(waveCount);
+    float yShift = baseYShift + fWaveIndex * 1./float(waveCount);
     if (yShift > WAVE_YSPAN) {
       yShift = mod(yShift, WAVE_YSPAN);
     }
     yShift -= offscreenHeight;
 
-    float amp = .1 + sin(fWaveindex * PI) * .025;
+    float amp = .1 + sin(fWaveIndex * PI) * .025;
     amp = .2 * sin(u_time);
 
     on = max(
