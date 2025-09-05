@@ -79,6 +79,20 @@ float perlin1d(float x) {
   return lowerVal + upperVal;
 }
 
+float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
+  float amplitude = 0.05;
+  float frequency = 1.;
+  float y = 0.;
+
+  for (int i = 0; i < repeats; i++) {
+    y += amplitude * fract(sin(frequency * x) * 4000.);
+    frequency *= lacunarity;
+    amplitude *= gain;
+  }
+
+  return y;
+}
+
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
   float invMaxWaveSpan, float waveFadeFactor) {
 
@@ -117,19 +131,13 @@ void main() {
     float amp = .1 + sin(fWaveIndex * PI) * .025;
     amp = .2 * sin(u_time);
 
-    on = max(
-      on,
-      noise(
-      noise(
-      noise(
-        wave(
-          vec2(st.x + phaseShift, st.y),
-          amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
-       )
-      )
-      )
-      )
+    float waveOn = wave(
+      vec2(st.x + phaseShift, st.y),
+      amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
+    waveOn += repeatedNoise(1, .5, .5, waveOn);
+
+    on = max(on, waveOn);
   }
 
   outColor = vec4(vec3(on), 1.0);
