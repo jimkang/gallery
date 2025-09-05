@@ -120,10 +120,14 @@ void main() {
     on = max(
       on,
       noise(
+      noise(
+      noise(
         wave(
           vec2(st.x + phaseShift, st.y),
           amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
        )
+      )
+      )
       )
     );
   }
