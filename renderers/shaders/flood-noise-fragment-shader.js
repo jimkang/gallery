@@ -13,6 +13,7 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_density;
+uniform float[100] u_random_values;
 
 float easeSinInOut(float x) {
   return (1. - cos(PI * x))/2.;
@@ -60,6 +61,24 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
   return r/freq;
 }
 
+float noise(float x) {
+  return sin(41869.5 * x);
+}
+
+// x should be between 0. and 1.
+float perlin1d(float x) {
+  int lowerIndex = int(floor(x * 100.));
+  int upperIndex = lowerIndex + 1;
+  float lowerRand = u_random_values[lowerIndex];
+  float upperRand = u_random_values[upperIndex];
+  float lowerDist = x - float(lowerIndex);
+  float lowerWeight = pow(lowerDist, 3.);
+  float upperWeight = 1. - lowerWeight;
+  float lowerVal = lowerWeight * lowerRand;
+  float upperVal = upperWeight * upperRand;
+  return lowerVal + upperVal;
+}
+
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
   float invMaxWaveSpan, float waveFadeFactor) {
 
@@ -100,9 +119,11 @@ void main() {
 
     on = max(
       on,
-      wave(
-        vec2(st.x + phaseShift, st.y),
-        amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
+      noise(
+        wave(
+          vec2(st.x + phaseShift, st.y),
+          amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
+       )
       )
     );
   }
