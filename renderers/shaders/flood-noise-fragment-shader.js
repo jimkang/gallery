@@ -135,7 +135,8 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
-    waveOn += repeatedNoise(1, .5, .5, waveOn);
+    // waveOn += repeatedNoise(1, .5, .5, waveOn);
+    waveOn += perlin1d(waveOn);
 
     on = max(on, waveOn);
   }
