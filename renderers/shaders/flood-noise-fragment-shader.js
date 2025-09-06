@@ -135,8 +135,10 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
-    // waveOn += repeatedNoise(1, .5, .5, waveOn);
-    waveOn += perlin1d(waveOn);
+    float sineNoise = noise(noise(waveOn));
+    float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
+    // TODO: Density noise
+    waveOn += .4 * mix(sineNoise, repeatedNoise, .8);
 
     on = max(on, waveOn);
   }
