@@ -62,7 +62,7 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
 }
 
 float noise(float x) {
-  return sin(41869.5 * x);
+  return fract(sin(159.3 * x));
 }
 
 // x should be between 0. and 1.
@@ -137,8 +137,9 @@ void main() {
     );
     float sineNoise = noise(noise(waveOn));
     float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
+    float perlinNoise = perlin1d(perlin1d(perlin1d(waveOn)));
     // TODO: Density noise
-    waveOn += .4 * mix(sineNoise, repeatedNoise, .8);
+    waveOn += .4 * mix(sineNoise, repeatedNoise, .6);
 
     on = max(on, waveOn);
   }
