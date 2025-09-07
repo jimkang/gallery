@@ -138,8 +138,7 @@ void main() {
     float sineNoise = noise(noise(waveOn));
     float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
     float perlinNoise = perlin1d(perlin1d(perlin1d(waveOn)));
-    // TODO: Density noise
-    waveOn += .4 * mix(sineNoise, repeatedNoise, .6);
+    waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
   }
