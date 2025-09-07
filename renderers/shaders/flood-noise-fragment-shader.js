@@ -107,7 +107,7 @@ void main() {
 
   float baseFreq = PI * (.5 + u_density * 2.);
   float invMaxWaveSpan = 3.;
-  float waveFadeFactor = 2.5 * (u_density * .5 + .5);
+  float waveFadeFactor = 1.9 + 4. * pow(u_density, 5.);
   float basePhaseShift = u_time * PI * .25 * u_density;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
@@ -135,7 +135,8 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
-    float sineNoise = noise(noise(waveOn));
+    float sineNoise = noise(waveOn);
+    sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
     float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
     float perlinNoise = perlin1d(perlin1d(perlin1d(waveOn)));
     waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
