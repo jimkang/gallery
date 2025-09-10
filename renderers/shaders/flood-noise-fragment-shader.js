@@ -3,7 +3,7 @@ precision mediump float;
 
 #define PI 3.14159265359
 #define WAVE_COUNT 10
-#define WAVE_YSPAN 1.4
+#define WAVE_YSPAN 1.6
 // Extra waves to avoid a gap in the scroll-around space
 #define SCROLL_FILLERS 2
 
@@ -120,11 +120,12 @@ void main() {
     float fWaveIndex = float(waveIndex);
     // -1 or 3.
     float fIndexAbs = abs(fWaveIndex);
-    float shiftMult = -1. + mod(fIndexAbs, 2.) * 3. + mod(fIndexAbs, 3.) * 7.;
+    float shiftMult = -2. + mod(fIndexAbs * u_density, 4.) * 3. + mod(fIndexAbs * u_density, 3.) * 7.;
     float phaseShift = basePhaseShift * shiftMult;
     float yShift = baseYShift + fWaveIndex * 1./float(waveCount);
-    if (yShift > WAVE_YSPAN) {
-      yShift = mod(yShift, WAVE_YSPAN);
+    float yWaveSpan = WAVE_YSPAN * (1. - u_density);
+    if (yShift > yWaveSpan) {
+      yShift = mod(yShift, yWaveSpan) + (WAVE_YSPAN - yWaveSpan)/2.;
     }
     yShift -= offscreenHeight;
 
