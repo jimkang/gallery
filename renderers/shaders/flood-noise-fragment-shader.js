@@ -123,7 +123,7 @@ void main() {
     float shiftMult = -2. + mod(fIndexAbs * u_density, 4.) * 3. + mod(fIndexAbs * u_density, 3.) * 7.;
     float phaseShift = basePhaseShift * shiftMult;
     float yShift = baseYShift + fWaveIndex * 1./float(waveCount);
-    float yWaveSpan = WAVE_YSPAN * (1. - u_density);
+    float yWaveSpan = WAVE_YSPAN * (1.05 - u_density);
     if (yShift > yWaveSpan) {
       yShift = mod(yShift, yWaveSpan) + (WAVE_YSPAN - yWaveSpan)/2.;
     }
