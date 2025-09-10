@@ -65,20 +65,6 @@ float noise(float x) {
   return fract(sin(159.3 * x));
 }
 
-// x should be between 0. and 1.
-float perlin1d(float x) {
-  int lowerIndex = int(floor(x * 100.));
-  int upperIndex = lowerIndex + 1;
-  float lowerRand = u_random_values[lowerIndex];
-  float upperRand = u_random_values[upperIndex];
-  float lowerDist = x - float(lowerIndex);
-  float lowerWeight = pow(lowerDist, 3.);
-  float upperWeight = 1. - lowerWeight;
-  float lowerVal = lowerWeight * lowerRand;
-  float upperVal = upperWeight * upperRand;
-  return lowerVal + upperVal;
-}
-
 float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
   float amplitude = 0.05;
   float frequency = 1.;
@@ -139,7 +125,6 @@ void main() {
     float sineNoise = noise(waveOn);
     sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
     float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
-    float perlinNoise = perlin1d(perlin1d(perlin1d(waveOn)));
     waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
