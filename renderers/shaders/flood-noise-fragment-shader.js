@@ -79,6 +79,10 @@ float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
   return y;
 }
 
+vec3 colorForOn(float on) {
+  return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
+}
+
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
   float invMaxWaveSpan, float waveFadeFactor) {
 
@@ -130,6 +134,6 @@ void main() {
     on = max(on, waveOn);
   }
 
-  outColor = vec4(vec3(on), 1.0);
+  outColor = vec4(colorForOn(on), 1.0);
 }
 `;
