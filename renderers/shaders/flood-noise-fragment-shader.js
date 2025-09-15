@@ -31,7 +31,7 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
   // reduce to principal half cycle
   const float TPI = 6.28318530718;
   
-  p.x = mod( p.x, TPI);
+  p.x = mod(p.x, TPI);
   if (p.x > 0.5 * TPI) {
     p.x = TPI - p.x;
   }
@@ -55,7 +55,7 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
   vec2 pOffset = p - qOffset;
   vec2 ba = qAmp - qOffset;
 	float h = clamp(dot(pOffset, ba)/dot(ba, ba), 0.0, 1.0);
-	float r = length(pOffset - ba * h );
+	float r = length(pOffset - ba * h ) * sign(pOffset.y * ba.x - pOffset.x * ba.y);
 
   // convert back to the non primitive cosine space 
   return r/freq;
@@ -80,24 +80,27 @@ float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
 }
 
 vec3 colorForOn(float on) {
-  return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
+  return vec3(.3, .5, .8) * on;
+  // return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
   float invMaxWaveSpan, float waveFadeFactor) {
 
-  return pow(
-    1. - invMaxWaveSpan * signedDistanceCos(st, yOffset, amp, baseFreq, 0.),
-    waveFadeFactor
-  );
+  float dist = signedDistanceCos(st, yOffset, amp, baseFreq, 0.);
+  if (dist < 0.) {
+    dist = 1. + dist;
+  }
+
+  return pow(1. - invMaxWaveSpan * dist, waveFadeFactor);
 }
 
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
   float baseFreq = PI * (.5 + u_density * 2.);
-  float invMaxWaveSpan = 3.;
-  float waveFadeFactor = 1.9 + 4. * pow(u_density, 5.);
+  float invMaxWaveSpan = 1.;
+  float waveFadeFactor = 2.5 + 4. * pow(u_density, 5.);
   float basePhaseShift = u_time * PI * .25 * u_density;
   float offscreenHeight = (WAVE_YSPAN - 1.)/2.;
   float baseYShift = mod(u_time/5., WAVE_YSPAN);
@@ -106,6 +109,7 @@ void main() {
   
   float on = 0.;
 
+  // Next: One-sided waves?
   for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < waveCount + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveIndex = float(waveIndex);
     // -1 or 3.
@@ -120,7 +124,7 @@ void main() {
     yShift -= offscreenHeight;
 
     float amp = .1 + sin(fWaveIndex * PI) * .025;
-    amp = .2 * sin(u_time);
+    amp = .4 * sin(u_time);
 
     float waveOn = wave(
       vec2(st.x + phaseShift, st.y),
@@ -129,7 +133,7 @@ void main() {
     float sineNoise = noise(waveOn);
     sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
     float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
-    waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
+    // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
   }
