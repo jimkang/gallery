@@ -92,7 +92,7 @@ float wave(vec2 st, float amp, float baseFreq, float yOffset,
     dist = 1. + dist;
   }
 
-  return pow(1. - invMaxWaveSpan * dist, waveFadeFactor);
+  return pow(invMaxWaveSpan * dist, waveFadeFactor);
 }
 
 void main() {
