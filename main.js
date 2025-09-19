@@ -6,6 +6,7 @@ import glowPlanetsFragmentShaderSrc from './renderers/shaders/glow-planets-fragm
 import randomCellsFragmentShaderSrc from './renderers/shaders/random-cells-fragment-shader';
 import waterNoiseFragmentShaderSrc from './renderers/shaders/water-noise-fragment-shader';
 import electricalPartyFragmentShaderSrc from './renderers/shaders/electrical-party-fragment-shader';
+import hueShiftFragmentShaderSrc from './renderers/shaders/hue-shift-fragment-shader';
 import { RenderShader } from './renderers/render-shader';
 import RenderMovingMondrianShader from './renderers/render-moving-mondrian';
 import RenderFloodNoiseShader from './renderers/render-flood-noise';
@@ -85,6 +86,16 @@ var pieceDefs = [
     wip: false,
   },
   floodNoisePieceDef,
+  {
+    id: 'hue-shift',
+    name: 'Hue shift',
+    renderer: RenderShader({
+      fragmentShaderSrc: hueShiftFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: true,
+  },
 ];
 
 (async function go() {
