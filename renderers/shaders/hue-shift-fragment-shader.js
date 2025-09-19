@@ -9,6 +9,7 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform int u_rgbWaveStyle;
 
 float rgbWave(float x, float phaseShift) {
   float y = mod(x + RGB_PERIOD/2. + phaseShift, RGB_PERIOD);
