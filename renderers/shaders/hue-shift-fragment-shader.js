@@ -3,6 +3,7 @@ precision mediump float;
 
 #define RGB_PERIOD 1.
 #define RGB_AMP 1.5
+#define PI 3.1415927
 
 out vec4 outColor;
 
@@ -18,12 +19,23 @@ float rgbWave(float x, float phaseShift) {
   return clamp(y, 0., 1.);
 }
 
+float rgbSineWave(float x, float phaseShift) {
+  return clamp(sin(2. * PI * x + phaseShift) + .5, 0., 1.);
+}
+
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float r = rgbWave(st.x, .5);
-  float g = rgbWave(st.x, 1./6.);
-  float b = rgbWave(st.x, -7./6.);
+  float r = rgbSineWave(st.x, 3./6. * PI);
+  float g = rgbSineWave(st.x, -1./6. * PI);
+  float b = rgbSineWave(st.x, -5./6. * PI);
+
+  if (u_rgbWaveStyle == 0) {
+    r = rgbWave(st.x, .5);
+    g = rgbWave(st.x, 1./6.);
+    b = rgbWave(st.x, -7./6.);
+  }
+
   vec3 lineColor = vec3(r, g, b);
 
 
