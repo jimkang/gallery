@@ -44,14 +44,22 @@ var floodNoisePieceDef = {
       showWIP: false,
       density: 0.5,
       rgbWaveStyle: 0,
+      rgbAmp: 1,
     },
     boolKeys: ['showWIP'],
-    numberKeys: ['density', 'rgbWaveStyle'],
+    numberKeys: ['density', 'rgbWaveStyle', 'rgbAmp'],
   });
   urlStore.update();
 })();
 
-function onUpdate({ seed, focusPiece, showWIP, density, rgbWaveStyle }) {
+function onUpdate({
+  seed,
+  focusPiece,
+  showWIP,
+  density,
+  rgbWaveStyle,
+  rgbAmp,
+}) {
   if (!seed) {
     urlStore.update({ seed: randomId(8) });
     return;
@@ -123,6 +131,13 @@ function onUpdate({ seed, focusPiece, showWIP, density, rgbWaveStyle }) {
             uniformType: '1i',
             name: 'u_rgbWaveStyle',
             value: rgbWaveStyle,
+          });
+          setUniform({
+            gl,
+            program,
+            uniformType: '1f',
+            name: 'u_rgbAmp',
+            value: rgbAmp,
           });
         },
       }),
