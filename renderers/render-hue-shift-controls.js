@@ -1,4 +1,5 @@
 import { select } from 'd3-selection';
+import throttle from 'lodash.throttle';
 
 export default function renderHueShiftControls({
   // rgbWaveStyle,
@@ -8,6 +9,7 @@ export default function renderHueShiftControls({
   var pieceCaptionSel = select('#hue-shift-piece .caption');
   var ampSlider = pieceCaptionSel.select('.amp-slider');
   if (ampSlider.empty()) {
+    var throttledOnControlChange = throttle(onControlChange, 100);
     ampSlider = pieceCaptionSel
       .append('input')
       .attr('type', 'range')
@@ -16,7 +18,9 @@ export default function renderHueShiftControls({
       .attr('step', '0.01')
       .attr('list', 'hue-amp-slider-markers')
       .classed('amp-slider', true)
-      .on('input', () => onControlChange({ rgbAmp: ampSlider.node().value }));
+      .on('input', () =>
+        throttledOnControlChange({ rgbAmp: ampSlider.node().value })
+      );
   }
   var ampText = pieceCaptionSel.select('.amp-text');
   if (ampText.empty()) {
