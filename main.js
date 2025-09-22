@@ -13,6 +13,7 @@ import RenderFloodNoiseShader from './renderers/render-flood-noise';
 import renderPieces from './renderers/render-pieces';
 import RandomId from '@jimkang/randomid';
 import { URLStore } from '@jimkang/url-store';
+import renderHueShiftControls from './renderers/render-hue-shift-controls';
 
 var randomId = RandomId();
 var urlStore;
@@ -31,6 +32,98 @@ var floodNoisePieceDef = {
   renderer: undefined,
   on: true,
 };
+
+var pieceDefs = [
+  {
+    id: 'glow-planets',
+    name: 'Glow Planets',
+    renderer: RenderShader({
+      fragmentShaderSrc: glowPlanetsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: true,
+  },
+  {
+    id: 'random-cells',
+    name: 'Random Cells',
+    renderer: RenderShader({
+      fragmentShaderSrc: randomCellsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: true,
+  },
+  {
+    id: 'mote-ghosts',
+    name: 'Mote Ghosts',
+    renderer: RenderShader({
+      fragmentShaderSrc: moteGhostsFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: false,
+  },
+  movingMondrianPieceDef,
+  {
+    id: 'water-noise',
+    name: 'Water Noise',
+    renderer: RenderShader({
+      fragmentShaderSrc: waterNoiseFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: true,
+    wip: true,
+  },
+  {
+    id: 'electrical-party',
+    name: 'Electrical Party',
+    note: 'Warning: flashing lights',
+    renderer: RenderShader({
+      fragmentShaderSrc: electricalPartyFragmentShaderSrc,
+      setCustomUniforms: undefined,
+    }),
+    on: false,
+    wip: false,
+  },
+  floodNoisePieceDef,
+  {
+    id: 'hue-shift',
+    name: 'Hue shift',
+    renderer: RenderShader({
+      fragmentShaderSrc: hueShiftFragmentShaderSrc,
+      setCustomUniforms({ gl, program, setUniform, customParams }) {
+        setUniform({
+          gl,
+          program,
+          uniformType: '1i',
+          name: 'u_rgbWaveStyle',
+          value: customParams.rgbWaveStyle,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_rgbAmp',
+          value: customParams.rgbAmp,
+        });
+      },
+    }),
+    on: true,
+    wip: true,
+    renderControls: renderHueShiftControls,
+    onControlChange(params) {
+      var updateOpts = {};
+      if (!isNaN(params.rgbWaveStyle)) {
+        updateOpts.rgbWaveStyle = params.rgbWaveStyle;
+      }
+      if (!isNaN(params.rgbAmp)) {
+        updateOpts.rgbAmp = params.rgbAmp;
+      }
+      urlStore.update(updateOpts);
+    },
+  },
+];
 
 (async function go() {
   window.addEventListener('error', reportTopLevelError);
@@ -52,100 +145,13 @@ var floodNoisePieceDef = {
   urlStore.update();
 })();
 
-function onUpdate({
-  seed,
-  focusPiece,
-  showWIP,
-  density,
-  rgbWaveStyle,
-  rgbAmp,
-}) {
+function onUpdate(params) {
+  var { seed, focusPiece, showWIP, density } = params;
+
   if (!seed) {
     urlStore.update({ seed: randomId(8) });
     return;
   }
-
-  var pieceDefs = [
-    {
-      id: 'glow-planets',
-      name: 'Glow Planets',
-      renderer: RenderShader({
-        fragmentShaderSrc: glowPlanetsFragmentShaderSrc,
-        setCustomUniforms: undefined,
-      }),
-      on: true,
-      wip: true,
-    },
-    {
-      id: 'random-cells',
-      name: 'Random Cells',
-      renderer: RenderShader({
-        fragmentShaderSrc: randomCellsFragmentShaderSrc,
-        setCustomUniforms: undefined,
-      }),
-      on: true,
-      wip: true,
-    },
-    {
-      id: 'mote-ghosts',
-      name: 'Mote Ghosts',
-      renderer: RenderShader({
-        fragmentShaderSrc: moteGhostsFragmentShaderSrc,
-        setCustomUniforms: undefined,
-      }),
-      on: true,
-      wip: false,
-    },
-    movingMondrianPieceDef,
-    {
-      id: 'water-noise',
-      name: 'Water Noise',
-      renderer: RenderShader({
-        fragmentShaderSrc: waterNoiseFragmentShaderSrc,
-        setCustomUniforms: undefined,
-      }),
-      on: true,
-      wip: true,
-    },
-    {
-      id: 'electrical-party',
-      name: 'Electrical Party',
-      note: 'Warning: flashing lights',
-      renderer: RenderShader({
-        fragmentShaderSrc: electricalPartyFragmentShaderSrc,
-        setCustomUniforms: undefined,
-      }),
-      on: false,
-      wip: false,
-    },
-    floodNoisePieceDef,
-    {
-      id: 'hue-shift',
-      name: 'Hue shift',
-      renderer: RenderShader({
-        fragmentShaderSrc: hueShiftFragmentShaderSrc,
-        setCustomUniforms({ gl, program, setUniform }) {
-          setUniform({
-            gl,
-            program,
-            uniformType: '1i',
-            name: 'u_rgbWaveStyle',
-            value: rgbWaveStyle,
-          });
-          setUniform({
-            gl,
-            program,
-            uniformType: '1f',
-            name: 'u_rgbAmp',
-            value: rgbAmp,
-          });
-        },
-      }),
-      on: true,
-      wip: true,
-    },
-  ];
-
   if (movingMondrianPieceDef.renderer) {
     movingMondrianPieceDef.renderer.setSeed({ seed });
   } else {
@@ -171,6 +177,7 @@ function onUpdate({
     urlStore,
     focusPiece,
     hideExpandCollapse: showablePieceDefs.length === 1,
+    customParams: params,
   });
 }
 

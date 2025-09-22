@@ -28,7 +28,7 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
     });
   }
 
-  function render({ canvas, on }) {
+  function render({ canvas, on, customParams }) {
     if (!on) {
       if (updateKey) {
         window.cancelAnimationFrame(updateKey);
@@ -49,28 +49,28 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
     updateKey = window.requestAnimationFrame(renderWithUpdatedTime);
 
     if (setCustomUniforms) {
-      setCustomUniforms({ gl, program, setUniform });
+      setCustomUniforms({ gl, program, setUniform, customParams });
     }
 
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  }
 
-  function renderWithUpdatedTime(timeStamp) {
-    setUniform({
-      gl,
-      program,
-      uniformType: '1f',
-      name: 'u_time',
-      value: timeStamp / 1000,
-    });
+    function renderWithUpdatedTime(timeStamp) {
+      setUniform({
+        gl,
+        program,
+        uniformType: '1f',
+        name: 'u_time',
+        value: timeStamp / 1000,
+      });
 
-    if (setCustomUniforms) {
-      setCustomUniforms({ gl, program, setUniform });
+      if (setCustomUniforms) {
+        setCustomUniforms({ gl, program, setUniform, customParams });
+      }
+
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      updateKey = requestAnimationFrame(renderWithUpdatedTime);
     }
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    updateKey = requestAnimationFrame(renderWithUpdatedTime);
   }
 }
 

@@ -54,6 +54,7 @@ export default function renderPieces({
     .select('.execute-toggle')
     .each(setExecuteToggle)
     .on('change', updatePieceOn);
+  extantPieceSel.each(updatePiece);
 
   function showPiece(piece) {
     let container = this;
@@ -74,10 +75,15 @@ export default function renderPieces({
 
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
-    setTimeout(
-      () => piece.renderer.render({ canvas, seed, on: piece.on, customParams }),
-      100
-    );
+    setTimeout(() => {
+      piece.renderer.render({ canvas, seed, on: piece.on, customParams });
+      if (piece.renderControls) {
+        piece.renderControls({
+          onControlChange: piece.onControlChange,
+          ...customParams,
+        });
+      }
+    }, 100);
   }
 
   function updateViewport(piece) {
@@ -105,6 +111,18 @@ export default function renderPieces({
       piece: def,
     });
     updateViewport(def);
+  }
+
+  function updatePiece(piece) {
+    let container = this;
+    let canvas = container.querySelector('canvas');
+    piece.renderer.render({ canvas, seed, on: piece.on, customParams });
+    if (piece.renderControls) {
+      piece.renderControls({
+        onControlChange: piece.onControlChange,
+        ...customParams,
+      });
+    }
   }
 }
 

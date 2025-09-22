@@ -79,8 +79,8 @@ float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
   return y;
 }
 
-vec3 colorForOn(float on) {
-  return vec3(.3, .5, .8) * on;
+vec3 colorForOn(float on, float n) {
+    return vec3(noise(n));
   // return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
 }
 
