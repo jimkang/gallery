@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 import throttle from 'lodash.throttle';
 
 export default function renderHueShiftControls({
-  // rgbWaveStyle,
+  rgbWaveStyle,
   rgbAmp,
   onControlChange,
 }) {
@@ -35,10 +35,32 @@ export default function renderHueShiftControls({
   ampText.text(rgbAmp);
   ampSlider.attr('value', rgbAmp);
 
-  var waveStylePulldownSel = pieceCaptionSel.select('.wave-style-pulldown');
+  var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
   if (waveStylePulldownSel.empty()) {
+    pieceCaptionSel
+      .append('label')
+      .attr('for', 'wave-style-pulldown')
+      .text('RGB wave style');
+
     waveStylePulldownSel = pieceCaptionSel
       .append('select')
-      .classed('wave-style-pulldown', true);
+      .attr('id', 'wave-style-pulldown');
+    let triOptSel = waveStylePulldownSel
+      .append('option')
+      .attr('value', 0)
+      .text('Triangle wave');
+    if (rgbWaveStyle === 0) {
+      triOptSel.attr('selected', true);
+    }
+    let sineOptSel = waveStylePulldownSel
+      .append('option')
+      .attr('value', 1)
+      .text('Sine wave');
+    if (rgbWaveStyle === 1) {
+      sineOptSel.attr('selected', true);
+    }
+    waveStylePulldownSel.on('change', () =>
+      onControlChange({ rgbWaveStyle: waveStylePulldownSel.node().value })
+    );
   }
 }
