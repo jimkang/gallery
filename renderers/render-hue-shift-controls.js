@@ -7,60 +7,40 @@ export default function renderHueShiftControls({
   onControlChange,
 }) {
   var pieceCaptionSel = select('#hue-shift-piece .caption');
-  var ampSlider = pieceCaptionSel.select('#hue-shift-amp-slider');
-  if (ampSlider.empty()) {
-    pieceCaptionSel
-      .append('label')
-      .attr('for', 'hue-shift-amp-slider')
-      .text('Sine wave amplitude');
-
-    var throttledOnControlChange = throttle(onControlChange, 100);
-    ampSlider = pieceCaptionSel
-      .append('input')
-      .attr('id', 'hue-shift-amp-slider')
-      .attr('type', 'range')
-      .attr('min', '0.0')
-      .attr('max', '2.0')
-      .attr('step', '0.01')
-      .attr('list', 'hue-amp-slider-markers')
-      .on('input', () =>
-        throttledOnControlChange({ rgbAmp: ampSlider.node().value })
-      );
-  }
-  var ampText = pieceCaptionSel.select('.amp-text');
-  if (ampText.empty()) {
-    ampText = pieceCaptionSel.append('span').classed('amp-text', true);
-  }
-
-  ampText.text(rgbAmp);
-  ampSlider.attr('value', rgbAmp);
-
+  var ampSliderSel = pieceCaptionSel.select('#hue-shift-amp-slider');
   var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
-  if (waveStylePulldownSel.empty()) {
-    pieceCaptionSel
-      .append('label')
-      .attr('for', 'wave-style-pulldown')
-      .text('RGB wave style');
 
-    waveStylePulldownSel = pieceCaptionSel
-      .append('select')
-      .attr('id', 'wave-style-pulldown');
-    let triOptSel = waveStylePulldownSel
-      .append('option')
-      .attr('value', 0)
-      .text('Triangle wave');
-    if (rgbWaveStyle === 0) {
-      triOptSel.attr('selected', true);
-    }
-    let sineOptSel = waveStylePulldownSel
-      .append('option')
-      .attr('value', 1)
-      .text('Sine wave');
-    if (rgbWaveStyle === 1) {
-      sineOptSel.attr('selected', true);
-    }
+  if (waveStylePulldownSel.empty()) {
+    pieceCaptionSel.html(`<label for="hue-shift-toggle" class="name">Hue shift</label>
+      <input type="checkbox" id="hue-shift-toggle" class="execute-toggle">
+
+    <div>
+      <label for="wave-style-pulldown">RGB wave style</label>
+      <select id="wave-style-pulldown">
+        <option value="0" selected="true">Triangle wave</option>
+        <option value="1">Sine wave</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="hue-shift-amp-slider">Sine wave amplitude</label>
+      <input id="hue-shift-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
+      <span class="amp-text">0.33</span>
+    </div>`);
+
+    waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
     waveStylePulldownSel.on('change', () =>
       onControlChange({ rgbWaveStyle: waveStylePulldownSel.node().value })
     );
+
+    ampSliderSel = pieceCaptionSel.select('#hue-shift-amp-slider');
+    var throttledOnControlChange = throttle(onControlChange, 100);
+    ampSliderSel.on('input', () =>
+      throttledOnControlChange({ rgbAmp: ampSliderSel.node().value })
+    );
   }
+
+  waveStylePulldownSel.node().value = rgbWaveStyle;
+  pieceCaptionSel.select('.amp-text').text(rgbAmp);
+  ampSliderSel.attr('value', rgbAmp);
 }
