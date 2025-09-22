@@ -14,8 +14,9 @@ export default function renderHueShiftControls({
       .attr('min', '0.0')
       .attr('max', '2.0')
       .attr('step', '0.01')
+      .attr('list', 'hue-amp-slider-markers')
       .classed('amp-slider', true)
-      .on('change', () => onControlChange({ rgbAmp: ampSlider.node().value }));
+      .on('input', () => onControlChange({ rgbAmp: ampSlider.node().value }));
   }
   var ampText = pieceCaptionSel.select('.amp-text');
   if (ampText.empty()) {
