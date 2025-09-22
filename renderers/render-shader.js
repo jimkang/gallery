@@ -10,6 +10,7 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
   return {
     render,
     updateViewport,
+    cleanUp,
   };
 
   function updateViewport() {
@@ -28,24 +29,30 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
     });
   }
 
-  function render({ canvas, on, customParams }) {
+  function render({ canvas, reinitGL, on, customParams }) {
     if (!on) {
-      if (updateKey) {
-        window.cancelAnimationFrame(updateKey);
-      }
-
+      cleanUp();
       return;
     }
 
-    if (gl && program) {
+    if (reinitGL && gl && program) {
       gl.deleteProgram(program);
+      program = undefined;
+      gl = undefined;
     }
 
-    ({ gl, program } = setUpShaders({
-      canvas,
-      fragmentShaderSrc,
-    }));
+    if (!gl || !program) {
+      ({ gl, program } = setUpShaders({
+        canvas,
+        fragmentShaderSrc,
+      }));
+    }
+
     ({ setUniform } = UniformCache());
+
+    if (updateKey) {
+      window.cancelAnimationFrame(updateKey);
+    }
     updateKey = window.requestAnimationFrame(renderWithUpdatedTime);
 
     if (setCustomUniforms) {
@@ -72,46 +79,70 @@ export function RenderShader({ setCustomUniforms, fragmentShaderSrc }) {
       updateKey = requestAnimationFrame(renderWithUpdatedTime);
     }
   }
-}
 
-function setUpShaders({ canvas, fragmentShaderSrc }) {
-  var gl = getRenderingContext(canvas);
+  function setUpShaders({ canvas, fragmentShaderSrc }) {
+    var gl = getRenderingContext(canvas);
 
-  var vertexShader = createShader({
-    gl,
-    src: vertexShaderSrc,
-    shaderType: gl.VERTEX_SHADER,
-  });
-  var fragmentShader = createShader({
-    gl,
-    src: fragmentShaderSrc,
-    shaderType: gl.FRAGMENT_SHADER,
-  });
+    var vertexShader = createShader({
+      gl,
+      src: vertexShaderSrc,
+      shaderType: gl.VERTEX_SHADER,
+    });
+    var fragmentShader = createShader({
+      gl,
+      src: fragmentShaderSrc,
+      shaderType: gl.FRAGMENT_SHADER,
+    });
 
-  var program = gl.createProgram();
+    var program = gl.createProgram();
 
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
 
-  gl.detachShader(program, vertexShader);
-  gl.detachShader(program, fragmentShader);
-  gl.deleteShader(vertexShader);
-  gl.deleteShader(fragmentShader);
+    gl.detachShader(program, vertexShader);
+    gl.detachShader(program, fragmentShader);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
 
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    var linkErrLog = gl.getProgramInfoLog(program);
-    cleanup(gl, program);
-    throw new Error(
-      `Shader program did not link successfully. Error log:\n${linkErrLog}`
-    );
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      var linkErrLog = gl.getProgramInfoLog(program);
+      cleanUp(gl, program);
+      throw new Error(
+        `Shader program did not link successfully. Error log:\n${linkErrLog}`
+      );
+    }
+
+    initializeGlAttributes(gl);
+
+    gl.useProgram(program);
+
+    return { gl, program };
   }
 
-  initializeGlAttributes(gl);
+  function cleanUp(gl, program) {
+    if (gl) {
+      gl.useProgram(null);
+      if (program) {
+        gl.deleteProgram(program);
+      }
+    }
+    if (updateKey) {
+      window.cancelAnimationFrame(updateKey);
+      updateKey = null;
+    }
+  }
 
-  gl.useProgram(program);
+  function getRenderingContext(canvas) {
+    var gl = canvas.getContext('webgl2');
 
-  return { gl, program };
+    if (!gl) {
+      throw new Error(
+        'Failed to get WebGL context. Your browser or device may not support WebGL 2.'
+      );
+    }
+    return gl;
+  }
 }
 
 function initializeGlAttributes(gl) {
@@ -134,25 +165,6 @@ function initializeGlAttributes(gl) {
   gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(0);
 }
-
-function cleanup(gl, program) {
-  gl.useProgram(null);
-  if (program) {
-    gl.deleteProgram(program);
-  }
-}
-
-function getRenderingContext(canvas) {
-  var gl = canvas.getContext('webgl2');
-
-  if (!gl) {
-    throw new Error(
-      'Failed to get WebGL context. Your browser or device may not support WebGL 2.'
-    );
-  }
-  return gl;
-}
-
 function createShader({ gl, src, shaderType }) {
   var shader = gl.createShader(shaderType);
   gl.shaderSource(shader, src);

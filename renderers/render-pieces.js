@@ -18,11 +18,16 @@ export default function renderPieces({
 }) {
   var pieceSel = pieceGridSel.selectAll('li').data(pieceDefs, accessor('id'));
 
+  pieceSel
+    .exit()
+    .each((piece) => piece?.renderer?.cleanUp && piece.renderer.cleanUp());
   pieceSel.exit().remove();
 
   var newPieceSel = pieceSel.enter().append('li');
   newPieceSel.append('canvas').attr('width', 320, 'height', 320);
-  newPieceSel.each(showPiece);
+  newPieceSel.each(function showNewPiece(piece) {
+    showPiece.bind(this)(piece, true);
+  });
   var newPieceInfoSel = newPieceSel.append('div').classed('piece-info', true);
 
   var captionSel = newPieceInfoSel.append('div').classed('caption', true);
@@ -56,12 +61,12 @@ export default function renderPieces({
     .on('change', updatePieceOn);
   extantPieceSel.each(updatePiece);
 
-  function showPiece(piece) {
+  function showPiece(piece, reinitGL) {
     let container = this;
-    showPieceInContainer({ container, piece });
+    showPieceInContainer({ container, piece, reinitGL });
   }
 
-  function showPieceInContainer({ container, piece }) {
+  function showPieceInContainer({ container, piece, reinitGL }) {
     let canvas = select(container).select('canvas').node();
     if (!canvas) {
       throw new Error(
@@ -75,7 +80,7 @@ export default function renderPieces({
 
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
-    setTimeout(() => updatePiece.bind(container)(piece), 100);
+    setTimeout(() => updatePiece.bind(container)(piece, reinitGL), 100);
   }
 
   function updateViewport(piece) {
@@ -105,10 +110,16 @@ export default function renderPieces({
     updateViewport(def);
   }
 
-  function updatePiece(piece) {
+  function updatePiece(piece, reinitGL) {
     let container = this;
     let canvas = container.querySelector('canvas');
-    piece.renderer.render({ canvas, seed, on: piece.on, customParams });
+    piece.renderer.render({
+      canvas,
+      reinitGL,
+      seed,
+      on: piece.on,
+      customParams,
+    });
     if (piece.renderControls) {
       piece.renderControls({
         onControlChange: piece.onControlChange,

@@ -25,6 +25,7 @@ export default function RenderMovingMondrianShader({
     render,
     updateViewport: shaderRenderer.updateViewport,
     setSeed,
+    cleanUp: shaderRenderer.cleanUp,
   };
 
   function setSeed({ seed }) {
