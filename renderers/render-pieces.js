@@ -75,15 +75,7 @@ export default function renderPieces({
 
     // Why is the observer not ready?
     // piece.renderer({ canvas, seed });
-    setTimeout(() => {
-      piece.renderer.render({ canvas, seed, on: piece.on, customParams });
-      if (piece.renderControls) {
-        piece.renderControls({
-          onControlChange: piece.onControlChange,
-          ...customParams,
-        });
-      }
-    }, 100);
+    setTimeout(() => updatePiece.bind(container)(piece), 100);
   }
 
   function updateViewport(piece) {
