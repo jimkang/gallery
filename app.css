@@ -76,6 +76,15 @@ a:visited {
   cursor: pointer;
 }
 
+.piece-control {
+  display: flex;
+  margin-bottom: .25em;
+}
+
+.piece-control label {
+  width: 30%;
+}
+
 #piece-grid canvas {
 }
 

@@ -14,7 +14,7 @@ export default function renderHueShiftControls({
     pieceCaptionSel.html(`<label for="hue-shift-toggle" class="name">Hue shift</label>
       <input type="checkbox" id="hue-shift-toggle" class="execute-toggle">
 
-    <div>
+    <div class="piece-control">
       <label for="wave-style-pulldown">RGB wave style</label>
       <select id="wave-style-pulldown">
         <option value="0" selected="true">Triangle wave</option>
@@ -22,7 +22,7 @@ export default function renderHueShiftControls({
       </select>
     </div>
 
-    <div>
+    <div class="piece-control">
       <label for="hue-shift-amp-slider">Sine wave amplitude</label>
       <input id="hue-shift-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
       <span class="amp-text">0.33</span>
