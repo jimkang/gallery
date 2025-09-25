@@ -78,6 +78,7 @@ a:visited {
 
 .piece-control {
   display: flex;
+  margin-top: .25em;
   margin-bottom: .25em;
 }
 

@@ -107,18 +107,44 @@ var pieceDefs = [
           name: 'u_rgbAmp',
           value: customParams.rgbAmp,
         });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_rShift',
+          value: customParams.rShift,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_gShift',
+          value: customParams.gShift,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_bShift',
+          value: customParams.bShift,
+        });
       },
     }),
     on: true,
     wip: true,
     renderControls: renderHueShiftControls,
+    // TODO: Add phase size controls
     onControlChange(params) {
       var updateOpts = {};
-      if (!isNaN(params.rgbWaveStyle)) {
-        updateOpts.rgbWaveStyle = params.rgbWaveStyle;
-      }
-      if (!isNaN(params.rgbAmp)) {
-        updateOpts.rgbAmp = params.rgbAmp;
+      var validUpdatedKeys = [
+        'rgbWaveStyle',
+        'rgbAmp',
+        'rShift',
+        'gShift',
+        'bShift',
+      ].filter((key) => key in params);
+      for (let key of validUpdatedKeys) {
+        updateOpts[key] = params[key];
       }
       urlStore.update(updateOpts);
     },
@@ -138,9 +164,19 @@ var pieceDefs = [
       density: 0.5,
       rgbWaveStyle: 0,
       rgbAmp: 1,
+      rShift: 3 / 6,
+      gShift: -1 / 6,
+      bShift: -5 / 6,
     },
     boolKeys: ['showWIP'],
-    numberKeys: ['density', 'rgbWaveStyle', 'rgbAmp'],
+    numberKeys: [
+      'density',
+      'rgbWaveStyle',
+      'rgbAmp',
+      'rShift',
+      'gShift',
+      'bShift',
+    ],
   });
   urlStore.update();
 })();

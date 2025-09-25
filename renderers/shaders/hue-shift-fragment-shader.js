@@ -12,6 +12,9 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform int u_rgbWaveStyle;
 uniform float u_rgbAmp;
+uniform float u_rShift;
+uniform float u_gShift;
+uniform float u_bShift;
 
 float rgbWave(float x, float phaseShift) {
   float y = mod(x + RGB_PERIOD/2. + phaseShift, RGB_PERIOD);
@@ -27,14 +30,14 @@ float rgbSineWave(float x, float phaseShift, float amp) {
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float r = rgbSineWave(st.x, 3./6. * PI, u_rgbAmp); 
-  float g = rgbSineWave(st.x, -1./6. * PI, u_rgbAmp);
-  float b = rgbSineWave(st.x, -5./6. * PI, u_rgbAmp);
+  float r = rgbSineWave(st.x, u_rShift * PI, u_rgbAmp); 
+  float g = rgbSineWave(st.x, u_gShift * PI, u_rgbAmp);
+  float b = rgbSineWave(st.x, u_bShift * PI, u_rgbAmp);
 
   if (u_rgbWaveStyle == 0) {
-    r = rgbWave(st.x, .5);
-    g = rgbWave(st.x, 1./6.);
-    b = rgbWave(st.x, -7./6.);
+    r = rgbWave(st.x, u_rShift);
+    g = rgbWave(st.x, u_gShift);
+    b = rgbWave(st.x, u_bShift);
   }
   vec3 lineColor = vec3(r, g, b);
 
