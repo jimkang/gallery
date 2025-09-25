@@ -83,7 +83,7 @@ a:visited {
 }
 
 .piece-control label {
-  width: 30%;
+  width: 12em;
 }
 
 #piece-grid canvas {

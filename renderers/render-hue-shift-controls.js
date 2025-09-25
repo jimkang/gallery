@@ -4,6 +4,9 @@ import throttle from 'lodash.throttle';
 export default function renderHueShiftControls({
   rgbWaveStyle,
   rgbAmp,
+  rShift,
+  gShift,
+  bShift,
   drawRGBWaves,
   onControlChange,
 }) {
@@ -33,19 +36,19 @@ export default function renderHueShiftControls({
     <div class="piece-control">
       <label for="red-shift-slider">Red wave phase shift</label>
       <input id="red-shift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
-      <span class="amp-text"></span>
+      <span class="rshift-text"></span>
     </div>
 
     <div class="piece-control">
       <label for="green-shift-slider">Green wave phase shift</label>
       <input id="green-shift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
-      <span class="amp-text"></span>
+      <span class="gshift-text"></span>
     </div>
 
     <div class="piece-control">
       <label for="blue-shift-slider">Blue wave phase shift</label>
       <input id="blue-shift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
-      <span class="amp-text"></span>
+      <span class="bshift-text"></span>
     </div>
 
     <div class="piece-control">
@@ -92,6 +95,9 @@ export default function renderHueShiftControls({
   waveStylePulldownSel.node().value = rgbWaveStyle;
   pieceCaptionSel.select('.amp-text').text(rgbAmp);
   ampSliderSel.attr('value', rgbAmp);
+  pieceCaptionSel.select('.rshift-text').text(rShift);
+  pieceCaptionSel.select('.gshift-text').text(gShift);
+  pieceCaptionSel.select('.bshift-text').text(bShift);
   drawWavesSel.node().checked = drawRGBWaves;
 }
 
