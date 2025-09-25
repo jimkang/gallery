@@ -4,15 +4,17 @@ import throttle from 'lodash.throttle';
 export default function renderHueShiftControls({
   rgbWaveStyle,
   rgbAmp,
+  drawRGBWaves,
   onControlChange,
 }) {
   var pieceCaptionSel = select('#hue-shift-piece .caption');
   var ampSliderSel = pieceCaptionSel.select('#hue-shift-amp-slider');
   var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
+  var drawWavesSel = select('#draw-rgb-waves');
 
   if (waveStylePulldownSel.empty()) {
     pieceCaptionSel.html(`<label for="hue-shift-toggle" class="name">Hue shift</label>
-      <input type="checkbox" id="hue-shift-toggle" class="execute-toggle">
+    <input type="checkbox" id="hue-shift-toggle" class="execute-toggle">
 
     <div class="piece-control">
       <label for="wave-style-pulldown">RGB wave style</label>
@@ -45,42 +47,52 @@ export default function renderHueShiftControls({
       <input id="blue-shift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
       <span class="amp-text"></span>
     </div>
+
+    <div class="piece-control">
+      <label for="draw-rgb-waves">Draw RGB waves</label>
+      <input type="checkbox" id="draw-rgb-waves" class="execute-toggle" checked>
+    </div>
     `);
 
     waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
     waveStylePulldownSel.on('change', () =>
       onControlChange({ rgbWaveStyle: waveStylePulldownSel.node().value })
     );
-  }
 
-  initSlider({
-    parentSel: pieceCaptionSel,
-    selector: '#hue-shift-amp-slider',
-    onControlChange,
-    propName: 'rgbAmp',
-  });
-  initSlider({
-    parentSel: pieceCaptionSel,
-    selector: '#red-shift-slider',
-    onControlChange,
-    propName: 'rShift',
-  });
-  initSlider({
-    parentSel: pieceCaptionSel,
-    selector: '#green-shift-slider',
-    onControlChange,
-    propName: 'gShift',
-  });
-  initSlider({
-    parentSel: pieceCaptionSel,
-    selector: '#blue-shift-slider',
-    onControlChange,
-    propName: 'bShift',
-  });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-amp-slider',
+      onControlChange,
+      propName: 'rgbAmp',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#red-shift-slider',
+      onControlChange,
+      propName: 'rShift',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#green-shift-slider',
+      onControlChange,
+      propName: 'gShift',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#blue-shift-slider',
+      onControlChange,
+      propName: 'bShift',
+    });
+    drawWavesSel = select('#draw-rgb-waves');
+    drawWavesSel.on('input', () =>
+      onControlChange({ drawRGBWaves: drawWavesSel.node().checked })
+    );
+  }
 
   waveStylePulldownSel.node().value = rgbWaveStyle;
   pieceCaptionSel.select('.amp-text').text(rgbAmp);
   ampSliderSel.attr('value', rgbAmp);
+  drawWavesSel.node().checked = drawRGBWaves;
 }
 
 function initSlider({ parentSel, selector, propName, onControlChange }) {

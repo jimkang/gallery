@@ -128,6 +128,13 @@ var pieceDefs = [
           name: 'u_bShift',
           value: customParams.bShift,
         });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1i',
+          name: 'u_drawRGBWaves',
+          value: customParams.drawRGBWaves ? 1 : 0,
+        });
       },
     }),
     on: true,
@@ -142,6 +149,7 @@ var pieceDefs = [
         'rShift',
         'gShift',
         'bShift',
+        'drawRGBWaves',
       ].filter((key) => key in params);
       for (let key of validUpdatedKeys) {
         updateOpts[key] = params[key];
@@ -167,8 +175,9 @@ var pieceDefs = [
       rShift: 3 / 6,
       gShift: -1 / 6,
       bShift: -5 / 6,
+      drawRGBWaves: true,
     },
-    boolKeys: ['showWIP'],
+    boolKeys: ['showWIP', 'drawRGBWaves'],
     numberKeys: [
       'density',
       'rgbWaveStyle',
