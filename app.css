@@ -70,6 +70,7 @@ a:visited {
   display: flex;
   justify-content: space-between;
   min-height: 3em;
+  overflow: scroll;
 }
 
 .piece-info input[type=checkbox],label {
@@ -78,6 +79,7 @@ a:visited {
 
 .piece-control {
   display: flex;
+  flex-wrap: wrap;
   margin-top: .25em;
   margin-bottom: .25em;
 }

@@ -138,7 +138,7 @@ var pieceDefs = [
       },
     }),
     on: true,
-    wip: true,
+    wip: false,
     renderControls: renderHueShiftControls,
     // TODO: Add phase size controls
     onControlChange(params) {

@@ -108,8 +108,8 @@ void main() {
   int waveCount = int(max(1., float(WAVE_COUNT) * (.5 + .5 * easeSinInOut(u_density)/2.)));
   
   float on = 0.;
+  vec3 waveColor = vec3(0.);
 
-  // Next: One-sided waves?
   for (int waveIndex = -SCROLL_FILLERS/2; waveIndex < waveCount + SCROLL_FILLERS/2; ++waveIndex) {
     float fWaveIndex = float(waveIndex);
     // -1 or 3.
@@ -136,8 +136,10 @@ void main() {
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
+    waveColor = colorForOn(waveOn, fWaveIndex/float(waveCount));
+    waveColor = vec3(on);
   }
 
-  outColor = vec4(colorForOn(on), 1.0);
+  outColor = vec4(waveColor, 1.);
 }
 `;
