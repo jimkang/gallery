@@ -131,6 +131,27 @@ var pieceDefs = [
         setUniform({
           gl,
           program,
+          uniformType: '1f',
+          name: 'u_rPeriod',
+          value: customParams.rPeriod,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_gPeriod',
+          value: customParams.gPeriod,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_bPeriod',
+          value: customParams.bPeriod,
+        });
+        setUniform({
+          gl,
+          program,
           uniformType: '1i',
           name: 'u_drawRGBWaves',
           value: customParams.drawRGBWaves ? 1 : 0,
@@ -149,6 +170,9 @@ var pieceDefs = [
         'rShift',
         'gShift',
         'bShift',
+        'rPeriod',
+        'gPeriod',
+        'bPeriod',
         'drawRGBWaves',
       ].filter((key) => key in params);
       for (let key of validUpdatedKeys) {
@@ -175,6 +199,9 @@ var pieceDefs = [
       rShift: 3 / 6,
       gShift: -1 / 6,
       bShift: -5 / 6,
+      rPeriod: 1,
+      gPeriod: 1,
+      bPeriod: 1,
       drawRGBWaves: true,
     },
     boolKeys: ['showWIP', 'drawRGBWaves'],
@@ -185,6 +212,9 @@ var pieceDefs = [
       'rShift',
       'gShift',
       'bShift',
+      'rPeriod',
+      'gPeriod',
+      'bPeriod',
     ],
   });
   urlStore.update();

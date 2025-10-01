@@ -15,6 +15,9 @@ uniform float u_rgbAmp;
 uniform float u_rShift;
 uniform float u_gShift;
 uniform float u_bShift;
+uniform float u_rPeriod;
+uniform float u_gPeriod;
+uniform float u_bPeriod;
 uniform int u_drawRGBWaves;
 
 float rgbWave(float x, float phaseShift) {
@@ -24,16 +27,16 @@ float rgbWave(float x, float phaseShift) {
   return clamp(y, 0., 1.);
 }
 
-float rgbSineWave(float x, float phaseShift, float amp) {
-  return clamp(amp * sin(2. * PI * x + phaseShift) + .5, 0., 1.);
+float rgbSineWave(float x, float phaseShift, float amp, float period) {
+  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5, 0., 1.);
 }
 
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float r = rgbSineWave(st.x, u_rShift * PI, u_rgbAmp); 
-  float g = rgbSineWave(st.x, u_gShift * PI, u_rgbAmp);
-  float b = rgbSineWave(st.x, u_bShift * PI, u_rgbAmp);
+  float r = rgbSineWave(st.x, u_rShift * PI, u_rgbAmp, u_rPeriod); 
+  float g = rgbSineWave(st.x, u_gShift * PI, u_rgbAmp, u_gPeriod);
+  float b = rgbSineWave(st.x, u_bShift * PI, u_rgbAmp, u_bPeriod);
 
   if (u_rgbWaveStyle == 0) {
     r = rgbWave(st.x, u_rShift);
