@@ -17,6 +17,9 @@ export default function renderHueShiftControls({
 
   if (waveStylePulldownSel.empty()) {
     pieceCaptionSel.html(`<h3>Hue shift</h3>
+    <div>This piece shows a spectrum. The x axis is the hue value, from 0.0 to 1.0. Red, green, and blue component values are shown on the y axes at the various hue values in the line graphs. The color resulting from the combination of R, G, and B values is shown behind the line graphs. (<a href="https://jimkang.com/weblog/articles/hue-shifting/">More about the relationship between hue and the color components, if you're interested.</a>) You can mess with the controls here to alter the spectrum.
+    </div>
+    <br>
     <div class="piece-control">
       <label for="wave-style-pulldown">RGB wave style</label>
       <select id="wave-style-pulldown">
