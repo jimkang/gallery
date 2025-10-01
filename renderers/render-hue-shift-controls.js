@@ -16,9 +16,7 @@ export default function renderHueShiftControls({
   var drawWavesSel = select('#draw-rgb-waves');
 
   if (waveStylePulldownSel.empty()) {
-    pieceCaptionSel.html(`<label for="hue-shift-toggle" class="name">Hue shift</label>
-    <input type="checkbox" id="hue-shift-toggle" class="execute-toggle">
-
+    pieceCaptionSel.html(`<h3>Hue shift</h3>
     <div class="piece-control">
       <label for="wave-style-pulldown">RGB wave style</label>
       <select id="wave-style-pulldown">
