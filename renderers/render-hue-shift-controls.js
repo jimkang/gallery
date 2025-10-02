@@ -48,25 +48,25 @@ export default function renderHueShiftControls(params) {
       <span class="bshift-text"></span>
     </div>
 
-    <div class="piece-control">
+    <div class="piece-control sine-specific">
       <label for="hue-shift-amp-slider">Sine wave amplitude</label>
       <input id="hue-shift-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
       <span class="amp-text">0.33</span>
     </div>
 
-    <div class="piece-control">
+    <div class="piece-control sine-specific">
       <label for="red-period-slider">Red sine wave period</label>
       <input id="red-period-slider" type="range" min="0" max="2.0" step="0.01" value="2">
       <span class="rperiod-text"></span>
     </div>
 
-    <div class="piece-control">
+    <div class="piece-control sine-specific">
       <label for="green-period-slider">Green sine wave period</label>
       <input id="green-period-slider" type="range" min="0" max="2.0" step="0.01" value="2">
       <span class="gperiod-text"></span>
     </div>
 
-    <div class="piece-control">
+    <div class="piece-control sine-specific">
       <label for="blue-period-slider">Blue sine wave period</label>
       <input id="blue-period-slider" type="range" min="0" max="2.0" step="0.01" value="2">
       <span class="bperiod-text"></span>
@@ -134,6 +134,9 @@ export default function renderHueShiftControls(params) {
   }
 
   waveStylePulldownSel.node().value = rgbWaveStyle;
+  pieceCaptionSel
+    .selectAll('.sine-specific')
+    .classed('hidden', +rgbWaveStyle === 0);
   pieceCaptionSel.select('.amp-text').text(rgbAmp);
   ampSliderSel.attr('value', rgbAmp);
   pieceCaptionSel.select('.rshift-text').text(rShift);
