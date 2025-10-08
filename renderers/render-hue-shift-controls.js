@@ -4,7 +4,9 @@ import throttle from 'lodash.throttle';
 export default function renderHueShiftControls(params) {
   var {
     rgbWaveStyle,
-    rgbAmp,
+    rAmp,
+    gAmp,
+    bAmp,
     rShift,
     gShift,
     bShift,
@@ -16,7 +18,9 @@ export default function renderHueShiftControls(params) {
   } = params;
 
   var pieceCaptionSel = select('#hue-shift-piece .caption');
-  var ampSliderSel = pieceCaptionSel.select('#hue-shift-amp-slider');
+  var rAmpSliderSel = pieceCaptionSel.select('#hue-shift-r-amp-slider');
+  var gAmpSliderSel = pieceCaptionSel.select('#hue-shift-g-amp-slider');
+  var bAmpSliderSel = pieceCaptionSel.select('#hue-shift-b-amp-slider');
   var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
   var drawWavesSel = select('#draw-rgb-waves');
 
@@ -48,9 +52,21 @@ export default function renderHueShiftControls(params) {
       <span class="bshift-text"></span>
     </div>
 
-    <div class="piece-control sine-specific">
-      <label for="hue-shift-amp-slider">Sine wave amplitude</label>
-      <input id="hue-shift-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
+    <div class="piece-control sine-specific red">
+      <label for="hue-shift-r-amp-slider">Red sine wave amplitude</label>
+      <input id="hue-shift-r-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
+      <span class="amp-text">0.33</span>
+    </div>
+
+    <div class="piece-control sine-specific green">
+      <label for="hue-shift-g-amp-slider">Green sine wave amplitude</label>
+      <input id="hue-shift-g-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
+      <span class="amp-text">0.33</span>
+    </div>
+
+    <div class="piece-control sine-specific blue">
+      <label for="hue-shift-b-amp-slider">Blue sine wave amplitude</label>
+      <input id="hue-shift-b-amp-slider" type="range" min="0.0" max="2.0" step="0.01" value="0">
       <span class="amp-text">0.33</span>
     </div>
 
@@ -87,9 +103,21 @@ export default function renderHueShiftControls(params) {
 
     initSlider({
       parentSel: pieceCaptionSel,
-      selector: '#hue-shift-amp-slider',
+      selector: '#hue-shift-r-amp-slider',
       onControlChange,
-      propName: 'rgbAmp',
+      propName: 'rAmp',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-g-amp-slider',
+      onControlChange,
+      propName: 'gAmp',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-b-amp-slider',
+      onControlChange,
+      propName: 'bAmp',
     });
     initSlider({
       parentSel: pieceCaptionSel,
@@ -137,8 +165,12 @@ export default function renderHueShiftControls(params) {
   pieceCaptionSel
     .selectAll('.sine-specific')
     .classed('hidden', +rgbWaveStyle === 0);
-  pieceCaptionSel.select('.amp-text').text(rgbAmp);
-  ampSliderSel.attr('value', rgbAmp);
+  pieceCaptionSel.select('.red .amp-text').text(rAmp);
+  pieceCaptionSel.select('.green .amp-text').text(gAmp);
+  pieceCaptionSel.select('.blue .amp-text').text(bAmp);
+  rAmpSliderSel.attr('value', rAmp);
+  gAmpSliderSel.attr('value', gAmp);
+  bAmpSliderSel.attr('value', bAmp);
   pieceCaptionSel.select('.rshift-text').text(rShift);
   pieceCaptionSel.select('.gshift-text').text(gShift);
   pieceCaptionSel.select('.bshift-text').text(bShift);

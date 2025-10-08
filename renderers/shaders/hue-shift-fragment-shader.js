@@ -11,7 +11,9 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform int u_rgbWaveStyle;
-uniform float u_rgbAmp;
+uniform float u_rAmp;
+uniform float u_gAmp;
+uniform float u_bAmp;
 uniform float u_rShift;
 uniform float u_gShift;
 uniform float u_bShift;
@@ -34,9 +36,9 @@ float rgbSineWave(float x, float phaseShift, float amp, float period) {
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float r = rgbSineWave(st.x, u_rShift * PI, u_rgbAmp, u_rPeriod); 
-  float g = rgbSineWave(st.x, u_gShift * PI, u_rgbAmp, u_gPeriod);
-  float b = rgbSineWave(st.x, u_bShift * PI, u_rgbAmp, u_bPeriod);
+  float r = rgbSineWave(st.x, u_rShift * PI, u_rAmp, u_rPeriod); 
+  float g = rgbSineWave(st.x, u_gShift * PI, u_gAmp, u_gPeriod);
+  float b = rgbSineWave(st.x, u_bShift * PI, u_bAmp, u_bPeriod);
 
   if (u_rgbWaveStyle == 0) {
     r = rgbWave(st.x, u_rShift);

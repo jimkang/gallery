@@ -104,8 +104,22 @@ var pieceDefs = [
           gl,
           program,
           uniformType: '1f',
-          name: 'u_rgbAmp',
-          value: customParams.rgbAmp,
+          name: 'u_rAmp',
+          value: customParams.rAmp,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_gAmp',
+          value: customParams.gAmp,
+        });
+        setUniform({
+          gl,
+          program,
+          uniformType: '1f',
+          name: 'u_bAmp',
+          value: customParams.bAmp,
         });
         setUniform({
           gl,
@@ -166,7 +180,9 @@ var pieceDefs = [
       var updateOpts = {};
       var validUpdatedKeys = [
         'rgbWaveStyle',
-        'rgbAmp',
+        'rAmp',
+        'gAmp',
+        'bAmp',
         'rShift',
         'gShift',
         'bShift',
@@ -195,7 +211,9 @@ var pieceDefs = [
       showWIP: false,
       density: 0.5,
       rgbWaveStyle: 0,
-      rgbAmp: 1,
+      rAmp: 1,
+      gAmp: 1,
+      bAmp: 1,
       rShift: 3 / 6,
       gShift: -1 / 6,
       bShift: -5 / 6,
@@ -208,7 +226,9 @@ var pieceDefs = [
     numberKeys: [
       'density',
       'rgbWaveStyle',
-      'rgbAmp',
+      'rAmp',
+      'gAmp',
+      'bAmp',
       'rShift',
       'gShift',
       'bShift',
