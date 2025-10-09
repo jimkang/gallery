@@ -7,6 +7,9 @@ export default function renderHueShiftControls(params) {
     rAmp,
     gAmp,
     bAmp,
+    rVShift,
+    gVShift,
+    bVShift,
     rShift,
     gShift,
     bShift,
@@ -21,6 +24,9 @@ export default function renderHueShiftControls(params) {
   var rAmpSliderSel = pieceCaptionSel.select('#hue-shift-r-amp-slider');
   var gAmpSliderSel = pieceCaptionSel.select('#hue-shift-g-amp-slider');
   var bAmpSliderSel = pieceCaptionSel.select('#hue-shift-b-amp-slider');
+  var rVShiftSliderSel = pieceCaptionSel.select('#hue-shift-r-vshift-slider');
+  var gVShiftSliderSel = pieceCaptionSel.select('#hue-shift-g-vshift-slider');
+  var bVShiftSliderSel = pieceCaptionSel.select('#hue-shift-b-vshift-slider');
   var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
   var drawWavesSel = select('#draw-rgb-waves');
 
@@ -50,6 +56,24 @@ export default function renderHueShiftControls(params) {
       <label for="blue-shift-slider">Blue wave phase shift</label>
       <input id="blue-shift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
       <span class="bshift-text"></span>
+    </div>
+
+    <div class="piece-control">
+      <label for="red-vshift-slider">Red wave vertical shift</label>
+      <input id="hue-shift-r-vshift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
+      <span class="r-vshift-text"></span>
+    </div>
+
+    <div class="piece-control">
+      <label for="green-vshift-slider">Green wave vertical shift</label>
+      <input id="hue-shift-g-vshift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
+      <span class="g-vshift-text"></span>
+    </div>
+
+    <div class="piece-control">
+      <label for="blue-vshift-slider">Blue wave vertical shift</label>
+      <input id="hue-shift-b-vshift-slider" type="range" min="-2.0" max="2.0" step="0.01" value="0">
+      <span class="b-vshift-text"></span>
     </div>
 
     <div class="piece-control sine-specific red">
@@ -119,6 +143,26 @@ export default function renderHueShiftControls(params) {
       onControlChange,
       propName: 'bAmp',
     });
+
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-r-vshift-slider',
+      onControlChange,
+      propName: 'rVShift',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-g-vshift-slider',
+      onControlChange,
+      propName: 'gVShift',
+    });
+    initSlider({
+      parentSel: pieceCaptionSel,
+      selector: '#hue-shift-b-vshift-slider',
+      onControlChange,
+      propName: 'bVShift',
+    });
+
     initSlider({
       parentSel: pieceCaptionSel,
       selector: '#red-shift-slider',
@@ -168,9 +212,18 @@ export default function renderHueShiftControls(params) {
   pieceCaptionSel.select('.red .amp-text').text(rAmp);
   pieceCaptionSel.select('.green .amp-text').text(gAmp);
   pieceCaptionSel.select('.blue .amp-text').text(bAmp);
+
+  pieceCaptionSel.select('.r-vshift-text').text(rVShift);
+  pieceCaptionSel.select('.g-vshift-text').text(gVShift);
+  pieceCaptionSel.select('.b-vshift-text').text(bVShift);
+
   rAmpSliderSel.attr('value', rAmp);
   gAmpSliderSel.attr('value', gAmp);
   bAmpSliderSel.attr('value', bAmp);
+  rVShiftSliderSel.attr('value', rVShift);
+  gVShiftSliderSel.attr('value', gVShift);
+  bVShiftSliderSel.attr('value', bVShift);
+
   pieceCaptionSel.select('.rshift-text').text(rShift);
   pieceCaptionSel.select('.gshift-text').text(gShift);
   pieceCaptionSel.select('.bshift-text').text(bShift);

@@ -17,33 +17,36 @@ uniform float u_bAmp;
 uniform float u_rShift;
 uniform float u_gShift;
 uniform float u_bShift;
+uniform float u_rVShift;
+uniform float u_gVShift;
+uniform float u_bVShift;
 uniform float u_rPeriod;
 uniform float u_gPeriod;
 uniform float u_bPeriod;
 uniform int u_drawRGBWaves;
 
-float rgbWave(float x, float phaseShift) {
+float rgbWave(float x, float phaseShift, float vShift) {
   float y = mod(x + RGB_PERIOD/2. + phaseShift, RGB_PERIOD);
   y = abs(y - RGB_PERIOD/2.);
   y = 4. * RGB_AMP * y - RGB_AMP + .5;
-  return clamp(y, 0., 1.);
+  return clamp(y, 0., 1.) + vShift;
 }
 
-float rgbSineWave(float x, float phaseShift, float amp, float period) {
-  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5, 0., 1.);
+float rgbSineWave(float x, float phaseShift, float amp, float period, float vShift) {
+  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5, 0., 1.) + vShift;
 }
 
 void main() {
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-  float r = rgbSineWave(st.x, u_rShift * PI, u_rAmp, u_rPeriod); 
-  float g = rgbSineWave(st.x, u_gShift * PI, u_gAmp, u_gPeriod);
-  float b = rgbSineWave(st.x, u_bShift * PI, u_bAmp, u_bPeriod);
+  float r = rgbSineWave(st.x, u_rShift * PI, u_rAmp, u_rPeriod, u_rVShift); 
+  float g = rgbSineWave(st.x, u_gShift * PI, u_gAmp, u_gPeriod, u_gVShift);
+  float b = rgbSineWave(st.x, u_bShift * PI, u_bAmp, u_bPeriod, u_bVShift);
 
   if (u_rgbWaveStyle == 0) {
-    r = rgbWave(st.x, u_rShift);
-    g = rgbWave(st.x, u_gShift);
-    b = rgbWave(st.x, u_bShift);
+    r = rgbWave(st.x, u_rShift, u_rVShift);
+    g = rgbWave(st.x, u_gShift, u_gVShift);
+    b = rgbWave(st.x, u_bShift, u_bVShift);
   }
   vec3 lineColor = vec3(r, g, b);
 
