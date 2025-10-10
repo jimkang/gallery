@@ -126,8 +126,54 @@ a:visited {
 
 #hue-shift-piece input[type=range] {
   width: 50%;
-  min-width: 150px;
+  min-width: 3em;
+  writing-mode: vertical-lr;
+  direction: rtl;
 }
+
+#hue-shift-piece .rgb-group {
+  display: flex;
+  border: solid 1px white;
+  border-radius: 8px;
+}
+
+#hue-shift-piece .rgb-group .piece-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#hue-shift-piece .piece-control label {
+  width: 3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rgb-sliders {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.rgb-panel h4 {
+  margin-bottom: 0.25em;
+  text-align: center;
+}
+
+.horizontal-control-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.horizontal-control-group .piece-control {
+  display: block;
+}
+
+#hue-shift-piece .horizontal-control-group .piece-control label {
+  width: inherit;
+}
+
 
 @media all and (max-height: 568px) {
   body {
