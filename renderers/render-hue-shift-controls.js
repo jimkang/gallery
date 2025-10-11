@@ -21,15 +21,8 @@ export default function renderHueShiftControls(params) {
   } = params;
 
   var pieceCaptionSel = select('#hue-shift-piece .caption');
-  var rAmpSliderSel = pieceCaptionSel.select('#hue-shift-r-amp-slider');
-  var gAmpSliderSel = pieceCaptionSel.select('#hue-shift-g-amp-slider');
-  var bAmpSliderSel = pieceCaptionSel.select('#hue-shift-b-amp-slider');
-  var rVShiftSliderSel = pieceCaptionSel.select('#hue-shift-r-vshift-slider');
-  var gVShiftSliderSel = pieceCaptionSel.select('#hue-shift-g-vshift-slider');
-  var bVShiftSliderSel = pieceCaptionSel.select('#hue-shift-b-vshift-slider');
-  var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
-  var drawWavesSel = select('#draw-rgb-waves');
 
+  var waveStylePulldownSel = pieceCaptionSel.select('#wave-style-pulldown');
   if (waveStylePulldownSel.empty()) {
     pieceCaptionSel.html(`<h3>Hue shift</h3>
     <div class="horizontal-control-group">
@@ -44,6 +37,10 @@ export default function renderHueShiftControls(params) {
       <div class="piece-control">
         <label for="draw-rgb-waves">Draw RGB waves</label>
         <input type="checkbox" id="draw-rgb-waves" checked>
+      </div>
+
+      <div class="piece-control">
+        <button id="randomize-hue-shift-button">Randomize</button>
       </div>
     </div>
 
@@ -149,87 +146,88 @@ export default function renderHueShiftControls(params) {
     waveStylePulldownSel.on('change', () =>
       onControlChange({ rgbWaveStyle: waveStylePulldownSel.node().value })
     );
-
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-r-amp-slider',
-      onControlChange,
-      propName: 'rAmp',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-g-amp-slider',
-      onControlChange,
-      propName: 'gAmp',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-b-amp-slider',
-      onControlChange,
-      propName: 'bAmp',
-    });
-
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-r-vshift-slider',
-      onControlChange,
-      propName: 'rVShift',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-g-vshift-slider',
-      onControlChange,
-      propName: 'gVShift',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#hue-shift-b-vshift-slider',
-      onControlChange,
-      propName: 'bVShift',
-    });
-
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#red-shift-slider',
-      onControlChange,
-      propName: 'rShift',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#green-shift-slider',
-      onControlChange,
-      propName: 'gShift',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#blue-shift-slider',
-      onControlChange,
-      propName: 'bShift',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#red-period-slider',
-      onControlChange,
-      propName: 'rPeriod',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#green-period-slider',
-      onControlChange,
-      propName: 'gPeriod',
-    });
-    initSlider({
-      parentSel: pieceCaptionSel,
-      selector: '#blue-period-slider',
-      onControlChange,
-      propName: 'bPeriod',
-    });
-    drawWavesSel = select('#draw-rgb-waves');
+    let drawWavesSel = select('#draw-rgb-waves');
     drawWavesSel.node().checked = drawRGBWaves;
     drawWavesSel.on('input', () =>
       onControlChange({ drawRGBWaves: drawWavesSel.node().checked })
     );
+    select('#randomize-hue-shift-button').on('click', randomize);
   }
+
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-r-amp-slider',
+    onControlChange,
+    propName: 'rAmp',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-g-amp-slider',
+    onControlChange,
+    propName: 'gAmp',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-b-amp-slider',
+    onControlChange,
+    propName: 'bAmp',
+  });
+
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-r-vshift-slider',
+    onControlChange,
+    propName: 'rVShift',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-g-vshift-slider',
+    onControlChange,
+    propName: 'gVShift',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#hue-shift-b-vshift-slider',
+    onControlChange,
+    propName: 'bVShift',
+  });
+
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#red-shift-slider',
+    onControlChange,
+    propName: 'rShift',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#green-shift-slider',
+    onControlChange,
+    propName: 'gShift',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#blue-shift-slider',
+    onControlChange,
+    propName: 'bShift',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#red-period-slider',
+    onControlChange,
+    propName: 'rPeriod',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#green-period-slider',
+    onControlChange,
+    propName: 'gPeriod',
+  });
+  initSlider({
+    parentSel: pieceCaptionSel,
+    selector: '#blue-period-slider',
+    onControlChange,
+    propName: 'bPeriod',
+  });
 
   waveStylePulldownSel.node().value = rgbWaveStyle;
   pieceCaptionSel
@@ -242,13 +240,6 @@ export default function renderHueShiftControls(params) {
   setNumberText({ selector: '.r-vshift-text', value: rVShift });
   setNumberText({ selector: '.g-vshift-text', value: gVShift });
   setNumberText({ selector: '.b-vshift-text', value: bVShift });
-
-  rAmpSliderSel.attr('value', rAmp);
-  gAmpSliderSel.attr('value', gAmp);
-  bAmpSliderSel.attr('value', bAmp);
-  rVShiftSliderSel.attr('value', rVShift);
-  gVShiftSliderSel.attr('value', gVShift);
-  bVShiftSliderSel.attr('value', bVShift);
 
   setNumberText({ selector: '.rshift-text', value: rShift });
   setNumberText({ selector: '.gshift-text', value: gShift });
@@ -265,7 +256,14 @@ export default function renderHueShiftControls(params) {
     );
     sliderSel.node().value = params[propName];
   }
+
   function setNumberText({ selector, value }) {
     pieceCaptionSel.select(selector).text((+value).toFixed(3));
+  }
+
+  function randomize() {
+    onControlChange({
+      rShift: Math.random() * 4 - 2,
+    });
   }
 }
