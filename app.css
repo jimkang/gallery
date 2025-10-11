@@ -174,7 +174,6 @@ a:visited {
   width: inherit;
 }
 
-
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;

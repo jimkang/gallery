@@ -225,6 +225,7 @@ export default function renderHueShiftControls(params) {
       propName: 'bPeriod',
     });
     drawWavesSel = select('#draw-rgb-waves');
+    drawWavesSel.node().checked = drawRGBWaves;
     drawWavesSel.on('input', () =>
       onControlChange({ drawRGBWaves: drawWavesSel.node().checked })
     );
@@ -234,13 +235,13 @@ export default function renderHueShiftControls(params) {
   pieceCaptionSel
     .selectAll('.sine-specific')
     .classed('hidden', +rgbWaveStyle === 0);
-  pieceCaptionSel.select('.red .amp-text').text(rAmp);
-  pieceCaptionSel.select('.green .amp-text').text(gAmp);
-  pieceCaptionSel.select('.blue .amp-text').text(bAmp);
+  setNumberText({ selector: '.red .amp-text', value: rAmp });
+  setNumberText({ selector: '.green .amp-text', value: gAmp });
+  setNumberText({ selector: '.blue .amp-text', value: bAmp });
 
-  pieceCaptionSel.select('.r-vshift-text').text(rVShift);
-  pieceCaptionSel.select('.g-vshift-text').text(gVShift);
-  pieceCaptionSel.select('.b-vshift-text').text(bVShift);
+  setNumberText({ selector: '.r-vshift-text', value: rVShift });
+  setNumberText({ selector: '.g-vshift-text', value: gVShift });
+  setNumberText({ selector: '.b-vshift-text', value: bVShift });
 
   rAmpSliderSel.attr('value', rAmp);
   gAmpSliderSel.attr('value', gAmp);
@@ -249,13 +250,12 @@ export default function renderHueShiftControls(params) {
   gVShiftSliderSel.attr('value', gVShift);
   bVShiftSliderSel.attr('value', bVShift);
 
-  pieceCaptionSel.select('.rshift-text').text(rShift);
-  pieceCaptionSel.select('.gshift-text').text(gShift);
-  pieceCaptionSel.select('.bshift-text').text(bShift);
-  pieceCaptionSel.select('.rperiod-text').text(rPeriod);
-  pieceCaptionSel.select('.gperiod-text').text(gPeriod);
-  pieceCaptionSel.select('.bperiod-text').text(bPeriod);
-  drawWavesSel.node().checked = drawRGBWaves;
+  setNumberText({ selector: '.rshift-text', value: rShift });
+  setNumberText({ selector: '.gshift-text', value: gShift });
+  setNumberText({ selector: '.bshift-text', value: bShift });
+  setNumberText({ selector: '.rperiod-text', value: rPeriod });
+  setNumberText({ selector: '.gperiod-text', value: gPeriod });
+  setNumberText({ selector: '.bperiod-text', value: bPeriod });
 
   function initSlider({ parentSel, selector, propName, onControlChange }) {
     var sliderSel = parentSel.select(selector);
@@ -264,5 +264,8 @@ export default function renderHueShiftControls(params) {
       throttledOnControlChange({ [propName]: sliderSel.node().value })
     );
     sliderSel.node().value = params[propName];
+  }
+  function setNumberText({ selector, value }) {
+    pieceCaptionSel.select(selector).text((+value).toFixed(3));
   }
 }
