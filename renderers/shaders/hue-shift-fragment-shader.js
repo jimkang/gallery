@@ -29,11 +29,11 @@ float rgbWave(float x, float phaseShift, float vShift) {
   float y = mod(x + RGB_PERIOD/2. + phaseShift, RGB_PERIOD);
   y = abs(y - RGB_PERIOD/2.);
   y = 4. * RGB_AMP * y - RGB_AMP + .5;
-  return clamp(y, 0., 1.) + vShift;
+  return clamp(y + vShift, 0., 1.);
 }
 
 float rgbSineWave(float x, float phaseShift, float amp, float period, float vShift) {
-  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5, 0., 1.) + vShift;
+  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5 + vShift, 0., 1.);
 }
 
 void main() {
