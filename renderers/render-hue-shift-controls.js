@@ -99,6 +99,17 @@ export default function renderHueShiftControls(params) {
   function randomize() {
     onControlChange({
       rShift: Math.random() * 4 - 2,
+      gShift: Math.random() * 4 - 2,
+      bShift: Math.random() * 4 - 2,
+      rVShift: Math.random() * 4 - 2,
+      gVShift: Math.random() * 4 - 2,
+      bVShift: Math.random() * 4 - 2,
+      rAmp: Math.random(),
+      gAmp: Math.random(),
+      bAmp: Math.random(),
+      rPeriod: Math.random() * 2,
+      gPeriod: Math.random() * 2,
+      bPeriod: Math.random() * 2,
     });
   }
 }
