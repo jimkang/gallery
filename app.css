@@ -189,6 +189,14 @@ a:visited {
 
 #hue-shift-piece button {
   font-size: 1em;
+  cursor: pointer;
+}
+
+.randomize-group-button {
+  filter: saturate(0);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 @media all and (max-height: 568px) {
