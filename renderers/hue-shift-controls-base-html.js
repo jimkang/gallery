@@ -14,12 +14,12 @@ export default `<h3>Hue shift</h3>
       </div>
 
       <div class="piece-control">
-        <button id="randomize-hue-shift-button">Randomize</button>
+        <button id="randomize-hue-shift-button">Randomize all</button>
       </div>
     </div>
 
     <div class="rgb-sliders">
-      <div class="rgb-panel">
+      <div class="rgb-panel phase-shift">
         <h4>Phase shift</h4>
         <div class="rgb-group">
           <div class="piece-control">
@@ -40,9 +40,11 @@ export default `<h3>Hue shift</h3>
             <span class="bshift-text"></span>
           </div>
         </div>
+
+        <button class="randomize-group-button">🎲</button>
       </div>
 
-      <div class="rgb-panel">
+      <div class="rgb-panel vshift">
         <h4>Vertical shift</h4>
         <div class="rgb-group">
           <div class="piece-control">
@@ -63,9 +65,11 @@ export default `<h3>Hue shift</h3>
             <span class="b-vshift-text"></span>
           </div>
         </div>
+
+        <button class="randomize-group-button">🎲</button>
       </div>
 
-      <div class="rgb-panel sine-specific">
+      <div class="rgb-panel sine-specific amp">
         <h4>Sine wave amp</h4>
         <div class="rgb-group">
           <div class="piece-control sine-specific red">
@@ -86,9 +90,11 @@ export default `<h3>Hue shift</h3>
             <span class="amp-text">0.33</span>
           </div>
         </div>
+
+        <button class="randomize-group-button">🎲</button>
       </div>
 
-      <div class="rgb-panel sine-specific">
+      <div class="rgb-panel sine-specific period">
         <h4>Sine wave period</h4>
         <div class="rgb-group">
           <div class="piece-control sine-specific">
@@ -109,6 +115,8 @@ export default `<h3>Hue shift</h3>
             <span class="bperiod-text"></span>
           </div>
         </div>
+
+        <button class="randomize-group-button">🎲</button>
       </div>
     </div>
 

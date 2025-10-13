@@ -156,9 +156,19 @@ a:visited {
   justify-content: space-evenly;
 }
 
+.rgb-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .rgb-panel h4 {
   margin-bottom: 0.25em;
   text-align: center;
+}
+
+.rgb-group {
+  margin-bottom: .5em;
 }
 
 .horizontal-control-group {

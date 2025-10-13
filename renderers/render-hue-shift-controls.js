@@ -37,6 +37,35 @@ export default function renderHueShiftControls(params) {
       onControlChange({ drawRGBWaves: drawWavesSel.node().checked })
     );
     select('#randomize-hue-shift-button').on('click', randomize);
+
+    select('.rgb-panel.phase-shift .randomize-group-button').on('click', () =>
+      onControlChange({
+        rShift: Math.random() * 4 - 2,
+        gShift: Math.random() * 4 - 2,
+        bShift: Math.random() * 4 - 2,
+      })
+    );
+    select('.rgb-panel.vshift .randomize-group-button').on('click', () =>
+      onControlChange({
+        rVShift: Math.random() * 4 - 2,
+        gVShift: Math.random() * 4 - 2,
+        bVShift: Math.random() * 4 - 2,
+      })
+    );
+    select('.rgb-panel.amp .randomize-group-button').on('click', () =>
+      onControlChange({
+        rAmp: Math.random(),
+        gAmp: Math.random(),
+        bAmp: Math.random(),
+      })
+    );
+    select('.rgb-panel.period .randomize-group-button').on('click', () =>
+      onControlChange({
+        rPeriod: Math.random() * 2,
+        gPeriod: Math.random() * 2,
+        bPeriod: Math.random() * 2,
+      })
+    );
   }
 
   waveStylePulldownSel.node().value = rgbWaveStyle;
@@ -78,6 +107,7 @@ export default function renderHueShiftControls(params) {
     { selector: '.rshift-text', value: rShift },
     { selector: '.gshift-text', value: gShift },
     { selector: '.bshift-text', value: bShift },
+
     { selector: '.rperiod-text', value: rPeriod },
     { selector: '.gperiod-text', value: gPeriod },
     { selector: '.bperiod-text', value: bPeriod },
