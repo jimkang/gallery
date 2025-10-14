@@ -79,8 +79,20 @@ float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
   return y;
 }
 
+float rgbSineWave(float x, float phaseShift, float amp, float period, float vShift) {
+  return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5 + vShift, 0., 1.);
+}
+
+vec3 getColor(float x) {
+  float r = rgbSineWave(x, -.83 * PI, .5, 1.43, -.21); 
+  float g = rgbSineWave(x, -.65 * PI, .09, .98, .27); 
+  float b = rgbSineWave(x, .48 * PI, .33, 2., -.04);
+  return vec3(r, g, b);
+}
+
 vec3 colorForOn(float on, float n) {
-    return vec3(noise(n));
+  return noise(n) * getColor(on);
+    // return vec3(noise(n));
   // return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
 }
 
@@ -136,8 +148,8 @@ void main() {
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
-    waveColor = colorForOn(waveOn, fWaveIndex/float(waveCount));
-    waveColor = vec3(on);
+    waveColor = colorForOn(on, fWaveIndex/float(waveCount));
+    // waveColor = vec3(on);
   }
 
   outColor = vec4(waveColor, 1.);
