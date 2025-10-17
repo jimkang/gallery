@@ -62,7 +62,7 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
 }
 
 float noise(float x) {
-  return fract(sin(159.3 * x));
+  return fract(sin(8374159.3 * x));
 }
 
 float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
@@ -91,9 +91,7 @@ vec3 getColor(float x) {
 }
 
 vec3 colorForOn(float on, float n) {
-  return noise(n) * getColor(on);
-    // return vec3(noise(n));
-  // return vec3(.3 * mix(noise(on), on, .3), mix(noise(on), on, .5), mix(noise(on), on, .8));
+  return noise(on) * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
