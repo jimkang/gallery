@@ -86,14 +86,15 @@ float repeatedNoise(float amp, float freq, float lacunarity, float gain, int rep
   return y;
 }
 
-float perlin1d(float amp, float freq, float lacunarity, float antiGain, int repeats, float seed) {
-  float prev = floor(seed);
+float perlin1d(float amp, float freq, float lacunarity, float antiGain, float divisions, int repeats, float seed) {
+  float prev = floor(seed * divisions);
   float next = prev + 1.;
-  float frac = seed - prev;
+  float frac = seed * divisions - prev;
 
   float result = 0.;
   for (int i = 0; i < repeats; ++i) {
     float noisePrev = noise(prev * freq);
+    // return noisePrev * divisions;
     float noiseNext = noise(next * freq);
     // Linear interp.
     float interpolated = noisePrev + frac * (noiseNext - noisePrev);
@@ -118,7 +119,7 @@ vec3 getColor(float x) {
 }
 
 vec3 colorForOn(float on) {
-  float noiseOn = perlin1d(2., 1.12, 5., 8., 2, on);
+  float noiseOn = perlin1d(2., 1.12, 5., 8., 10., 2, on);
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   return vec3(noiseOn);
@@ -183,8 +184,8 @@ void main() {
   }
 
   // Debug noise line graph
-  float noiseVal = perlin1d(.5, 1., 5., 4., 2, st.x);
-  noiseVal = noise(st.x);
+  float noiseVal = perlin1d(.5, 1., 5., 4., 10., 2, st.x);
+  // noiseVal = noise(st.x);
   float lineOn = 1. - step(.01, abs(st.y - noiseVal));
   if (lineOn > 0.) {
     waveColor = vec3(0., 1., 0.);
