@@ -79,6 +79,21 @@ float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
   return y;
 }
 
+float perlin1d(float amp, float freq, int repeats, float seed) {
+  float randomValue = noise(seed);
+  float prev = floor(randomValue);
+  float next = prev + 1.;
+  float frac = randomValue - prev;
+
+  float result = 0.;
+  float noisePrev = noise(prev);
+  for (int i = 0; i < repeats; ++i) {
+    // Linear interp.
+    result += noisePrev + frac * (noise(next) - noisePrev);
+  }
+  return result;
+}
+
 float rgbSineWave(float x, float phaseShift, float amp, float period, float vShift) {
   return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5 + vShift, 0., 1.);
 }
@@ -90,8 +105,8 @@ vec3 getColor(float x) {
   return vec3(r, g, b);
 }
 
-vec3 colorForOn(float on, float n) {
-  return noise(on) * getColor(u_density);
+vec3 colorForOn(float on) {
+  return perlin1d(.0, .05, 2, u_density) * on * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
@@ -146,7 +161,7 @@ void main() {
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
-    waveColor = colorForOn(on, fWaveIndex/float(waveCount));
+    waveColor = colorForOn(on);// fWaveIndex/float(waveCount));
     // waveColor = vec3(on);
   }
 
