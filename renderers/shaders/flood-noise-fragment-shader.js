@@ -61,35 +61,47 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
   return r/freq;
 }
 
-float noise(float x) {
-  return fract(sin(8374159.3 * x));
+float rand(float n) {
+  return fract(cos(n) * 8173.);
 }
 
-float repeatedNoise(int repeats, float lacunarity, float gain, float x) {
-  float amplitude = 0.05;
-  float frequency = 1.;
+float smoothrand(float n) {
+  return mix(rand(n), rand(n + 1.), smoothstep(0., 1., n));
+}
+
+float noise(float x) {
+  return fract(sin(x) * 43758.5453);
+  // return fract(sin(x * 57587.));
+}
+
+float repeatedNoise(float amp, float freq, float lacunarity, float gain, int repeats, float x) {
   float y = 0.;
 
   for (int i = 0; i < repeats; i++) {
-    y += amplitude * fract(sin(frequency * x) * 4000.);
-    frequency *= lacunarity;
-    amplitude *= gain;
+    y += amp * noise(freq * x);//fract(sin(freq * x) * 4000.);
+    freq *= lacunarity;
+    amp *= gain;
   }
 
   return y;
 }
 
-float perlin1d(float amp, float freq, int repeats, float seed) {
-  float randomValue = noise(seed);
-  float prev = floor(randomValue);
+float perlin1d(float amp, float freq, float lacunarity, float antiGain, int repeats, float seed) {
+  float prev = floor(seed);
   float next = prev + 1.;
-  float frac = randomValue - prev;
+  float frac = seed - prev;
 
   float result = 0.;
-  float noisePrev = noise(prev);
   for (int i = 0; i < repeats; ++i) {
+    float noisePrev = noise(prev * freq);
+    float noiseNext = noise(next * freq);
     // Linear interp.
-    result += noisePrev + frac * (noise(next) - noisePrev);
+    float interpolated = noisePrev + frac * (noiseNext - noisePrev);
+    // interpolated = noise(prev);
+    result += interpolated * amp;
+
+    freq *= lacunarity;
+    amp /= antiGain;
   }
   return result;
 }
@@ -106,7 +118,11 @@ vec3 getColor(float x) {
 }
 
 vec3 colorForOn(float on) {
-  return perlin1d(.0, .05, 2, u_density) * on * getColor(u_density);
+  float noiseOn = perlin1d(2., 1.12, 5., 8., 2, on);
+  // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
+  // noiseOn = on;
+  return vec3(noiseOn);
+  return noiseOn * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
@@ -155,14 +171,23 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
-    float sineNoise = noise(waveOn);
-    sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
-    float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
+    // float sineNoise = noise(waveOn);
+    // sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
+    // float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
-    waveColor = colorForOn(on);// fWaveIndex/float(waveCount));
+    waveColor = colorForOn(on);
+    // waveColor = colorForOn(waveOn);
     // waveColor = vec3(on);
+  }
+
+  // Debug noise line graph
+  float noiseVal = perlin1d(.5, 1., 5., 4., 2, st.x);
+  noiseVal = noise(st.x);
+  float lineOn = 1. - step(.01, abs(st.y - noiseVal));
+  if (lineOn > 0.) {
+    waveColor = vec3(0., 1., 0.);
   }
 
   outColor = vec4(waveColor, 1.);
