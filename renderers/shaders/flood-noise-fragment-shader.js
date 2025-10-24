@@ -118,12 +118,15 @@ vec3 getColor(float x) {
   return vec3(r, g, b);
 }
 
-vec3 colorForOn(float on) {
-  float noiseOn = perlin1d(2., 1.12, 5., 8., 10., 2, on);
+vec3 colorForOn(float on, float x) {
+  // Oh, no, this needs to be 2d noise so that it's not uniform across the
+  // period direction of the wave.
+  float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, on);
+  noiseVal *= perlin1d(.5, .5, 5., 4., 100., 3, x);
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
-  return vec3(noiseOn);
-  return noiseOn * getColor(u_density);
+  return vec3(noiseVal);
+  return noiseVal * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
@@ -178,13 +181,13 @@ void main() {
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
-    waveColor = colorForOn(on);
+    waveColor = colorForOn(on, st.x);
     // waveColor = colorForOn(waveOn);
     // waveColor = vec3(on);
   }
 
   // Debug noise line graph
-  float noiseVal = perlin1d(.5, 1., 5., 4., 10., 2, st.x);
+  float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, st.x);
   // noiseVal = noise(st.x);
   float lineOn = 1. - step(.01, abs(st.y - noiseVal));
   if (lineOn > 0.) {
