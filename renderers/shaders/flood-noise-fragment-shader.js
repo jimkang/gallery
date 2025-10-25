@@ -69,6 +69,13 @@ float smoothrand(float n) {
   return mix(rand(n), rand(n + 1.), smoothstep(0., 1., n));
 }
 
+// 2D Random
+float random2d(in vec2 st) {
+  return fract(sin(dot(st.xy,
+                       vec2(12.9898,78.233)))
+               * 43758.5453123);
+}
+
 float noise(float x) {
   return fract(sin(x) * 43758.5453);
   // return fract(sin(x * 57587.));
@@ -107,6 +114,28 @@ float perlin1d(float amp, float freq, float lacunarity, float antiGain, float di
   return result;
 }
 
+float noise2d(in vec2 st) {
+  vec2 i = floor(st);
+  vec2 f = fract(st);
+
+  // Four corners in 2D of a tile
+  float a = random2d(i);
+  float b = random2d(i + vec2(1.0, 0.0));
+  float c = random2d(i + vec2(0.0, 1.0));
+  float d = random2d(i + vec2(1.0, 1.0));
+
+  // Smooth Interpolation
+
+  // Cubic Hermine Curve.  Same as SmoothStep()
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  // u = smoothstep(0., 1., f);
+
+  // Mix 4 corners' percentages
+  return mix(a, b, u.x) +
+    (c - a) * u.y * (1.0 - u.x) +
+    (d - b) * u.x * u.y;
+}
+
 float rgbSineWave(float x, float phaseShift, float amp, float period, float vShift) {
   return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5 + vShift, 0., 1.);
 }
@@ -122,7 +151,9 @@ vec3 colorForOn(float on, float x) {
   // Oh, no, this needs to be 2d noise so that it's not uniform across the
   // period direction of the wave.
   float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, on);
-  noiseVal *= perlin1d(.5, .5, 5., 4., 100., 3, x);
+  noiseVal = noise2d(vec2(on, x));
+  // noiseVal = on;
+  // noiseVal *= perlin1d(.5, .5, 5., 4., 100., 3, x);
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   return vec3(noiseVal);
@@ -188,6 +219,7 @@ void main() {
 
   // Debug noise line graph
   float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, st.x);
+  noiseVal = noise2d(vec2(st.x, on));
   // noiseVal = noise(st.x);
   float lineOn = 1. - step(.01, abs(st.y - noiseVal));
   if (lineOn > 0.) {
