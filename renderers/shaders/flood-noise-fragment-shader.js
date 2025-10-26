@@ -150,10 +150,10 @@ vec3 getColor(float x) {
 vec3 colorForOn(float on, float x) {
   // Oh, no, this needs to be 2d noise so that it's not uniform across the
   // period direction of the wave.
-  float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, on);
-  noiseVal = noise2d(vec2(on, x));
+  float noiseVal = perlin1d(.5, .5, 5., 4., 1000., 3, on);
+  // noiseVal *= noise2d(vec2(on, x));
   // noiseVal = on;
-  // noiseVal *= perlin1d(.5, .5, 5., 4., 100., 3, x);
+  noiseVal *= perlin1d(1., .05, 50., 4., 10000., 1, mod(x + noiseVal, 1.));
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   return vec3(noiseVal);
@@ -206,6 +206,8 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
+    // waveOn *= perlin1d(.5, .5, 5., 4., 100., 3, waveOn);
+
     // float sineNoise = noise(waveOn);
     // sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
     // float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
@@ -219,7 +221,7 @@ void main() {
 
   // Debug noise line graph
   float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, st.x);
-  noiseVal = noise2d(vec2(st.x, on));
+  // noiseVal = noise2d(vec2(st.x, st.y));
   // noiseVal = noise(st.x);
   float lineOn = 1. - step(.01, abs(st.y - noiseVal));
   if (lineOn > 0.) {
