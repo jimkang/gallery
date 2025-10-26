@@ -104,7 +104,19 @@ float perlin1d(float amp, float freq, float lacunarity, float antiGain, float di
     // return noisePrev * divisions;
     float noiseNext = noise(next * freq);
     // Linear interp.
-    float interpolated = noisePrev + frac * (noiseNext - noisePrev);
+    // float interpolated = noisePrev + frac * (noiseNext - noisePrev);
+    // Cosine interp.
+    // float halfInverseCos = (1. - cos(frac * PI))/2.;
+    // float interpolated = noisePrev * (1. - halfInverseCos) + noiseNext * halfInverseCos;
+    // Cubic interp.
+    float noisePrevPrev = noise(prev + 1.);
+    float noiseNextNext = noise(next + 1.);
+    float p = noiseNextNext + noisePrev - noiseNext - noisePrevPrev;
+    float q = noisePrevPrev - noisePrev - frac;
+    float r = noiseNext - noisePrevPrev;
+    float s = noisePrev;
+    float interpolated = p * pow(frac, 3.) + q * pow(frac, 2.) + r * frac + s;
+
     // interpolated = noise(prev);
     result += interpolated * amp;
 
@@ -148,12 +160,10 @@ vec3 getColor(float x) {
 }
 
 vec3 colorForOn(float on, float x) {
-  // Oh, no, this needs to be 2d noise so that it's not uniform across the
-  // period direction of the wave.
-  float noiseVal = perlin1d(.5, .5, 5., 4., 1000., 3, on);
+  float noiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
   // noiseVal *= noise2d(vec2(on, x));
   // noiseVal = on;
-  noiseVal *= perlin1d(1., .05, 50., 4., 10000., 1, mod(x + noiseVal, 1.));
+  noiseVal *= perlin1d(2., .05, 50., 4., 10000., 1, mod(x + noiseVal, 1.));
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   return vec3(noiseVal);
@@ -220,7 +230,7 @@ void main() {
   }
 
   // Debug noise line graph
-  float noiseVal = perlin1d(.5, .5, 5., 4., 100., 3, st.x);
+  float noiseVal = perlin1d(.125, .5, 5., 4., 100., 3, st.x);
   // noiseVal = noise2d(vec2(st.x, st.y));
   // noiseVal = noise(st.x);
   float lineOn = 1. - step(.01, abs(st.y - noiseVal));
