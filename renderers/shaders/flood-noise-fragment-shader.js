@@ -160,14 +160,16 @@ vec3 getColor(float x) {
 }
 
 vec3 colorForOn(float on, float x) {
-  float noiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
+  float waveNoiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
   // noiseVal *= noise2d(vec2(on, x));
   // noiseVal = on;
-  noiseVal *= perlin1d(2., .05, 50., 4., 10000., 1, mod(x + noiseVal, 1.));
+  float horizontalNoiseVal = perlin1d(2., .05, 50., 4., 10000., 1, mod(x + waveNoiseVal, 1.));
+  float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .75);
+
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   // return vec3(noiseVal);
-  return mix(noiseVal, on, .8) * 1.25 * getColor(u_density);
+  return mix(noiseVal, on, .4) * 1.25 * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
