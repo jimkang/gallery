@@ -166,8 +166,8 @@ vec3 colorForOn(float on, float x) {
   noiseVal *= perlin1d(2., .05, 50., 4., 10000., 1, mod(x + noiseVal, 1.));
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
-  return vec3(noiseVal);
-  return noiseVal * getColor(u_density);
+  // return vec3(noiseVal);
+  return mix(noiseVal, on, .8) * 1.25 * getColor(u_density);
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
