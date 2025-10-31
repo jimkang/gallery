@@ -6,6 +6,7 @@ precision mediump float;
 #define WAVE_YSPAN 1.6
 // Extra waves to avoid a gap in the scroll-around space
 #define SCROLL_FILLERS 2
+#define COLOR_JITTER .1
 
 out vec4 outColor;
 
@@ -93,7 +94,8 @@ float repeatedNoise(float amp, float freq, float lacunarity, float gain, int rep
   return y;
 }
 
-float perlin1d(float amp, float freq, float lacunarity, float antiGain, float divisions, int repeats, float seed) {
+float perlin1d(float amp, float freq, float lacunarity, float antiGain,
+float divisions, int repeats, float seed) {
   float prev = floor(seed * divisions);
   float next = prev + 1.;
   float frac = seed * divisions - prev;
@@ -153,23 +155,35 @@ float rgbSineWave(float x, float phaseShift, float amp, float period, float vShi
 }
 
 vec3 getColor(float x) {
-  float r = rgbSineWave(x, -.83 * PI, .5, 1.43, -.21); 
-  float g = rgbSineWave(x, -.65 * PI, .09, .98, .27); 
-  float b = rgbSineWave(x, .48 * PI, .33, 2., -.04);
+  float r = rgbSineWave(x, 1.06 * PI, 1.5, .36, -.11); 
+  float g = rgbSineWave(x, -.65 * PI, .24, .98, .13); 
+  float b = rgbSineWave(x, .48 * PI, .33, 2., .17);
   return vec3(r, g, b);
 }
 
-vec3 colorForOn(float on, float x) {
+vec3 colorForOn(float on, float t, float x, float y, int index) {
   float waveNoiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
   // noiseVal *= noise2d(vec2(on, x));
   // noiseVal = on;
-  float horizontalNoiseVal = perlin1d(2., .05, 50., 4., 10000., 1, mod(x + waveNoiseVal, 1.));
+  float horizontalNoiseVal = perlin1d(4. * sin(t), fract(t), float(index), 4., 10000., 1,
+    mod(fract(t) + waveNoiseVal, 1.));
   float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .75);
 
   // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
   // noiseOn = on;
   // return vec3(noiseVal);
-  return mix(noiseVal, on, .4) * 1.25 * getColor(u_density);
+  // vec3 color = getColor(clamp(u_density + COLOR_JITTER * perlin1d(.5, .5, 1., 4., 1., 2, u_density), 0., 1.));
+  float jitterInput = pow(noise(float(index)/7. * on * x), 2.);
+  jitterInput = sin(t);
+  float jitterAmount = jitterInput * COLOR_JITTER;
+  jitterAmount = COLOR_JITTER;
+  jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise(x * y))/2.; 
+  vec3 color = getColor(u_density - COLOR_JITTER/2. + jitterAmount);
+  // color = getColor(min(u_density + COLOR_JITTER, 1.));
+  // color = getColor(u_density + COLOR_JITTER);
+  // color = getColor(.5);
+  // color = getColor(u_density);
+  return mix(noiseVal, on, .4) * 2.5 * color;
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
@@ -226,19 +240,19 @@ void main() {
     // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
-    waveColor = colorForOn(on, st.x);
+    waveColor = colorForOn(on, u_time, st.x, st.y, waveIndex);
     // waveColor = colorForOn(waveOn);
     // waveColor = vec3(on);
   }
 
   // Debug noise line graph
-  float noiseVal = perlin1d(.125, .5, 5., 4., 100., 3, st.x);
-  // noiseVal = noise2d(vec2(st.x, st.y));
-  // noiseVal = noise(st.x);
-  float lineOn = 1. - step(.01, abs(st.y - noiseVal));
-  if (lineOn > 0.) {
-    waveColor = vec3(0., 1., 0.);
-  }
+  // float noiseVal = perlin1d(.125, .5, 5., 4., 100., 3, st.x);
+  // // noiseVal = noise2d(vec2(st.x, st.y));
+  // // noiseVal = noise(st.x);
+  // float lineOn = 1. - step(.01, abs(st.y - noiseVal));
+  // if (lineOn > 0.) {
+  //   waveColor = vec3(0., 1., 0.);
+  // }
 
   outColor = vec4(waveColor, 1.);
 }
