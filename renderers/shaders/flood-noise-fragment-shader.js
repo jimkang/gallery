@@ -177,7 +177,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   jitterInput = sin(t);
   float jitterAmount = jitterInput * COLOR_JITTER;
   jitterAmount = COLOR_JITTER;
-  jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise(x * y))/2.; 
+  jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(x, y))/2.); 
   vec3 color = getColor(u_density - COLOR_JITTER/2. + jitterAmount);
   // color = getColor(min(u_density + COLOR_JITTER, 1.));
   // color = getColor(u_density + COLOR_JITTER);
