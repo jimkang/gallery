@@ -183,7 +183,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   // color = getColor(u_density + COLOR_JITTER);
   // color = getColor(.5);
   // color = getColor(u_density);
-  return mix(noiseVal, on, .4) * 2. * color;
+  return mix(noiseVal, on, .45) * 1.8 * color;
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
