@@ -173,17 +173,17 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   // noiseOn = on;
   // return vec3(noiseVal);
   // vec3 color = getColor(clamp(u_density + COLOR_JITTER * perlin1d(.5, .5, 1., 4., 1., 2, u_density), 0., 1.));
-  float jitterInput = pow(noise(float(index)/7. * on * x), 2.);
-  jitterInput = sin(t);
-  float jitterAmount = jitterInput * COLOR_JITTER;
-  jitterAmount = COLOR_JITTER;
-  jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.); 
+  // float jitterInput = pow(noise(float(index)/7. * on * x), 2.);
+  // jitterInput = sin(t);
+  // float jitterAmount = jitterInput * COLOR_JITTER;
+  // jitterAmount = COLOR_JITTER;
+  float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.); 
   vec3 color = getColor(u_density - COLOR_JITTER/2. + jitterAmount);
   // color = getColor(min(u_density + COLOR_JITTER, 1.));
   // color = getColor(u_density + COLOR_JITTER);
   // color = getColor(.5);
   // color = getColor(u_density);
-  return mix(noiseVal, on, .4) * 2.5 * color;
+  return mix(noiseVal, on, .4) * 2. * color;
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
