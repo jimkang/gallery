@@ -137,8 +137,8 @@ float rgbSineWave(float x, float phaseShift, float amp, float period, float vShi
 
 vec3 getColor(float x, float on) {
   float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11); 
-  float g = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13); 
-  float b = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 - on/2.);
+  float g = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13 -.25 * on); 
+  float b = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 -.5 * on);
 
   return vec3(r, g, b);
 }
@@ -152,7 +152,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.);
   float colorInput = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
   // Increase the spectral range with increased density.
-  colorInput *= u_density;
+  colorInput *= .2 + .8 * u_density;
   vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .45) * 1.8 * color;
 }
