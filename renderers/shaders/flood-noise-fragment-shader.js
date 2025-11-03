@@ -62,14 +62,6 @@ float signedDistanceCos(in vec2 p, in float offset, in float amp, in float freq,
   return r/freq;
 }
 
-float rand(float n) {
-  return fract(cos(n) * 8173.);
-}
-
-float smoothrand(float n) {
-  return mix(rand(n), rand(n + 1.), smoothstep(0., 1., n));
-}
-
 // 2D Random
 float random2d(in vec2 st) {
   return fract(sin(dot(st.xy,
@@ -82,20 +74,9 @@ float noise(float x) {
   // return fract(sin(x * 57587.));
 }
 
-float repeatedNoise(float amp, float freq, float lacunarity, float gain, int repeats, float x) {
-  float y = 0.;
-
-  for (int i = 0; i < repeats; i++) {
-    y += amp * noise(freq * x);//fract(sin(freq * x) * 4000.);
-    freq *= lacunarity;
-    amp *= gain;
-  }
-
-  return y;
-}
-
 float perlin1d(float amp, float freq, float lacunarity, float antiGain,
 float divisions, int repeats, float seed) {
+
   float prev = floor(seed * divisions);
   float next = prev + 1.;
   float frac = seed * divisions - prev;
@@ -141,8 +122,8 @@ float noise2d(in vec2 st) {
   // Smooth Interpolation
 
   // Cubic Hermine Curve.  Same as SmoothStep()
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  // u = smoothstep(0., 1., f);
+  // vec2 u = f * f * (3.0 - 2.0 * f);
+  vec2 u = smoothstep(0., 1., f);
 
   // Mix 4 corners' percentages
   return mix(a, b, u.x) +
