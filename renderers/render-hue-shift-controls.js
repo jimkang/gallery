@@ -113,6 +113,15 @@ export default function renderHueShiftControls(params) {
     { selector: '.bperiod-text', value: bPeriod },
   ].forEach(setNumberText);
 
+  console.log(
+    'RGB equations:',
+    `
+  float r = rgbSineWave(x, ${rShift} * PI, ${rAmp}, ${rPeriod}, ${rVShift}); 
+  float g = rgbSineWave(x, ${gShift} * PI, ${gAmp}, ${gPeriod}, ${gVShift}); 
+  float b = rgbSineWave(x, ${bShift} * PI, ${bAmp}, ${bPeriod}, ${bVShift});
+`
+  );
+
   function initSlider({ parentSel, selector, propName, onControlChange }) {
     var sliderSel = parentSel.select(selector);
     var throttledOnControlChange = throttle(onControlChange, 100);
