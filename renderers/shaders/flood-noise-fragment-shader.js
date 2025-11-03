@@ -154,35 +154,25 @@ float rgbSineWave(float x, float phaseShift, float amp, float period, float vShi
   return clamp(amp * sin(2. * PI/period * x + phaseShift) + .5 + vShift, 0., 1.);
 }
 
-vec3 getColor(float x) {
-  float r = rgbSineWave(x, 1.06 * PI, 1.5, .36, -.11); 
-  float g = rgbSineWave(x, -.65 * PI, .24, .98, .13); 
-  float b = rgbSineWave(x, .48 * PI, .33, 2., .17);
+vec3 getColor(float x, float on) {
+  float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11); 
+  float g = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13); 
+  float b = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 - on/2.);
+
   return vec3(r, g, b);
 }
 
 vec3 colorForOn(float on, float t, float x, float y, int index) {
   float waveNoiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
-  // noiseVal *= noise2d(vec2(on, x));
-  // noiseVal = on;
   float horizontalNoiseVal = perlin1d(4. * sin(t), fract(t), float(index), 4., 10000., 1,
     mod(fract(t) + waveNoiseVal, 1.));
   float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .75);
 
-  // noiseOn = repeatedNoise(1., 1., 2., 3., 1, on);
-  // noiseOn = on;
-  // return vec3(noiseVal);
-  // vec3 color = getColor(clamp(u_density + COLOR_JITTER * perlin1d(.5, .5, 1., 4., 1., 2, u_density), 0., 1.));
-  // float jitterInput = pow(noise(float(index)/7. * on * x), 2.);
-  // jitterInput = sin(t);
-  // float jitterAmount = jitterInput * COLOR_JITTER;
-  // jitterAmount = COLOR_JITTER;
-  float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.); 
-  vec3 color = getColor(u_density - COLOR_JITTER/2. + jitterAmount);
-  // color = getColor(min(u_density + COLOR_JITTER, 1.));
-  // color = getColor(u_density + COLOR_JITTER);
-  // color = getColor(.5);
-  // color = getColor(u_density);
+  float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.);
+  float colorInput = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
+  // Increase the spectral range with increased density.
+  colorInput *= u_density;
+  vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .45) * 1.8 * color;
 }
 
@@ -232,17 +222,9 @@ void main() {
       vec2(st.x + phaseShift, st.y),
       amp, baseFreq, yShift, invMaxWaveSpan, waveFadeFactor
     );
-    // waveOn *= perlin1d(.5, .5, 5., 4., 100., 3, waveOn);
-
-    // float sineNoise = noise(waveOn);
-    // sineNoise = mix(noise(sineNoise), sineNoise, pow(u_density, 4.));
-    // float repeatedNoise = repeatedNoise(3, .5, .5, waveOn);
-    // waveOn += .4 * mix(repeatedNoise, sineNoise, u_density);
 
     on = max(on, waveOn);
     waveColor = colorForOn(on, u_time, st.x, st.y, waveIndex);
-    // waveColor = colorForOn(waveOn);
-    // waveColor = vec3(on);
   }
 
   // Debug noise line graph
