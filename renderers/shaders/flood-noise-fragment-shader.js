@@ -11,7 +11,6 @@ precision mediump float;
 out vec4 outColor;
 
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_density;
 uniform float[100] u_random_values;
@@ -152,7 +151,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.);
   float colorInput = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
   // Increase the spectral range with increased density.
-  colorInput *= .2 + .8 * u_density;
+  colorInput *= .2 + .6 * u_density + .2 * fract(u_time/10.);
   vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .45) * 1.8 * color;
 }
