@@ -153,7 +153,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   // Increase the spectral range with increased density.
   colorInput *= .2 + .6 * u_density + .2 * fract(u_time/10.);
   vec3 color = getColor(colorInput, u_density);
-  return mix(noiseVal, on, .45) * 1.8 * color;
+  return mix(noiseVal, on, .15) * 1.8 * color;
 }
 
 float wave(vec2 st, float amp, float baseFreq, float yOffset,
