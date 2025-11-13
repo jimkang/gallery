@@ -13,7 +13,8 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_density;
-uniform float[100] u_random_values;
+uniform float u_ampChangeMult;
+uniform float u_ampChangeFreqMult;
 
 float easeSinInOut(float x) {
   return (1. - cos(PI * x))/2.;
@@ -196,7 +197,7 @@ void main() {
     yShift -= offscreenHeight;
 
     float amp = .1 + sin(fWaveIndex * PI) * .025;
-    amp = .4 * sin(u_time);
+    amp = u_ampChangeMult * sin(u_time * u_ampChangeFreqMult);
 
     float waveOn = wave(
       vec2(st.x + phaseShift, st.y),
