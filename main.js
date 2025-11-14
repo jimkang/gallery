@@ -234,6 +234,8 @@ var pieceDefs = [
       seed: randomId(8),
       showWIP: false,
       density: 0.5,
+      ampChangeFreqMult: 1,
+      ampChangeMult: 0.4,
       rgbWaveStyle: 0,
       rAmp: 1,
       gAmp: 1,
@@ -252,6 +254,8 @@ var pieceDefs = [
     boolKeys: ['showWIP', 'drawRGBWaves'],
     numberKeys: [
       'density',
+      'ampChangeMult',
+      'ampChangeFreqMult',
       'rgbWaveStyle',
       'rAmp',
       'gAmp',
@@ -271,7 +275,8 @@ var pieceDefs = [
 })();
 
 function onUpdate(params) {
-  var { seed, focusPiece, showWIP, density } = params;
+  var { seed, focusPiece, showWIP, density, ampChangeFreqMult, ampChangeMult } =
+    params;
 
   if (!seed) {
     urlStore.update({ seed: randomId(8) });
@@ -287,10 +292,20 @@ function onUpdate(params) {
   if (!floodNoisePieceDef.renderer) {
     floodNoisePieceDef.renderer = RenderFloodNoiseShader({
       density,
+      ampChangeMult,
+      ampChangeFreqMult,
       onDensityChange,
+      onAmpChangeMult(mult) {
+        urlStore.update({ ampChangeMult: mult });
+      },
+      onAmpChangeFreqMult(mult) {
+        urlStore.update({ ampChangeFreqMult: mult });
+      },
     });
   } else {
-    floodNoisePieceDef.renderer.setDensity({ density });
+    floodNoisePieceDef.renderer.setDensity(density);
+    floodNoisePieceDef.renderer.setAmpChangeFreqMult(ampChangeFreqMult);
+    floodNoisePieceDef.renderer.setAmpChangeMult(ampChangeMult);
   }
 
   var showablePieceDefs = pieceDefs.filter((def) => showWIP || !def.wip);
@@ -306,7 +321,7 @@ function onUpdate(params) {
   });
 }
 
-function onDensityChange({ density }) {
+function onDensityChange(density) {
   urlStore.update({ density });
 }
 

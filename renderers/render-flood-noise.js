@@ -9,6 +9,8 @@ export default function RenderFloodNoiseShader({
   ampChangeMult = 0.4,
   ampChangeFreqMult = 1,
   onDensityChange,
+  onAmpChangeMult,
+  onAmpChangeFreqMult,
 }) {
   var _density = density;
 
@@ -23,10 +25,22 @@ export default function RenderFloodNoiseShader({
     render,
     updateViewport: shaderRenderer.updateViewport,
     setDensity,
+    setAmpChangeFreqMult,
+    setAmpChangeMult,
   };
 
-  function setDensity({ density }) {
+  function setDensity(density) {
     _density = density;
+    renderControls();
+  }
+
+  function setAmpChangeMult(mult) {
+    ampChangeMult = mult;
+    renderControls();
+  }
+
+  function setAmpChangeFreqMult(mult) {
+    ampChangeFreqMult = mult;
     renderControls();
   }
 
@@ -61,27 +75,61 @@ export default function RenderFloodNoiseShader({
 
   function renderControls() {
     var pieceCaptionSel = select('#flood-noise-piece .caption');
-    var densitySlider = pieceCaptionSel.select('.density-slider');
-    if (densitySlider.empty()) {
-      densitySlider = pieceCaptionSel
+    renderSlider({
+      parentSel: pieceCaptionSel,
+      sliderClass: 'density-slider',
+      textValueClass: 'density-text',
+      onChangeFn: onDensityChange,
+      value: _density,
+      min: 0,
+      max: 1,
+    });
+    renderSlider({
+      parentSel: pieceCaptionSel,
+      sliderClass: 'amp-change-freq-mult-slider',
+      textValueClass: 'amp-change-freq-mult-text',
+      onChangeFn: onAmpChangeFreqMult,
+      value: ampChangeFreqMult,
+      min: 0,
+      max: 4,
+    });
+    renderSlider({
+      parentSel: pieceCaptionSel,
+      sliderClass: 'amp-change-mult-slider',
+      textValueClass: 'amp-change-mult-text',
+      onChangeFn: onAmpChangeMult,
+      value: ampChangeMult,
+      min: 0,
+      max: 1,
+    });
+  }
+
+  function renderSlider({
+    parentSel,
+    sliderClass,
+    textValueClass,
+    onChangeFn,
+    min,
+    max,
+    value,
+  }) {
+    var sliderSel = parentSel.select('.' + sliderClass);
+    if (sliderSel.empty()) {
+      sliderSel = parentSel
         .append('input')
         .attr('type', 'range')
-        .attr('min', '0.0')
-        .attr('max', '1.0')
+        .attr('min', min)
+        .attr('max', max)
         .attr('step', '0.01')
-        .classed('density-slider', true)
-        .on('change', () =>
-          onDensityChange({ density: densitySlider.node().value })
-        );
+        .classed(sliderClass, true)
+        .on('change', () => onChangeFn(sliderSel.node().value));
     }
-    var densityText = pieceCaptionSel.select('.density-text');
-    if (densityText.empty()) {
-      densityText = pieceCaptionSel
-        .append('span')
-        .classed('density-text', true);
+    var textSel = parentSel.select('.' + textValueClass);
+    if (textSel.empty()) {
+      textSel = parentSel.append('span').classed(textValueClass, true);
     }
 
-    densityText.text(_density);
-    densitySlider.attr('value', _density);
+    textSel.text(value);
+    sliderSel.attr('value', value);
   }
 }
