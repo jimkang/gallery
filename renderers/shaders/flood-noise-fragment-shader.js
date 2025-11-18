@@ -136,7 +136,7 @@ float rgbSineWave(float x, float phaseShift, float amp, float period, float vShi
 }
 
 vec3 getColor(float x, float on) {
-  float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11); 
+  float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11 * on); 
   float g = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13 -.25 * on); 
   float b = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 -.5 * on);
 
