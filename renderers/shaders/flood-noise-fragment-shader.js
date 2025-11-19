@@ -149,7 +149,8 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float horizontalNoiseAmp = 4. * (.6 + .4 * sin(t/10.));
   float horizontalNoiseVal = perlin1d(horizontalNoiseAmp, fract(t), float(index), 4., 10000., 1,
     mod(fract(t) + waveNoiseVal, 1.));
-  float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .75);
+  // Allow the noise to be more pattern-influenced at higher densities.
+  float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .8 - .5 * u_density);
 
   float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.);
   float colorInput = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
