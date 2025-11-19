@@ -144,8 +144,10 @@ vec3 getColor(float x, float on) {
 }
 
 vec3 colorForOn(float on, float t, float x, float y, int index) {
-  float waveNoiseVal = perlin1d(.5, .5, 5., 4., 500., 3, on);
-  float horizontalNoiseVal = perlin1d(4. * sin(t), fract(t), float(index), 4., 10000., 1,
+  float waveNoiseVal = perlin1d(.5, .5, 5., 2., 500., 3, on);
+  // If horizontalNoiseAmp gets too low, overall, things look too dark.
+  float horizontalNoiseAmp = 4. * (.6 + .4 * sin(t/10.));
+  float horizontalNoiseVal = perlin1d(horizontalNoiseAmp, fract(t), float(index), 4., 10000., 1,
     mod(fract(t) + waveNoiseVal, 1.));
   float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .75);
 
