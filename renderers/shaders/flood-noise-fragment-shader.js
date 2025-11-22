@@ -146,7 +146,7 @@ vec3 getColor(float x, float on) {
 vec3 colorForOn(float on, float t, float x, float y, int index) {
   float waveNoiseVal = perlin1d(.5, .5, 5., 2., 500., 3, on);
   // If horizontalNoiseAmp gets too low, overall, things look too dark.
-  float horizontalNoiseAmp = 4. * (.6 + .4 * sin(t/10.));
+  float horizontalNoiseAmp = 4. * (.5 + .5 * sin(t/10.));
   float horizontalNoiseVal = perlin1d(horizontalNoiseAmp, fract(t), float(index), 4., 10000., 1,
     mod(fract(t) + waveNoiseVal, 1.));
   // Allow the noise to be more pattern-influenced at higher densities.
@@ -155,7 +155,7 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.);
   float colorInput = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
   // Increase the spectral range with increased density.
-  colorInput *= .2 + .6 * u_density + .2 * fract(u_time/10.);
+  colorInput *= .2 + .6 * u_density + .2; // * fract(u_time/10.);
   vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .15) * 1.8 * color;
 }
@@ -208,7 +208,7 @@ void main() {
     );
 
     on = max(on, waveOn);
-    waveColor = colorForOn(on, u_time, st.x, st.y, waveIndex);
+    waveColor = colorForOn(on, fract(u_time), st.x, st.y, waveIndex);
   }
 
   // Debug noise line graph
