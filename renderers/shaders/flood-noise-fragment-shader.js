@@ -156,8 +156,9 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float colorX = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
   // Increase the spectral range with increased density. Also push down the color
   // input ceiling.
-  float colorInputFloor = .05 + .45 * u_density;
-  float colorInputRangeSize = .55 * (1. - pow(1. - u_density, 3.));
+  float colorInputFloor = .075 + .45 * u_density;
+  // It's OK if the range goes over 1.
+  float colorInputRangeSize = .465 + .25 * (1. - pow(1. - u_density, 3.));
   float colorInput = colorInputFloor + colorInputRangeSize * colorX;// fract(u_time/10.);
   vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .15) * 1.8 * color;
