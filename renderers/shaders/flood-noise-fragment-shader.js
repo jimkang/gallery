@@ -6,7 +6,7 @@ precision mediump float;
 #define WAVE_YSPAN 1.6
 // Extra waves to avoid a gap in the scroll-around space
 #define SCROLL_FILLERS 2
-#define COLOR_JITTER .2
+#define COLOR_JITTER .5
 
 out vec4 outColor;
 
@@ -153,12 +153,13 @@ vec3 colorForOn(float on, float t, float x, float y, int index) {
   float noiseVal = mix(waveNoiseVal, horizontalNoiseVal, .8 - .5 * u_density);
 
   float jitterAmount = COLOR_JITTER * (sin(t/100.) * float(index)/.7 + noise2d(vec2(y, x))/2.) * u_density;
-  float colorX = clamp(noise2d(vec2(y, x)) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
+  float shuffledOn = mix(noise(on), on, u_density);
+  float colorX = clamp(mix(shuffledOn, noise2d(vec2(y, x)), u_density) - COLOR_JITTER/2. + jitterAmount, 0., 1.);
   // Increase the spectral range with increased density. Also push down the color
   // input ceiling.
   float colorInputFloor = .075 + .45 * u_density;
   // It's OK if the range goes over 1.
-  float colorInputRangeSize = .465 + .25 * (1. - pow(1. - u_density, 3.));
+  float colorInputRangeSize = .565 + .25 * (1. - pow(1. - u_density, 3.));
   float colorInput = colorInputFloor + colorInputRangeSize * colorX;// fract(u_time/10.);
   vec3 color = getColor(colorInput, u_density);
   return mix(noiseVal, on, .15) * 1.8 * color;
