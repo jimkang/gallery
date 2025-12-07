@@ -19,8 +19,8 @@ var randomId = RandomId();
 var urlStore;
 
 var movingMondrianPieceDef = {
-  id: 'moving-mondrian',
-  name: 'Moving Mondrian',
+  id: 'mondrian-3000',
+  name: 'Mondrian 3000',
   wip: true,
   renderer: undefined,
   on: true,
