@@ -136,12 +136,17 @@ float rgbSineWave(float x, float phaseShift, float amp, float period, float vShi
 }
 
 vec3 getColor(float x, float on) {
-  // float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11 * on); 
-  // float g = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13 -.25 * on); 
-  // float b = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 -.5 * on);
-  float r = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11 * on); 
-  float g = rgbSineWave(x, -2.25 * PI, 0.24, 0.58, 0.13 - .25 * on); 
-  float b = rgbSineWave(x, .5 * PI, 0.33, 2., 0.28 -.4);
+  float r1 = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11 * on);
+  float g1 = rgbSineWave(x, -0.65 * PI, 0.24, 0.98, 0.13 -.25 * on);
+  float b1 = rgbSineWave(x, 0.48 * PI, 0.33, 2., 0.28 -.5 * on);
+  float r2 = rgbSineWave(x, 1.06 * PI, 0.36 + on/2., 1.51, -0.11 * on);
+  float g2 = rgbSineWave(x, -2.25 * PI, 0.24, 0.58, 0.13 - .25 * on);
+  float b2 = rgbSineWave(x, .5 * PI, 0.33, 2., 0.28 -.4);
+  // Blend these two sets.
+  float blend = .5 * sin(1.5 * PI * on + PI/4.) + sin(on);
+  float r = mix(r1, r2, blend);
+  float g = mix(g1, g2, blend);
+  float b = mix(b1, b2, blend);
 
   return vec3(r, g, b);
 }
